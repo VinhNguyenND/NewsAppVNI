@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_graph.xml"
+    app:startDestination="@id/home_Fragment">
+
+    <fragment
+        android:id="@+id/home_Fragment"
+        android:name="com.example.myappnews.Ui.Fragment.Home.Home_Fragment"
+        tools:layout="@layout/home_screen"
+        android:label="Home_Fragment" >
+        <action
+            android:id="@+id/action_home_Fragment_to_article_Fragment"
+            app:destination="@id/article_Fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/search_Fragment"
+        android:name="com.example.myappnews.Ui.Fragment.Search.Search_Fragment"
+        tools:layout="@layout/search_screen"
+        android:label="Search_Fragment" />
+    <fragment
+        android:id="@+id/profile_Fragment"
+        android:name="com.example.myappnews.Ui.Fragment.Profile.Profile_Fragment"
+        tools:layout="@layout/profile_screen"
+        android:label="Profile_Fragment" />
+    <fragment
+        android:id="@+id/article_Fragment"
+        android:name="com.example.myappnews.Ui.Fragment.Article.Article_Fragment"
+        android:label="Article_Fragment"
+        tools:layout="@layout/article_screen">
+        <action
+            android:id="@+id/action_article_Fragment_to_home_Fragment"
+            app:destination="@id/home_Fragment" />
+    </fragment>
+</navigation>

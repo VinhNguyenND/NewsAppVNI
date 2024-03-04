@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Ui.Activities.MainActivity">
+
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <fragment
+            android:id="@+id/nav_host_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:defaultNavHost="true"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+            app:navGraph="@navigation/navigation_graph" />
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.appbar.CollapsingToolbarLayout
+       android:layout_gravity="bottom"
+       app:layout_scrollFlags="scroll|enterAlways"
+       app:hideOnScroll="true"
+       app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
+    <ViewFlipper
+        android:id="@+id/view_flipper_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <include layout="@layout/bottom_main_activities"/>
+        <include layout="@layout/layout_bottom_audio"/>
+    </ViewFlipper>
+   </com.google.android.material.appbar.CollapsingToolbarLayout>
+    <com.google.android.material.appbar.AppBarLayout
+       android:layout_gravity="top"
+       android:layout_width="match_parent"
+       android:layout_height="56dp">
+    <ViewFlipper
+        android:id="@+id/view_flipper_top"
+        android:layout_gravity="top"
+        android:layout_width="match_parent"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:hideOnScroll="true"
+        android:layout_height="match_parent">
+        <include layout="@layout/top_bar_main_activities"/>
+    </ViewFlipper>
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_margin="8dp"
+    app:strokeWidth="5dp"
+    app:cardElevation="1dp"
+    app:strokeColor="@color/black"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="75dp">
+           <ImageView
+               android:id="@+id/img_article"
+               android:scaleType="fitXY"
+               android:layout_margin="5dp"
+               android:layout_width="75dp"
+               android:layout_height="75dp"
+               android:src="@drawable/ic_news"/>
+            <TextView
+                android:id="@+id/description"
+                android:layout_margin="8dp"
+                android:text="@string/text_present_item_article"
+                android:textColor="@color/PRIMARY_TEXT"
+                android:maxHeight="75dp"
+                android:textSize="16sp"
+                android:maxLength="100"
+                android:ellipsize="end"
+                android:lineSpacingExtra="1dp"
+                android:maxLines="3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="25dp">
+
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
