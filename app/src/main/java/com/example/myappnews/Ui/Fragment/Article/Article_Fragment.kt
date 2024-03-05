@@ -66,6 +66,7 @@ class Article_Fragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         init()
         observeDic()
+        callTextToSpeech()
         setEventTouchText(binding.txtPageContent)
     }
 

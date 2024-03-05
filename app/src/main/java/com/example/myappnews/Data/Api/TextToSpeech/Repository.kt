@@ -1,13 +1,12 @@
 package com.example.myappnews.Data.Api.TextToSpeech
 
 import android.media.AudioAttributes
-import android.media.MediaDataSource
 import android.media.MediaPlayer
 import android.os.Build
-import android.os.ParcelFileDescriptor
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -18,10 +17,10 @@ import java.io.IOException
 import java.io.InputStream
 
 class Repository {
-    private var mediaPlayer: MediaPlayer? = null
-    private suspend fun getVoid(text:String){
+      private val _TextToSpechApi = MutableLiveData<String>()
 
-    }
+      val word: LiveData<String>
+        get() = _TextToSpechApi
 
     public suspend fun callTextToSpeech(text: String,apiKey:String,apiHost:String){
         val client = OkHttpClient()
@@ -38,24 +37,11 @@ class Repository {
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
                     val responseBody = response.body
-                    val inputStream = responseBody?.byteStream()
+                    val inputStream =  responseBody?.byteStream()
                     try {
-                        //trong đây khi dữ liệu lấy về sẽ được trả về và lưu vào cache
-                        Log.d("nhan ve",responseBody.toString())
-                        Log.d("nhan ve",inputStream.toString())
                         if (inputStream != null) {
                             val tempFile = createTempFile(inputStream)
-                            // Initialize MediaPlayer
-                            mediaPlayer = MediaPlayer()
-
-                            // Set data source
-                            mediaPlayer?.setDataSource(tempFile.absolutePath)
-
-                            // Prepare and start playback
-                            GlobalScope.launch(Dispatchers.Main) {
-                                mediaPlayer?.prepare()
-                                mediaPlayer?.start()
-                            }
+                            _TextToSpechApi.postValue(tempFile.absolutePath)
                         }
                     } catch (e: IOException) {
                         e.printStackTrace()
@@ -66,21 +52,13 @@ class Repository {
             }
         })
     }
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private fun buildAudioAttributes(): AudioAttributes {
-        return AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_MEDIA)
-            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-            .build()
-    }
 
     private fun createTempFile(inputStream: InputStream): File {
         val tempFile = File.createTempFile("audio_temp", null)
         tempFile.deleteOnExit()
         val outputStream = FileOutputStream(tempFile)
-
         try {
-            val buffer = ByteArray(100000)
+            val buffer = ByteArray(1000000)
             var bytesRead: Int
             while (inputStream.read(buffer).also { bytesRead = it } != -1) {
                 outputStream.write(buffer, 0, bytesRead)
@@ -88,6 +66,8 @@ class Repository {
         } finally {
             outputStream.close()
         }
-
         return tempFile
-    }}
+    }
+
+
+}
