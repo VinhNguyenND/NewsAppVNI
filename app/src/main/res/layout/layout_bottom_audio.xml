@@ -3,65 +3,100 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    >
+    android:layout_height="wrap_content">
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_app_bar_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        app:hideOnScroll="true"
         android:background="#232323"
+        app:hideOnScroll="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-      <androidx.appcompat.widget.LinearLayoutCompat
-          android:orientation="horizontal"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent">
-          <ImageView
-              android:src="@drawable/ic_replay5s"
-              android:layout_gravity="center"
-              android:layout_marginStart="10dp"
-              android:layout_width="25dp"
-              android:layout_height="25dp"/>
-          <ImageView
-              android:src="@drawable/ic_play24"
-              android:layout_gravity="center"
-              android:layout_marginStart="10dp"
-              android:layout_width="25dp"
-              android:layout_height="25dp"/>
-          <ImageView
-              android:src="@drawable/ic_forward5s"
-              android:layout_gravity="center"
-              android:layout_marginStart="10dp"
-              android:layout_width="25dp"
-              android:layout_height="25dp"/>
-          <Space
-              android:layout_width="180dp"
-              android:layout_marginStart="10dp"
-              android:layout_height="match_parent"/>
-          <ImageView
-              android:src="@drawable/ic_speed_run24"
-              android:layout_gravity="center"
-              android:layout_marginStart="10dp"
-              android:layout_width="25dp"
-              android:layout_height="25dp"/>
-          <ImageView
-              android:src="@drawable/ic_download24"
-              android:layout_gravity="center"
-              android:layout_marginBottom="1dp"
-              android:layout_marginStart="10dp"
-              android:layout_width="25dp"
-              android:layout_height="25dp"/>
-          <ImageView
-              android:src="@drawable/ic_forward5s"
-              android:layout_gravity="center"
-              android:layout_marginStart="10dp"
-              android:layout_width="25dp"
-              android:layout_height="25dp"/>
-      </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/decree5s"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/ic_replay5s" />
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/ic_play24" />
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/ic_forward5s" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp" />
+
+            <TextView
+                android:id="@+id/text_now"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="0:00"
+                android:textColor="@color/white" />
+
+            <SeekBar
+                android:id="@+id/seekPageContent"
+                android:layout_gravity="center"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/text_end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="0:00"
+                android:textColor="@color/white" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp" />
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/ic_speed_run24" />
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="1dp"
+                android:src="@drawable/ic_download24" />
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/ic_forward5s" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
     </com.google.android.material.bottomnavigation.BottomNavigationView>
 </androidx.constraintlayout.widget.ConstraintLayout>

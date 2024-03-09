@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.PixelFormat
 import android.graphics.Rect
+import android.media.Image
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.Layout
@@ -21,6 +23,7 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.ViewFlipper
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
@@ -34,6 +37,8 @@ import com.example.myappnews.Data.Api.TextToSpeech.Repository
 import com.example.myappnews.Data.Model.Dictionary.DictionaryItem
 import com.example.myappnews.R
 import com.example.myappnews.databinding.ArticleScreenBinding
+import com.example.myappnews.databinding.BottomArticleBinding
+import com.example.myappnews.databinding.LayoutBottomAudioBinding
 import com.example.myappnews.databinding.PopupArticleBinding
 
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -45,19 +50,26 @@ import kotlin.system.measureTimeMillis
 
 class Article_Fragment : Fragment() {
     private lateinit var binding: ArticleScreenBinding;
+    private lateinit var bindingBottom: LayoutBottomAudioBinding;
     private lateinit var viewModel: DicViewModel
     private lateinit var popupWindow: PopupWindow
     private var viewPopup: View? = null
-    private var loadingButton:View?=null;
-    private var bodyPopup:View?=null;
-    private var word:TextView?=null;
-    private var phonetic:TextView?=null;
+    private var loadingButton: View? = null;
+    private var bodyPopup: View? = null;
+    private var word: TextView? = null;
+    private lateinit var speech: String;
+    private var phonetic: TextView? = null;
+    private val apiKey = "76373408e2mshdd1b501acbcbf46p1b09c4jsn6300c60e03f5"
+    private val apiHost = "text-to-speech27.p.rapidapi.com"
+    private val repository = Repository.getInstance();
+    private var MediaPlayer = MediaPlayer()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = ArticleScreenBinding.inflate(inflater, container, false)
-
+        bindingBottom = LayoutBottomAudioBinding.inflate(inflater);
         return binding.root
     }
 
@@ -66,23 +78,44 @@ class Article_Fragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         init()
         observeDic()
-        callTextToSpeech()
-        setEventTouchText(binding.txtPageContent)
+//        callTextToSpeech(binding.txtPageContent.text.toString())
+//        setEventTouchText(binding.txtPageContent)
+        setEventBottomMedia()
     }
 
+    override fun onStart() {
+        super.onStart()
+        observeSpeech()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        speech = "";
+    }
 
     private fun init() {
         viewModel = ViewModelProvider(this)[DicViewModel::class.java]
+    }
+
+    private fun observeSpeech() {
+        repository.TextToSpechApi.observe(viewLifecycleOwner, Observer {
+            speech = it;
+            MediaPlayer.setDataSource(it)
+            MediaPlayer.prepare()
+            MediaPlayer.start()
+            Log.i("link audio la:>>>", speech.toString());
+        })
+
     }
 
     private fun observeDic() {
         viewModel.word.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 if (it.isEmpty()) {
-                     Log.i("tu dien nhan ve", "null")
-                }else{
+                    Log.i("tu dien nhan ve", "null")
+                } else {
                     Log.i("tu dien nhan ve", it[0].toString())
-                    word!!.text=it[0].word.toString()
+                    word!!.text = it[0].word.toString()
 
                 }
             } else {
@@ -105,32 +138,25 @@ class Article_Fragment : Fragment() {
         }
     }
 
-    private fun callTextToSpeech() {
-        val repository: Repository = Repository()
+    private fun callTextToSpeech(content: String) {
         viewLifecycleOwner.lifecycleScope.launch {
             repository.callTextToSpeech(
                 binding.txtPageContent.text.toString(),
-                "76373408e2mshdd1b501acbcbf46p1b09c4jsn6300c60e03f5",
-                "text-to-speech27.p.rapidapi.com"
+                apiKey,
+                apiHost
             )
         }
     }
 
-    private fun setPopupWindow() {
-        val inflater: LayoutInflater =
-            requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater;
-        val popupView = inflater.inflate(R.layout.popup_article, null)
-        val focusable = false
-        popupWindow = PopupWindow(popupView, 1250, 1250, focusable)
-        popupWindow.overlapAnchor = true
-        popupWindow.elevation = 0.0f
-        popupWindow.isClippingEnabled = false
-        popupWindow.isOutsideTouchable = true
+
+    fun convertDurationToMinSec(durationInMillis: Int): String {
+        val seconds = (durationInMillis / 1000) % 60
+        val minutes = (durationInMillis / (1000 * 60)) % 60
+
+        // Sử dụng String.format để định dạng thời gian thành "mm:ss"
+        return String.format("%02d:%02d", minutes, seconds)
     }
 
-    private fun showPopup(view: View, x: Int, y: Int) {
-        popupWindow.showAtLocation(view, Gravity.NO_GRAVITY, x, y)
-    }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setEventTouchText(textView: TextView) {
@@ -140,59 +166,39 @@ class Article_Fragment : Fragment() {
                 return false
             }
         })
+    }
+
+    private fun setEventBottomMedia() {
+//        val a = findViewInLayout(R.id.decree5s)
+//        if (a != null) {
+//            a.setOnClickListener {
+//                Toast.makeText(requireContext(),"hello",Toast.LENGTH_LONG).show()
+//            }
+//        }
+
 
     }
 
-//    private fun handleTouch(event: MotionEvent?, textView: TextView) {
-//        if (event != null) {
-//            if (event.action == MotionEvent.ACTION_UP) {
-//                val x = event.x.toInt()
-//                val y = event.y.toInt()
-//                val layout = textView.layout
-//                val line = layout?.getLineForVertical(y)
-//                val offset = line?.let { layout.getOffsetForHorizontal(it, x.toFloat()) }
-//                val xOnScreen = offset?.let { layout.getPrimaryHorizontal(it).toInt() }
-//                val yOnScreen = line?.let { layout.getLineBottom(it).toInt() }
-//                if (offset != null) {
-//                    val (left, right) = findWordAtPosition(
-//                        textView.text.toString(),
-//                        offset
-//                    )
-//                    if (xOnScreen != null && yOnScreen != null) {
-//                        showPopup(binding.root, xOnScreen, yOnScreen)
-//                    }
-//                    Log.d("get get article when click:", textView.text.substring(left, right));
+//    private fun findViewInLayout(viewId: Int): View? {
+//        // Lấy ra tham chiếu đến ViewFlipper
+////        val viewFlipper = view?.findViewById<ViewFlipper>(R.id.view_flipper_bottom)
+//
+//        // Kiểm tra xem ViewFlipper có tồn tại không
+//        if (viewFlipper != null) {
+//            // Lặp qua tất cả các View con trong ViewFlipper
+//            for (i in 0 until viewFlipper.childCount) {
+//                val childView = viewFlipper.getChildAt(i)
+//
+//                // Tìm View trong mỗi childView
+//                val targetView = childView.findViewById<View>(viewId)
+//                if (targetView != null) {
+//                    // Nếu tìm thấy, trả về View đó
+//                    return targetView
 //                }
 //            }
 //        }
-//    }
-
-//    private fun handleTouch(event: MotionEvent?, textView: TextView) {
-//        val density = resources.displayMetrics.density
 //
-//        // Lấy offset tương ứng với vị trí chạm của sự kiện
-//        val offset = getOffsetForEvent(textView, event!!)
-//
-//        Log.d("getOffsetForEvent",offset.toString())
-//
-//        // Lấy layout của TextView
-//        val layout = textView.layout
-//
-//        // Lấy dòng tương ứng với offset
-//        val line = layout?.getLineForOffset(offset)
-//
-//        Log.d("getLineForOffset",offset.toString())
-//
-//
-//        // Tính khoảng cách từ top của từ đến top của TextView
-//        val distanceTop = layout!!.getLineTop(line!!).toFloat() / density
-//
-//        // Tính khoảng cách từ left của từ đến left của TextView
-//        val distanceLeft = layout.getPrimaryHorizontal(offset).toFloat() / density
-//
-//        Log.d("DistanceTop", distanceTop.toInt().toString())
-//        Log.d("DistanceLeft", distanceLeft.toInt().toString())
-////        addView(distanceTop.toInt(),distanceLeft.toInt())
+//        return null
 //    }
 
     private fun handleTouchEvent(event: MotionEvent, textView: TextView): Boolean {
@@ -288,10 +294,10 @@ class Article_Fragment : Fragment() {
 
         binding.rlLayout.removeView(viewPopup)
         viewPopup = LayoutInflater.from(context).inflate(R.layout.popup_article, null)
-        loadingButton= viewPopup!!.findViewById<ProgressBar>(R.id.popupLoading);
-        bodyPopup=viewPopup!!.findViewById(R.id.linearBody);
-        word=viewPopup!!.findViewById(R.id.englishWord);
-        phonetic=viewPopup!!.findViewById(R.id.phonetic1);
+        loadingButton = viewPopup!!.findViewById<ProgressBar>(R.id.popupLoading);
+        bodyPopup = viewPopup!!.findViewById(R.id.linearBody);
+        word = viewPopup!!.findViewById(R.id.englishWord);
+        phonetic = viewPopup!!.findViewById(R.id.phonetic1);
 
         val layoutParams = RelativeLayout.LayoutParams(
             CoordinatorLayout.LayoutParams.WRAP_CONTENT,
@@ -339,7 +345,7 @@ class Article_Fragment : Fragment() {
             }
 
             override fun onFinish() {
-                loadingButton!!.visibility=View.GONE
+                loadingButton!!.visibility = View.GONE
             }
         }
 

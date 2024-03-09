@@ -17,14 +17,24 @@ import java.io.IOException
 import java.io.InputStream
 
 class Repository {
-      private val _TextToSpechApi = MutableLiveData<String>()
+    private val _TextToSpechApi = MutableLiveData<String>()
 
-      val word: LiveData<String>
+    val TextToSpechApi: LiveData<String>
         get() = _TextToSpechApi
 
-    public suspend fun callTextToSpeech(text: String,apiKey:String,apiHost:String){
+    companion object {
+        private var instance: Repository? = null
+        fun getInstance()=instance ?: synchronized(this){
+             instance ?: Repository().also {
+                instance = it
+            }
+        }
+
+    }
+
+    public suspend fun callTextToSpeech(text: String, apiKey: String, apiHost: String) {
         val client = OkHttpClient()
-        val request =  Request.Builder()
+        val request = Request.Builder()
             .url("https://text-to-speech27.p.rapidapi.com/speech?text=$text&lang=en-us")
             .get()
             .addHeader("X-RapidAPI-Key", apiKey)
@@ -34,14 +44,17 @@ class Repository {
             override fun onFailure(call: Call, e: IOException) {
                 e.printStackTrace()
             }
+
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
                     val responseBody = response.body
-                    val inputStream =  responseBody?.byteStream()
+                    val inputStream = responseBody?.byteStream()
                     try {
                         if (inputStream != null) {
                             val tempFile = createTempFile(inputStream)
                             _TextToSpechApi.postValue(tempFile.absolutePath)
+                        } else {
+                            _TextToSpechApi.postValue("");
                         }
                     } catch (e: IOException) {
                         e.printStackTrace()

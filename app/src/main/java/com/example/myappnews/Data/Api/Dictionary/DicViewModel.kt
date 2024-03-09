@@ -16,7 +16,7 @@ class DicViewModel() : ViewModel() {
     private val _Word: MutableLiveData<List<DictionaryItem>?> = MutableLiveData()
     private val _TranslateApi = MutableLiveData<Translate>()
 
-    val word: MutableLiveData<List<DictionaryItem>?>
+    val word: LiveData<List<DictionaryItem>?>
         get() = _Word
     val translateWord: LiveData<Translate>
         get() = _TranslateApi
