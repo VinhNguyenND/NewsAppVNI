@@ -7,11 +7,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myappnews.Data.Model.Article.Article
+import com.example.myappnews.Data.Model.Article.NewsArticle
 import com.example.myappnews.Interface.Adapter.CommonAdapter
 import com.example.myappnews.R
 import com.example.myappnews.databinding.ItemArticleBinding
 
-class ArticleAdapter(private val listArticle: MutableList<Article>,context: Context):RecyclerView.Adapter<ArticleAdapter.ArticleViewHolder>(){
+class ArticleAdapter(private val listArticle: ArrayList<NewsArticle>,context: Context):RecyclerView.Adapter<ArticleAdapter.ArticleViewHolder>(){
 
     private lateinit var _onClickListener:CommonAdapter
     private val _context=context
@@ -20,7 +21,7 @@ class ArticleAdapter(private val listArticle: MutableList<Article>,context: Cont
         this._onClickListener=OnClickListener
     }
     @SuppressLint("NotifyDataSetChanged")
-    fun submitList(listArticle: MutableList<Article>){
+    fun submitList(listArticle: ArrayList<NewsArticle>){
         this._listArticle=listArticle
         notifyDataSetChanged()
     }
@@ -48,10 +49,10 @@ class ArticleAdapter(private val listArticle: MutableList<Article>,context: Cont
                 }
             }
         }
-        fun bind(article: Article){
+        fun bind(article: NewsArticle){
              binding.description.text=article.titleArticle
              Glide.with(_context)
-                 .load(article.imageUrl)
+                 .load(article.imageUrl?.trim())
                  .error(R.drawable.ic_news)
                  .fitCenter()
                  .into(binding.imgArticle)

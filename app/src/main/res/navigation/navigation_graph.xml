@@ -26,9 +26,9 @@
         android:label="Profile_Fragment" />
     <fragment
         android:id="@+id/article_Fragment"
+        tools:layout="@layout/article_screen"
         android:name="com.example.myappnews.Ui.Fragment.Article.Article_Fragment"
-        android:label="Article_Fragment"
-        tools:layout="@layout/article_screen">
+        android:label="Article_Fragment" >
         <action
             android:id="@+id/action_article_Fragment_to_home_Fragment"
             app:destination="@id/home_Fragment" />

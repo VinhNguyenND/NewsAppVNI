@@ -5,13 +5,17 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.PixelFormat
 import android.graphics.Rect
-import android.media.Image
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
+import android.text.Html
 import android.text.Layout
 import android.text.Spannable
 import android.text.SpannableStringBuilder
+import android.text.TextUtils
 import android.text.style.BackgroundColorSpan
 import android.util.DisplayMetrics
 import android.util.Log
@@ -21,25 +25,24 @@ import android.view.ViewGroup.MarginLayoutParams
 import android.widget.PopupWindow
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
+import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.ViewFlipper
+import androidx.annotation.RequiresApi
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import com.example.myappnews.Data.Api.Dictionary.DicRepository
 import com.example.myappnews.Data.Api.Dictionary.DicViewModel
 import com.example.myappnews.Data.Api.TextToSpeech.Repository
-import com.example.myappnews.Data.Model.Dictionary.DictionaryItem
+import com.example.myappnews.Data.Firebase.ViewModel.ArticleViewModel.ArViewModel
+import com.example.myappnews.Data.Model.Article.NewsArticle
 import com.example.myappnews.R
 import com.example.myappnews.databinding.ArticleScreenBinding
-import com.example.myappnews.databinding.BottomArticleBinding
-import com.example.myappnews.databinding.LayoutBottomAudioBinding
-import com.example.myappnews.databinding.PopupArticleBinding
 
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -49,10 +52,8 @@ import kotlin.math.roundToInt
 import kotlin.system.measureTimeMillis
 
 class Article_Fragment : Fragment() {
-    private lateinit var binding: ArticleScreenBinding;
-    private lateinit var bindingBottom: LayoutBottomAudioBinding;
+    private lateinit var binding: ArticleScreenBinding
     private lateinit var viewModel: DicViewModel
-    private lateinit var popupWindow: PopupWindow
     private var viewPopup: View? = null
     private var loadingButton: View? = null;
     private var bodyPopup: View? = null;
@@ -62,51 +63,77 @@ class Article_Fragment : Fragment() {
     private val apiKey = "76373408e2mshdd1b501acbcbf46p1b09c4jsn6300c60e03f5"
     private val apiHost = "text-to-speech27.p.rapidapi.com"
     private val repository = Repository.getInstance();
-    private var MediaPlayer = MediaPlayer()
+    private lateinit var mp: MediaPlayer
+    private var isPlaying = false
+    private val handler = Handler(Looper.getMainLooper())
+    private lateinit var article: NewsArticle;
 
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
-        binding = ArticleScreenBinding.inflate(inflater, container, false)
-        bindingBottom = LayoutBottomAudioBinding.inflate(inflater);
+        binding = ArticleScreenBinding.inflate(inflater, container, false);
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+//        initializeMediaPlayer()
+    }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        init()
-        observeDic()
-//        callTextToSpeech(binding.txtPageContent.text.toString())
+        callTextToSpeech(binding.txtPageContent.text.toString())
 //        setEventTouchText(binding.txtPageContent)
+        initMedia()
+        initViewModel()
+        observeDic()
         setEventBottomMedia()
+        setEventtopBar(view)
+        initContent()
+        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onStart() {
         super.onStart()
-        observeSpeech()
+//        observeSpeech()
     }
+
 
     override fun onPause() {
         super.onPause()
         speech = "";
     }
 
-    private fun init() {
+    private fun initViewModel() {
         viewModel = ViewModelProvider(this)[DicViewModel::class.java]
     }
 
-    private fun observeSpeech() {
-        repository.TextToSpechApi.observe(viewLifecycleOwner, Observer {
-            speech = it;
-            MediaPlayer.setDataSource(it)
-            MediaPlayer.prepare()
-            MediaPlayer.start()
-            Log.i("link audio la:>>>", speech.toString());
-        })
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun initContent() {
+        if (arguments?.getParcelable("Article", NewsArticle::class.java) != null) {
+            article = arguments?.getParcelable("Article", NewsArticle::class.java)!!
+        }
+        var text:String = article.content!!.replace("\\\\n", "<br/>"+" ");
+
+        Log.i("text convert",text);
+        binding.txtPageContent.text = Html.fromHtml(text)
 
     }
+
+    private fun initMedia() {
+        mp = MediaPlayer();
+    }
+
+    private fun initializeMediaPlayer() {
+        mp.setOnPreparedListener {
+            binding.seekPageContent.max = mp.duration
+        }
+        binding.StartOrStop.visibility = View.INVISIBLE
+    }
+
 
     private fun observeDic() {
         viewModel.word.observe(viewLifecycleOwner, Observer {
@@ -169,37 +196,84 @@ class Article_Fragment : Fragment() {
     }
 
     private fun setEventBottomMedia() {
-//        val a = findViewInLayout(R.id.decree5s)
-//        if (a != null) {
-//            a.setOnClickListener {
-//                Toast.makeText(requireContext(),"hello",Toast.LENGTH_LONG).show()
-//            }
-//        }
+        binding.StartOrStop.setOnClickListener {
+            if (isPlaying) {
+                pauseAudio()
+            } else {
+                playAudio()
+            }
+        }
+        binding.seekPageContent.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    mp.seekTo(progress)
+                }
+            }
 
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                TODO("Not yet implemented")
+            }
+
+        })
+        updateSeekBar()
+    }
+
+    private fun setEventtopBar(view:View){
+        binding.btnbackar.setOnClickListener {
+            view.findNavController().popBackStack();
+        }
+    }
+    private fun observeSpeech() {
+        repository.TextToSpechApi.observe(viewLifecycleOwner, Observer {
+            speech = it;
+            mp.setDataSource(it)
+            mp.prepare()
+            binding.StartOrStop.visibility = View.VISIBLE
+            binding.accelerate.visibility = View.INVISIBLE
+//            mp.start()
+            Log.i("link audio la:>>>", speech.toString());
+        })
 
     }
 
-//    private fun findViewInLayout(viewId: Int): View? {
-//        // Lấy ra tham chiếu đến ViewFlipper
-////        val viewFlipper = view?.findViewById<ViewFlipper>(R.id.view_flipper_bottom)
-//
-//        // Kiểm tra xem ViewFlipper có tồn tại không
-//        if (viewFlipper != null) {
-//            // Lặp qua tất cả các View con trong ViewFlipper
-//            for (i in 0 until viewFlipper.childCount) {
-//                val childView = viewFlipper.getChildAt(i)
-//
-//                // Tìm View trong mỗi childView
-//                val targetView = childView.findViewById<View>(viewId)
-//                if (targetView != null) {
-//                    // Nếu tìm thấy, trả về View đó
-//                    return targetView
-//                }
-//            }
-//        }
-//
-//        return null
-//    }
+    private fun updateSeekBar() {
+        handler.postDelayed({
+            binding.seekPageContent.progress = mp.currentPosition
+            updateSeekBar()
+        }, 100)
+    }
+
+    private fun playAudio() {
+        mp.start()
+        isPlaying = true
+        binding.StartOrStop.setImageResource(android.R.drawable.ic_media_pause)
+    }
+
+    private fun pauseAudio() {
+        mp.pause()
+        isPlaying = false
+        binding.StartOrStop.setImageResource(android.R.drawable.ic_media_play)
+    }
+
+    private fun stopAudio() {
+        mp.stop()
+        mp.prepareAsync()
+        mp.seekTo(0)
+        isPlaying = false
+        binding.StartOrStop.setImageResource(android.R.drawable.ic_media_play)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mp.release()
+        handler.removeCallbacksAndMessages(null)
+    }
+
 
     private fun handleTouchEvent(event: MotionEvent, textView: TextView): Boolean {
         if (event.action == MotionEvent.ACTION_UP) {
@@ -352,6 +426,5 @@ class Article_Fragment : Fragment() {
         // Bắt đầu bộ đếm
         countDownTimer.start()
     }
-
 
 }

@@ -36,26 +36,27 @@ class MainActivity : AppCompatActivity() {
         navHostFragment=supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController=navHostFragment.navController
         appBarConfiguration= AppBarConfiguration(setOf(R.id.home_Fragment,R.id.search_Fragment,R.id.profile_Fragment))
-//        findViewById<BottomNavigationView>(R.id.bottom_app_bar_main).setupWithNavController(navController)
-//        binding.viewFlipperBottom.elevation=10.0f
+        findViewById<BottomNavigationView>(R.id.bottom_app_bar_main).setupWithNavController(navController)
+
     }
-    
+
     private fun getNowFragment(){
         val navController = findNavController(R.id.nav_host_fragment)
         val destinationChangedListener = NavController.OnDestinationChangedListener { _, destination, _ ->
             when (destination.label) {
                 "Home_Fragment"->{
-//                    binding.viewFlipperBottom.displayedChild = 0
+                    binding.bottomMain.visibility=View.VISIBLE
+
                 }
                 "Search_Fragment"->{
 
                 }
                 "Profile_Fragment"->{
-//                    binding.viewFlipperBottom.displayedChild = 2
+
 
                 }
                 "Article_Fragment"->{
-//                    binding.viewFlipperBottom.displayedChild = 1
+                    binding.bottomMain.visibility=View.INVISIBLE
 
                 }
                 else -> "Invalid day"

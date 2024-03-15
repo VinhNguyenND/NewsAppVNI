@@ -1,25 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/article_page"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        app:layout_scrollFlags="enterAlways">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="0dp" />
+
+            <ImageButton
+                android:id="@+id/btnbackar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/white"
+                android:src="@drawable/back_24" />
+
+            <Space
+                android:layout_width="270dp"
+                android:layout_height="0dp" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/white"
+                android:src="@drawable/icheart24" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="wrap_content" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/white"
+                android:src="@drawable/ichistory24" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="wrap_content" />
+
+            <ImageButton
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:background="@color/white"
+                android:src="@drawable/icslider24" />
+
+
+        </LinearLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
+        android:layout_marginBottom="50dp"
+        android:id="@+id/ar_scr"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        android:layout_above="@+id/bottombar"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <RelativeLayout
             android:id="@+id/rl_layout"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="15dp"
+                android:layout_margin="5dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -41,6 +103,7 @@
                     android:text="@string/present_time_article_page"
                     android:textColor="@color/SECONDARY_TEXT" />
 
+
                 <ImageView
                     android:id="@+id/img_article_page"
                     android:layout_width="match_parent"
@@ -49,112 +112,136 @@
                     android:scaleType="fitXY"
                     android:src="@drawable/article_page_image" />
 
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="10dp" />
+
+
                 <TextView
                     android:id="@+id/txt_page_content"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_top_article_page"
+                    android:ellipsize="end"
                     android:lineSpacingExtra="2dp"
+                    android:padding="8dp"
                     android:text="@string/present_content"
-                    android:textColor="@color/PRIMARY_TEXT"
+                    android:textAlignment="textStart"
+                    android:textColor="#000000"
                     android:textIsSelectable="true"
-                    android:textSize="@dimen/text_size_mid" />
+                    android:textSize="16sp" />
 
             </LinearLayout>
         </RelativeLayout>
+
     </ScrollView>
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/bottombar"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_height="30dp">
+        android:background="@color/ACCENT_COLOR">
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/black"
-            android:orientation="horizontal"
-            app:layout_scrollFlags="exitUntilCollapsed">
+            android:layout_height="50dp">
 
-            <ImageView
-                android:id="@+id/decree5s"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="10dp"
-                android:src="@drawable/ic_replay5s" />
-
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="10dp"
-                android:src="@drawable/ic_play24" />
-
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="10dp"
-                android:src="@drawable/ic_forward5s" />
-
-            <Space
-                android:layout_width="10dp"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="10dp" />
+                android:background="@color/black"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/text_now"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="0:00"
-                android:textColor="@color/white" />
+                <ImageView
+                    android:id="@+id/decree5s"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="15dp"
+                    android:src="@drawable/ic_replay5s" />
 
-            <SeekBar
-                android:id="@+id/seekPageContent"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center" />
 
-            <TextView
-                android:id="@+id/text_end"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="0:00"
-                android:textColor="@color/white" />
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="5dp">
 
-            <Space
-                android:layout_width="10dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="10dp" />
+                    <ImageView
+                        android:id="@+id/StartOrStop"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_play24" />
 
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="10dp"
-                android:src="@drawable/ic_speed_run24" />
+                    <ProgressBar
+                        android:id="@+id/accelerate"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp" />
+                </FrameLayout>
 
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="10dp"
-                android:layout_marginBottom="1dp"
-                android:src="@drawable/ic_download24" />
 
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="10dp"
-                android:src="@drawable/ic_forward5s" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:src="@drawable/ic_forward5s" />
 
+                <Space
+                    android:layout_width="5dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp" />
+
+                <TextView
+                    android:id="@+id/text_now"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="0:00"
+                    android:textColor="@color/white" />
+
+                <SeekBar
+                    android:id="@+id/seekPageContent"
+                    android:layout_width="130dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+
+                <TextView
+                    android:id="@+id/text_end"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="0:00"
+                    android:textColor="@color/white" />
+
+                <Space
+                    android:layout_width="10dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:src="@drawable/ic_speed_run24" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginBottom="1dp"
+                    android:src="@drawable/ic_download24" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:src="@drawable/ic_forward5s" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.appbar.AppBarLayout>
-
 
 </RelativeLayout>

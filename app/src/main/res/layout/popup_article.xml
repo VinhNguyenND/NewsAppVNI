@@ -94,7 +94,7 @@
                     android:id="@+id/heart"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:src="@drawable/icheart50"
+                    android:src="@drawable/icheart24"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/imageVoice"
                     app:layout_constraintHorizontal_bias="0.927"
