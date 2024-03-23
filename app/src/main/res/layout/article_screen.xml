@@ -203,6 +203,7 @@
                 <SeekBar
                     android:id="@+id/seekPageContent"
                     android:layout_width="130dp"
+                    android:progressBackgroundTint="@color/white"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center" />
 

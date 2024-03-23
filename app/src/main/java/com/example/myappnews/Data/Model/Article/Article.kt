@@ -1,6 +1,6 @@
 package com.example.myappnews.Data.Model.Article
 
-data class Article(
+ open class Article(
      val idArticle:String,
      val titleArticle:String,
      val linkArticle: String,

@@ -12,7 +12,7 @@ import com.example.myappnews.Interface.Adapter.CommonAdapter
 import com.example.myappnews.R
 import com.example.myappnews.databinding.ItemArticleBinding
 
-class ArticleAdapter(private val listArticle: ArrayList<NewsArticle>,context: Context):RecyclerView.Adapter<ArticleAdapter.ArticleViewHolder>(){
+class ArticleAdapter(private val listArticle: List<NewsArticle>,context: Context):RecyclerView.Adapter<ArticleAdapter.ArticleViewHolder>(){
 
     private lateinit var _onClickListener:CommonAdapter
     private val _context=context
@@ -21,7 +21,7 @@ class ArticleAdapter(private val listArticle: ArrayList<NewsArticle>,context: Co
         this._onClickListener=OnClickListener
     }
     @SuppressLint("NotifyDataSetChanged")
-    fun submitList(listArticle: ArrayList<NewsArticle>){
+    fun submitList(listArticle: List<NewsArticle>){
         this._listArticle=listArticle
         notifyDataSetChanged()
     }

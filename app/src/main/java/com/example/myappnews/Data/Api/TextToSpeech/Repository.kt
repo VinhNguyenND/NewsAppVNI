@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.myappnews.Data.Api.TextToSpeech.ObjectAudio.FileWriter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -51,8 +52,8 @@ class Repository {
                     val inputStream = responseBody?.byteStream()
                     try {
                         if (inputStream != null) {
-                            val tempFile = createTempFile(inputStream)
-                            _TextToSpechApi.postValue(tempFile.absolutePath)
+                             FileWriter.initializeFile(inputStream)
+                            _TextToSpechApi.postValue(FileWriter.getFilePath())
                         } else {
                             _TextToSpechApi.postValue("");
                         }
@@ -66,21 +67,21 @@ class Repository {
         })
     }
 
-    private fun createTempFile(inputStream: InputStream): File {
-        val tempFile = File.createTempFile("audio_temp", null)
-        tempFile.deleteOnExit()
-        val outputStream = FileOutputStream(tempFile)
-        try {
-            val buffer = ByteArray(1000000)
-            var bytesRead: Int
-            while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                outputStream.write(buffer, 0, bytesRead)
-            }
-        } finally {
-            outputStream.close()
-        }
-        return tempFile
-    }
+//    private fun createTempFile(inputStream: InputStream): File {
+//        val tempFile = File.createTempFile("audio_temp", null)
+//        tempFile.deleteOnExit()
+//        val outputStream = FileOutputStream(tempFile)
+//        try {
+//            val buffer = ByteArray(1000000)
+//            var bytesRead: Int
+//            while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+//                outputStream.write(buffer, 0, bytesRead)
+//            }
+//        } finally {
+//            outputStream.close()
+//        }
+//        return tempFile
+//    }
 
 
 }

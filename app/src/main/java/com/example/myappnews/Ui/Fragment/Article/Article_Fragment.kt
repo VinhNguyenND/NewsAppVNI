@@ -28,6 +28,7 @@ import android.widget.RelativeLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.marginTop
@@ -36,23 +37,35 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.room.TypeConverter
+import com.bumptech.glide.Glide
 import com.example.myappnews.Data.Api.Dictionary.DicRepository
 import com.example.myappnews.Data.Api.Dictionary.DicViewModel
 import com.example.myappnews.Data.Api.TextToSpeech.Repository
 import com.example.myappnews.Data.Firebase.ViewModel.ArticleViewModel.ArViewModel
+import com.example.myappnews.Data.Local.Article.ArticleEntity
+import com.example.myappnews.Data.Local.Article.ArticlelocalViewModel
+import com.example.myappnews.Data.Model.Article.Article
 import com.example.myappnews.Data.Model.Article.NewsArticle
 import com.example.myappnews.R
+import com.example.myappnews.Ui.Fragment.Article.Article_Fragment.Companion.fromDateToString
+import com.example.myappnews.Ui.Fragment.Article.Article_Fragment.Companion.fromStringToDate
+import com.example.myappnews.Ui.Fragment.Home.Adapt.popupAdapter
 import com.example.myappnews.databinding.ArticleScreenBinding
 
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
 import kotlin.math.roundToInt
 import kotlin.system.measureTimeMillis
 
 class Article_Fragment : Fragment() {
     private lateinit var binding: ArticleScreenBinding
+    private lateinit var articlelocalViewModel: ArticlelocalViewModel
     private lateinit var viewModel: DicViewModel
     private var viewPopup: View? = null
     private var loadingButton: View? = null;
@@ -63,7 +76,7 @@ class Article_Fragment : Fragment() {
     private val apiKey = "76373408e2mshdd1b501acbcbf46p1b09c4jsn6300c60e03f5"
     private val apiHost = "text-to-speech27.p.rapidapi.com"
     private val repository = Repository.getInstance();
-    private lateinit var mp: MediaPlayer
+    private var mp: MediaPlayer? = null
     private var isPlaying = false
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var article: NewsArticle;
@@ -80,17 +93,17 @@ class Article_Fragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-//        initializeMediaPlayer()
+        setEventforBack()
+        Log.i("resume quay lai", "onResume")
+        setEventBottomMedia()
+        initializeMediaPlayer()
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        callTextToSpeech(binding.txtPageContent.text.toString())
-//        setEventTouchText(binding.txtPageContent)
-        initMedia()
+        setEventTouchText(binding.txtPageContent)
         initViewModel()
         observeDic()
-        setEventBottomMedia()
         setEventtopBar(view)
         initContent()
         super.onViewCreated(view, savedInstanceState)
@@ -98,7 +111,8 @@ class Article_Fragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-//        observeSpeech()
+        Log.i("onStart article", "onStart article")
+        observeSpeech()
     }
 
 
@@ -109,27 +123,34 @@ class Article_Fragment : Fragment() {
 
     private fun initViewModel() {
         viewModel = ViewModelProvider(this)[DicViewModel::class.java]
+        articlelocalViewModel = ViewModelProvider(this).get(ArticlelocalViewModel::class.java)
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun initContent() {
         if (arguments?.getParcelable("Article", NewsArticle::class.java) != null) {
             article = arguments?.getParcelable("Article", NewsArticle::class.java)!!
+            val text: String = article.content!!.replace("\\\\n", "<br/>" + " ");
+            callTextToSpeech(text)
+            articlelocalViewModel.addArticle(toArticleEntity(article))
+            articlelocalViewModel.readAllArticle.observe(viewLifecycleOwner, Observer {
+                Log.i("du lieu tra ve tu local", it.toString());
+            })
+            Log.i("text convert", text);
+            binding.txtPageContent.text = Html.fromHtml(text)
+            Glide.with(requireContext())
+                .load(article.imageUrl?.trim())
+                .error(R.drawable.uploaderror)
+                .fitCenter()
+                .into(binding.imgArticlePage)
         }
-        var text:String = article.content!!.replace("\\\\n", "<br/>"+" ");
-
-        Log.i("text convert",text);
-        binding.txtPageContent.text = Html.fromHtml(text)
-
     }
 
-    private fun initMedia() {
-        mp = MediaPlayer();
-    }
 
     private fun initializeMediaPlayer() {
-        mp.setOnPreparedListener {
-            binding.seekPageContent.max = mp.duration
+        mp = MediaPlayer();
+        mp!!.setOnPreparedListener {
+            binding.seekPageContent.max = mp!!.duration
         }
         binding.StartOrStop.visibility = View.INVISIBLE
     }
@@ -143,6 +164,7 @@ class Article_Fragment : Fragment() {
                 } else {
                     Log.i("tu dien nhan ve", it[0].toString())
                     word!!.text = it[0].word.toString()
+                    phonetic!!.text = it[0].phonetic
 
                 }
             } else {
@@ -168,7 +190,7 @@ class Article_Fragment : Fragment() {
     private fun callTextToSpeech(content: String) {
         viewLifecycleOwner.lifecycleScope.launch {
             repository.callTextToSpeech(
-                binding.txtPageContent.text.toString(),
+                content,
                 apiKey,
                 apiHost
             )
@@ -195,6 +217,23 @@ class Article_Fragment : Fragment() {
         })
     }
 
+    private fun setEventforBack() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                isEnabled = false
+                if (viewPopup != null) {
+                    binding.rlLayout.removeView(viewPopup)
+                    isEnabled = false
+                } else {
+                    isEnabled = true
+                }
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
+
+
     private fun setEventBottomMedia() {
         binding.StartOrStop.setOnClickListener {
             if (isPlaying) {
@@ -207,71 +246,83 @@ class Article_Fragment : Fragment() {
             SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
-                    mp.seekTo(progress)
+                    mp?.seekTo(progress)
+                    binding.textNow.text= mp?.currentPosition?.let { formatDuration(it.toLong()) }
                 }
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                TODO("Not yet implemented")
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                TODO("Not yet implemented")
             }
 
         })
         updateSeekBar()
     }
 
-    private fun setEventtopBar(view:View){
+    private fun setEventtopBar(view: View) {
         binding.btnbackar.setOnClickListener {
             view.findNavController().popBackStack();
         }
     }
+
+    //lay audio
     private fun observeSpeech() {
         repository.TextToSpechApi.observe(viewLifecycleOwner, Observer {
             speech = it;
-            mp.setDataSource(it)
-            mp.prepare()
+            Log.i("dương link audio là:>>>", speech.toString());
+            mp?.setDataSource(it)
+            mp?.prepare()
+            binding.textEnd.text= mp?.duration?.let { it1 -> formatDuration(it1.toLong()) }
             binding.StartOrStop.visibility = View.VISIBLE
             binding.accelerate.visibility = View.INVISIBLE
-//            mp.start()
-            Log.i("link audio la:>>>", speech.toString());
         })
 
     }
 
     private fun updateSeekBar() {
         handler.postDelayed({
-            binding.seekPageContent.progress = mp.currentPosition
+            binding.seekPageContent.progress = mp?.currentPosition ?: 0
             updateSeekBar()
         }, 100)
     }
 
     private fun playAudio() {
-        mp.start()
+        mp?.start()
         isPlaying = true
         binding.StartOrStop.setImageResource(android.R.drawable.ic_media_pause)
     }
 
     private fun pauseAudio() {
-        mp.pause()
+        mp?.pause()
         isPlaying = false
         binding.StartOrStop.setImageResource(android.R.drawable.ic_media_play)
     }
 
     private fun stopAudio() {
-        mp.stop()
-        mp.prepareAsync()
-        mp.seekTo(0)
+        mp?.stop()
+        mp?.prepareAsync()
+        mp?.seekTo(0)
         isPlaying = false
         binding.StartOrStop.setImageResource(android.R.drawable.ic_media_play)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        mp.release()
-        handler.removeCallbacksAndMessages(null)
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.i("destroy view article", "destroy view article")
+        speech = null.toString();
+        binding.StartOrStop.visibility = View.INVISIBLE
+        binding.accelerate.visibility = View.VISIBLE
+        val tempFilePath = speech
+        val fileToDelete = File(tempFilePath)
+        if (fileToDelete.exists()) {
+            fileToDelete.delete()
+        }
+        Log.d("link xoa laf:>>", fileToDelete.absolutePath)
+        mp!!.release();
+        mp = null;
     }
 
 
@@ -384,11 +435,6 @@ class Article_Fragment : Fragment() {
 
     }
 
-    private fun lazyLoadingData() {
-
-
-    }
-
 
     private fun setSpanForWord(start: Int, end: Int) {
         binding.txtPageContent.setOnClickListener {
@@ -427,4 +473,59 @@ class Article_Fragment : Fragment() {
         countDownTimer.start()
     }
 
+
+    companion object {
+        @SuppressLint("SimpleDateFormat")
+        private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+
+        @TypeConverter
+        @JvmStatic
+        fun fromDateToString(date: Date?): String? {
+            return date?.let { dateFormat.format(it) }
+        }
+
+        @TypeConverter
+        @JvmStatic
+        fun fromStringToDate(dateString: String?): Date? {
+            return dateString?.let { dateFormat.parse(it) }
+        }
+
+        fun formatDuration(duration: Long): String {
+            val minutes = (duration / 1000 / 60).toInt()
+            val seconds = (duration / 1000 % 60).toInt()
+            return String.format("%d:%02d", minutes, seconds)
+        }
+    }
+}
+
+public fun toArticleEntity(article: NewsArticle): ArticleEntity {
+    val articleEntity = ArticleEntity("null")
+    articleEntity.idArticle = article.idArticle.toString()
+    articleEntity.linkArticle = article.linkArticle
+    articleEntity.titleArticle = article.titleArticle
+    articleEntity.content = article.content
+    articleEntity.country = article.country
+    articleEntity.creator = article.creator
+    articleEntity.field = article.field
+    articleEntity.imageUrl = article.imageUrl
+    articleEntity.pubDate = fromDateToString(article.pubDate)
+    articleEntity.sourceId = article.sourceId
+    articleEntity.sourceUrl = article.sourceUrl
+    return articleEntity
+}
+
+public fun toNewsArticle(articleEntity: ArticleEntity): NewsArticle {
+    return NewsArticle(
+        idArticle = articleEntity.idArticle,
+        linkArticle = articleEntity.linkArticle,
+        titleArticle = articleEntity.titleArticle,
+        content = articleEntity.content,
+        country = articleEntity.country,
+        creator = articleEntity.creator,
+        field = articleEntity.field,
+        imageUrl = articleEntity.imageUrl,
+        pubDate = fromStringToDate(articleEntity.pubDate),
+        sourceId = articleEntity.sourceId,
+        sourceUrl = articleEntity.sourceUrl
+    )
 }

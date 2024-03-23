@@ -37,6 +37,8 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <LinearLayout
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -50,11 +52,13 @@
                             android:src="@drawable/ic_search" />
 
                         <ImageView
+                            android:id="@+id/historyHome"
                             android:layout_width="0dp"
                             android:layout_height="25dp"
                             android:layout_gravity="center"
                             android:layout_weight="1.5"
-                            android:src="@drawable/ic_search" />
+
+                            android:src="@drawable/ichistory24" />
 
                         <Space
                             android:layout_width="0dp"
@@ -67,14 +71,14 @@
                             android:layout_height="25dp"
                             android:layout_gravity="center"
                             android:layout_weight="1.5"
-                            android:src="@drawable/ic_search" />
+                            android:src="@drawable/ic_folder24" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="25dp"
                             android:layout_gravity="center"
                             android:layout_weight="1.5"
-                            android:src="@drawable/ic_search" />
+                            android:src="@drawable/icslider24" />
 
                     </LinearLayout>
 
@@ -90,6 +94,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/topontop">
 
                 <LinearLayout
+                    android:id="@+id/NguonidHome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
