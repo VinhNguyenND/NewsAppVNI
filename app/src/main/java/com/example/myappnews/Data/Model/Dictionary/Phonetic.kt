@@ -9,7 +9,7 @@ data class Phonetic(
     val license: License,
     val sourceUrl: String,
     val text: String
-) : Parcelable {
+):Parcelable {
 
     // Hàm khởi tạo không có tham số
     constructor() : this(

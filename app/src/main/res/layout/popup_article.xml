@@ -1,123 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
     android:layout_width="350dp"
-    android:layout_height="350dp"
-    android:backgroundTint="@color/white"
-    android:minHeight="100dp"
-    android:maxHeight="100dp"
-    android:background="@drawable/popdraw">
+    android:layout_height="350dp">
 
-    <FrameLayout
-        android:layout_width="350dp"
-        android:layout_height="350dp"
-        android:background="@drawable/popdraw">
+    <ScrollView
+        android:id="@+id/mainPopWord"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:backgroundTint="@color/white"
+        android:maxHeight="100dp"
+        android:minHeight="100dp">
 
-        <ProgressBar
-            android:id="@+id/popupLoading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|top"
-            android:visibility="visible" />
+        <FrameLayout
+            android:layout_width="350dp"
+            android:layout_height="350dp"
+            android:background="@drawable/popdraw">
 
-        <LinearLayout
-            android:id="@+id/linearBody"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            <LinearLayout
+                android:id="@+id/linearBody"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="350dp"
-                android:layout_height="350dp">
-
-                <TextView
-                    android:id="@+id/englishWord"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/universities"
-                    android:textColor="@color/black"
-                    android:textFontWeight="1"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.05"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.05" />
-
-                <LinearLayout
-                    android:id="@+id/linearLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.05"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/englishWord"
-                    app:layout_constraintVertical_bias="0.01">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="350dp"
+                    android:layout_height="350dp">
 
                     <TextView
-                        android:id="@+id/phonetic1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:text="ˈfeɪməs"
-                        android:textColor="@color/black"
-                        android:textFontWeight="1"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/phonetic2"
+                        android:id="@+id/englishWord"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="ˈfeɪməs"
+                        android:text="@string/universities"
                         android:textColor="@color/black"
                         android:textFontWeight="1"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.05"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.05" />
+
+                    <LinearLayout
+                        android:id="@+id/linearLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.05"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/englishWord"
+                        app:layout_constraintVertical_bias="0.01">
+
+                        <TextView
+                            android:id="@+id/phonetic1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:text="ˈfeɪməs"
+                            android:textColor="@color/black"
+                            android:textFontWeight="1"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/imageVoice"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic8sound50"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.926"
+                        app:layout_constraintStart_toEndOf="@+id/englishWord"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.05" />
+
+                    <ImageView
+                        android:id="@+id/heart"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/icheart24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/imageVoice"
+                        app:layout_constraintHorizontal_bias="0.927"
+                        app:layout_constraintStart_toEndOf="@+id/englishWord"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.05" />
+
+                    <TextView
+                        android:id="@+id/meanWordVietNam"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nghĩa: Trường Đại học"
+                        android:textColor="@color/black"
+                        android:textFontWeight="1"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.05"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+                        app:layout_constraintVertical_bias="0.03" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+        </FrameLayout>
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/popNothing"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="nothing"
+        android:textSize="26sp" />
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_word_container"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:layout_centerInParent="false"
+        android:background="@drawable/popdraw"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_weight="1"
+                    android:elevation="2dp"
+                    app:cardBackgroundColor="@color/shimmer_bg_color"
+                    app:cardCornerRadius="25dp" />
+
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:orientation="horizontal">
+
+                    <Space
+                        android:layout_width="100dp"
+                        android:layout_height="0dp" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_marginLeft="10dp"
+                        app:cardBackgroundColor="@color/shimmer_bg_color" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_marginLeft="10dp"
+                        app:cardBackgroundColor="@color/shimmer_bg_color" />
+
                 </LinearLayout>
 
-                <ImageView
-                    android:id="@+id/imageVoice"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:src="@drawable/ic8sound50"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.926"
-                    app:layout_constraintStart_toEndOf="@+id/englishWord"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.05" />
+            </LinearLayout>
 
-                <ImageView
-                    android:id="@+id/heart"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:src="@drawable/icheart24"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imageVoice"
-                    app:layout_constraintHorizontal_bias="0.927"
-                    app:layout_constraintStart_toEndOf="@+id/englishWord"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.05" />
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="10dp" />
 
-                <TextView
-                    android:id="@+id/meanWordVietNam"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nghĩa: Trường Đại học"
-                    android:textColor="@color/black"
-                    android:textFontWeight="1"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.05"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-                    app:layout_constraintVertical_bias="0.03" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                app:cardBackgroundColor="@color/shimmer_bg_color" />
         </LinearLayout>
-    </FrameLayout>
-</ScrollView>
+
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+</RelativeLayout>
+
 

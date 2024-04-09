@@ -7,23 +7,18 @@
 
 
     <LinearLayout
+        android:id="@+id/layoutLogin"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/back_ground_start_sign"
         android:orientation="vertical">
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="150dp"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/img_login"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/top_arc2"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/txt_sign_in_logo"
@@ -32,7 +27,7 @@
                 android:layout_marginStart="12dp"
                 android:layout_marginBottom="12dp"
                 android:text="@string/welcome_back"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="36sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -51,6 +46,7 @@
             app:startIconDrawable="@drawable/email">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/txtEmailLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/Email_hint"
@@ -76,6 +72,7 @@
             app:startIconDrawable="@drawable/password">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/txtPassWordLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/PassWord_hint"
@@ -90,24 +87,43 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="150dp">
 
-            <ImageView
+            <TextView
+                android:id="@+id/toCreateAccount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/btn_login"
+                android:text="create an account"
+                android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintHorizontal_bias="0.151"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.045" />
+
+            <Button
+                android:id="@+id/btnDangNhap"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Đăng Nhập"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.843" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_circular_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:background="@color/white"
         android:indeterminate="true"
+        android:visibility="gone"
         app:indicatorColor="@color/ACCENT_COLOR" />
 </RelativeLayout>

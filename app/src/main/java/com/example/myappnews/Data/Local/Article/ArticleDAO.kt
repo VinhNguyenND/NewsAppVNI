@@ -9,7 +9,7 @@ import com.example.myappnews.Data.Model.Article.Article
 
 @Dao
 interface ArticleDAO {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertArticle(article: ArticleEntity)
 
     @Query("DELETE FROM Articles")

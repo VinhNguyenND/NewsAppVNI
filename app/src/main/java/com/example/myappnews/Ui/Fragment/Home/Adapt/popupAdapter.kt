@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myappnews.Data.Model.item.Field
+import com.example.myappnews.Data.Model.Article.Field
 import com.example.myappnews.Interface.Adapter.CommonAdapter
 import com.example.myappnews.databinding.ItemPopUpHomeBinding
 
@@ -16,6 +16,7 @@ class popupAdapter(private val listArticle: ArrayList<Field>, context: Context) 
     private lateinit var _onClickListener: CommonAdapter
     private val _context = context
     private var _listChosse = listArticle
+
     fun setClickListener(OnClickListener: CommonAdapter) {
         this._onClickListener = OnClickListener
     }
@@ -55,11 +56,18 @@ class popupAdapter(private val listArticle: ArrayList<Field>, context: Context) 
                     onClick.setOnClickListener(adapterPosition)
                 }
             }
+            binding.apply {
+                checkbtn.setOnClickListener {
+                    onClick.setOnClickListener(adapterPosition)
+                }
+            }
         }
 
         fun bind(choose: Field) {
-            binding.txtChoose.text=choose.field.toString();
-            binding.checkbtn.isChecked=choose.choose;
+            binding.txtChoose.text = choose.fieldId.toString();
+            binding.checkbtn.isChecked = choose.choose;
         }
     }
+
+
 }

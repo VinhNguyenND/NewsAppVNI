@@ -8,29 +8,228 @@
     <fragment
         android:id="@+id/home_Fragment"
         android:name="com.example.myappnews.Ui.Fragment.Home.Home_Fragment"
-        tools:layout="@layout/home_screen"
-        android:label="Home_Fragment" >
+        android:label="Home_Fragment"
+        tools:layout="@layout/home_screen">
         <action
             android:id="@+id/action_home_Fragment_to_article_Fragment"
             app:destination="@id/article_Fragment" />
     </fragment>
     <fragment
         android:id="@+id/search_Fragment"
-        android:name="com.example.myappnews.Ui.Fragment.Search.Search_Fragment"
-        tools:layout="@layout/search_screen"
-        android:label="Search_Fragment" />
+        android:name="com.example.myappnews.Ui.Fragment.Search.Dictionary_Fragment"
+        android:label="Search_Fragment"
+        tools:layout="@layout/search_screen" />
     <fragment
         android:id="@+id/profile_Fragment"
         android:name="com.example.myappnews.Ui.Fragment.Profile.Profile_Fragment"
-        tools:layout="@layout/profile_screen"
-        android:label="Profile_Fragment" />
+        android:label="Profile_Fragment"
+        tools:layout="@layout/profile_screen">
+        <action
+            android:id="@+id/action_profile_Fragment_to_mainAdmFrag"
+            app:destination="@id/mainAdmFrag" />
+        <action
+            android:id="@+id/action_profile_Fragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_profile_Fragment_to_authorHome"
+            app:destination="@id/authorHome" />
+    </fragment>
     <fragment
         android:id="@+id/article_Fragment"
-        tools:layout="@layout/article_screen"
         android:name="com.example.myappnews.Ui.Fragment.Article.Article_Fragment"
-        android:label="Article_Fragment" >
+        android:label="Article_Fragment"
+        tools:layout="@layout/article_screen">
         <action
             android:id="@+id/action_article_Fragment_to_home_Fragment"
             app:destination="@id/home_Fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/homeAdmFrag"
+        android:name="com.example.myappnews.Ui.Fragment.management.Admin.HomeAdmFrag"
+        android:label="HomeAdmFrag"
+        tools:layout="@layout/home_admin">
+        <action
+            android:id="@+id/action_homeAdmFrag_to_mainAdmFrag"
+            app:destination="@id/mainAdmFrag" />
+        <action
+            android:id="@+id/action_homeAdmFrag_to_editFragment2"
+            app:destination="@id/editFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editFragment"
+        android:name="com.example.myappnews.Ui.Fragment.management.Admin.EditFragment"
+        android:label="EditFragment"
+        tools:layout="@layout/edit_fragment" >
+        <action
+            android:id="@+id/action_editFragment_to_homeAdmFrag2"
+            app:destination="@id/homeAdmFrag" />
+    </fragment>
+    <fragment
+        android:id="@+id/mainAdmFrag"
+        android:name="com.example.myappnews.Ui.Fragment.management.Admin.MainAdmFrag"
+        android:label="MainAdmFrag"
+        tools:layout="@layout/main_adm_frag">
+        <action
+            android:id="@+id/action_mainAdmFrag_to_profile_Fragment"
+            app:destination="@id/profile_Fragment" />
+        <action
+            android:id="@+id/action_mainAdmFrag_to_homeAdmFrag"
+            app:destination="@id/homeAdmFrag" />
+        <action
+            android:id="@+id/action_mainAdmFrag_to_approvedFragment"
+            app:destination="@id/approvedFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/approvedFragment"
+        tools:layout="@layout/approved_fragment"
+        android:name="com.example.myappnews.Ui.Fragment.management.Admin.ApprovedFragment"
+        android:label="ApprovedFragment" >
+        <action
+            android:id="@+id/action_approvedFragment_to_mainAdmFrag"
+            app:destination="@id/mainAdmFrag" />
+        <action
+            android:id="@+id/action_approvedFragment_to_editApprovedFrg"
+            app:destination="@id/editApprovedFrg" />
+    </fragment>
+    <fragment
+        android:id="@+id/editApprovedFrg"
+        tools:layout="@layout/edit_approved"
+        android:name="com.example.myappnews.Ui.Fragment.management.Admin.EditApprovedFrg"
+        android:label="EditApprovedFrg" >
+        <action
+            android:id="@+id/action_editApprovedFrg_to_approvedFragment"
+            app:destination="@id/approvedFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginFragment"
+        tools:layout="@layout/login_screen"
+        android:name="com.example.myappnews.Ui.Fragment.LoginSignUp.LoginFragment"
+        android:label="LoginFragment" >
+        <action
+            android:id="@+id/action_loginFragment_to_profile_Fragment"
+            app:destination="@id/profile_Fragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_signFragment"
+            app:destination="@id/signFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_home_Fragment"
+            app:destination="@id/home_Fragment" />
+    </fragment>
+    <fragment
+        tools:layout="@layout/signup_screen"
+        android:id="@+id/signFragment"
+        android:name="com.example.myappnews.Ui.Fragment.LoginSignUp.SignFragment"
+        android:label="SignFragment" >
+        <action
+            android:id="@+id/action_signFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_signFragment_to_home_Fragment"
+            app:destination="@id/home_Fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/authorHome"
+        tools:layout="@layout/author_home"
+        android:name="com.example.myappnews.Ui.Fragment.management.Author.AuthorHome"
+        android:label="AuthorHome" >
+        <action
+            android:id="@+id/action_authorHome_to_profile_Fragment"
+            app:destination="@id/profile_Fragment" />
+        <action
+            android:id="@+id/action_authorHome_to_articlePosted"
+            app:destination="@id/articlePosted" />
+        <action
+            android:id="@+id/action_authorHome_to_editAwait"
+            app:destination="@id/editAwait" />
+        <action
+            android:id="@+id/action_authorHome_to_editDenied"
+            app:destination="@id/editDenied" />
+        <action
+            android:id="@+id/action_authorHome_to_request"
+            app:destination="@id/request" />
+        <action
+            android:id="@+id/action_authorHome_to_sendRequest"
+            app:destination="@id/sendRequest" />
+    </fragment>
+    <fragment
+        android:id="@+id/articlePosted"
+        tools:layout="@layout/article_posted"
+        android:name="com.example.myappnews.Ui.Fragment.management.Author.Home.ArticlePosted"
+        android:label="ArticlePosted" >
+        <action
+            android:id="@+id/action_articlePosted_to_authorHome"
+            app:destination="@id/authorHome" />
+    </fragment>
+    <fragment
+        android:id="@+id/editAwait"
+        tools:layout="@layout/edit_await"
+        android:name="com.example.myappnews.Ui.Fragment.management.Author.AwaitingApproval.EditAwait"
+        android:label="EditAwait" >
+        <action
+            android:id="@+id/action_editAwait_to_authorHome"
+            app:destination="@id/authorHome" />
+    </fragment>
+    <fragment
+        android:id="@+id/editDenied"
+        tools:layout="@layout/edit_denied"
+        android:name="com.example.myappnews.Ui.Fragment.management.Author.Denied.EditDenied"
+        android:label="EditDenied" >
+        <action
+            android:id="@+id/action_editDenied_to_authorHome"
+            app:destination="@id/authorHome" />
+        <action
+            android:id="@+id/action_editDenied_to_deniedEdit"
+            app:destination="@id/deniedEdit" />
+    </fragment>
+    <fragment
+        android:id="@+id/request"
+        tools:layout="@layout/edit_request_author"
+        android:name="com.example.myappnews.Ui.Fragment.management.Author.EditRequest.Request"
+        android:label="Request" >
+        <action
+            android:id="@+id/action_request_to_authorHome"
+            app:destination="@id/authorHome" />
+        <action
+            android:id="@+id/action_request_to_requestEdit"
+            app:destination="@id/requestEdit" />
+    </fragment>
+    <fragment
+        android:id="@+id/requestEdit"
+        tools:layout="@layout/request_edit"
+        android:name="com.example.myappnews.Ui.Fragment.management.Author.EditRequest.RequestEdit"
+        android:label="RequestEdit" >
+        <action
+            android:id="@+id/action_requestEdit_to_request"
+            app:destination="@id/request" />
+        <action
+            android:id="@+id/action_requestEdit_to_editRequest"
+            app:destination="@id/editRequest" />
+    </fragment>
+    <fragment
+        android:id="@+id/editRequest"
+        tools:layout="@layout/denied_edit"
+        android:name="com.example.myappnews.Ui.Fragment.management.Author.EditRequest.EditRequest"
+        android:label="EditRequest" >
+        <action
+            android:id="@+id/action_editRequest_to_requestEdit"
+            app:destination="@id/requestEdit" />
+    </fragment>
+    <fragment
+        android:id="@+id/sendRequest"
+        tools:layout="@layout/send_request"
+        android:name="com.example.myappnews.Ui.Fragment.management.Author.Home.SendRequest"
+        android:label="SendRequest" >
+        <action
+            android:id="@+id/action_sendRequest_to_authorHome"
+            app:destination="@id/authorHome" />
+    </fragment>
+    <fragment
+        android:id="@+id/deniedEdit"
+        tools:layout="@layout/denied_edit"
+        android:name="com.example.myappnews.Ui.Fragment.management.Author.Denied.DeniedEdit"
+        android:label="DeniedEdit" >
+        <action
+            android:id="@+id/action_deniedEdit_to_editDenied"
+            app:destination="@id/editDenied" />
     </fragment>
 </navigation>

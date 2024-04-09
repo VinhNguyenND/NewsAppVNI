@@ -18,4 +18,28 @@ data class Meaning(
         "", // Thay thế "" bằng giá trị mặc định nếu có
         emptyList() // Thay thế emptyList() bằng giá trị mặc định nếu có
     )
+
+    override fun toString(): String {
+        var antonyms: String = "null"
+        var definitions: String = "null";
+        var partOfSpeech: String = "null";
+        var synonyms: String = "null";
+        if (this.antonyms.size > 0) {
+            antonyms= this.antonyms.toString()
+        }
+        if (this.definitions.size > 0) {
+           definitions=this.definitions.toString()
+        }
+        if (this.partOfSpeech.length>0) {
+          partOfSpeech=this.partOfSpeech
+        }
+        if (this.synonyms.size > 0) {
+         synonyms=this.synonyms.toString()
+        }
+        return "Meanings:\n +antonyms:$antonyms; \n  +definitions: $definitions; \n  +partOfSpeech:$partOfSpeech; \n  +synonyms:$synonyms \n"
+    }
+
+
+
+
 }

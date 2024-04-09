@@ -22,12 +22,12 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.example.myappnews.Data.FakeData.ArticleStore
 import com.example.myappnews.Data.Firebase.ViewModel.ArticleViewModel.ArViewModel
 import com.example.myappnews.Data.Local.Article.ArticlelocalViewModel
 import com.example.myappnews.Data.Model.Article.Article
+import com.example.myappnews.Data.Model.Article.Field
+import com.example.myappnews.Data.Model.item.Field as field
 import com.example.myappnews.Data.Model.Article.NewsArticle
-import com.example.myappnews.Data.Model.item.Field
 import com.example.myappnews.Interface.Adapter.CommonAdapter
 import com.example.myappnews.R
 import com.example.myappnews.Ui.Fragment.History.Article.AdapterPage.FragmentPageAdapter
@@ -42,10 +42,13 @@ import org.w3c.dom.Text
 class Home_Fragment : Fragment() {
     private lateinit var binding: HomeScreenBinding;
     private lateinit var _articleAdapter: ArticleAdapter
-    private lateinit var _articleHistory:ArticleAdapter;
+    private lateinit var _articleHistory: ArticleAdapter;
     private val ArticleViewModel = ArViewModel.getInstance();
     private lateinit var articlelocalViewModel: ArticlelocalViewModel
     private var listArticle = ArrayList<NewsArticle>()
+    private var listField = ArrayList<Field>()
+    private var topic = "All";
+    private lateinit var adapter: popupAdapter
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -58,6 +61,7 @@ class Home_Fragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViewModel()
+        initAdapter()
         initShimer()
         initRcView(requireParentFragment().requireContext())
         setEventForTop()
@@ -83,7 +87,9 @@ class Home_Fragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        getAllArticle()
+        getAllArticle(topic)
+        getAllField()
+
     }
 
     override fun onPause() {
@@ -91,9 +97,9 @@ class Home_Fragment : Fragment() {
         listArticle = ArrayList<NewsArticle>()
     }
 
-    private fun getAllArticle() {
+    private fun getAllArticle(topic: String) {
         binding.shimmerViewContainer.startShimmer()
-        ArticleViewModel.getAllArticle().observe(viewLifecycleOwner, Observer {
+        ArticleViewModel.getAllArticle(topic).observe(viewLifecycleOwner, Observer {
             listArticle = it;
             _articleAdapter.submitList(it);
             binding.shimmerViewContainer.stopShimmer()
@@ -102,11 +108,25 @@ class Home_Fragment : Fragment() {
         })
     }
 
+    private fun getAllField() {
+        ArticleViewModel.getAllField().observe(
+            viewLifecycleOwner, Observer {
+                listField = it;
+                adapter.submitList(listField);
+            }
+        )
+    }
+
     private fun initShimer() {
         binding.shimmerViewContainer.visibility = View.VISIBLE
     }
-    private fun initViewModel(){
-       articlelocalViewModel= ViewModelProvider(this).get(ArticlelocalViewModel::class.java)
+
+    private fun initViewModel() {
+        articlelocalViewModel = ViewModelProvider(this).get(ArticlelocalViewModel::class.java)
+    }
+
+    private fun initAdapter() {
+        adapter = popupAdapter(listField, requireContext())
     }
 
     @SuppressLint("ResourceType")
@@ -130,16 +150,21 @@ class Home_Fragment : Fragment() {
             dialog.cancel()
         }
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        val adapter = popupAdapter(getdatachooseall(), requireContext())
         adapter.setClickListener(object : CommonAdapter {
             override fun setOnClickListener(position: Int) {
-                Log.i("click", position.toString())
+                for (i in listField.indices) {
+                    if (i != position) {
+                        listField[i].choose = false
+                    }
+                }
+                listField[position].choose = !listField[position].choose;
+                adapter.submitList(listField);
+                topic = listField[position].fieldId.toString();
+                ArticleViewModel.getAllArticle(listField[position].fieldId.toString());
+                dialog.dismiss()
             }
         })
-
         recyclerView.adapter = adapter
-
 
         dialog.show()
     }
@@ -147,21 +172,22 @@ class Home_Fragment : Fragment() {
 
     private fun showBottmSheet() {
         val dialog = BottomSheetDialog(requireContext())
-        val bottomshet= layoutInflater.inflate(R.layout.history_bottom_sheet, null)
-        val btnXoatatca=bottomshet.findViewById<TextView>(R.id.xoatatcahome)
-        val tablayout: TabLayout =bottomshet.findViewById<TabLayout>(R.id.tablayouthisHome);
-        val viewpager2=bottomshet.findViewById<ViewPager2>(R.id.historyHomepage);
-        val adapter=FragmentPageAdapter(requireContext(),childFragmentManager,lifecycle)
+        val bottomshet = layoutInflater.inflate(R.layout.history_bottom_sheet, null)
+        val btnXoatatca = bottomshet.findViewById<TextView>(R.id.xoatatcahome)
+        val tablayout: TabLayout = bottomshet.findViewById<TabLayout>(R.id.tablayouthisHome);
+        val viewpager2 = bottomshet.findViewById<ViewPager2>(R.id.historyHomepage);
+        val adapter = FragmentPageAdapter(requireContext(), childFragmentManager, lifecycle)
+
         tablayout.addTab(tablayout.newTab().setText("Tin Tức"))
         tablayout.addTab(tablayout.newTab().setText("Từ Vựng"))
         btnXoatatca.setOnClickListener {
             articlelocalViewModel.deleteAllData()
         }
-        viewpager2.adapter=adapter
-        tablayout.addOnTabSelectedListener(object :TabLayout.OnTabSelectedListener{
+        viewpager2.adapter = adapter
+        tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 if (tab != null) {
-                    viewpager2.currentItem=tab.position
+                    viewpager2.currentItem = tab.position
                 }
             }
 
@@ -174,35 +200,16 @@ class Home_Fragment : Fragment() {
             }
 
         })
-        viewpager2.registerOnPageChangeCallback(object:ViewPager2.OnPageChangeCallback(){
+        viewpager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-              tablayout.selectTab(tablayout.getTabAt(position));
+                tablayout.selectTab(tablayout.getTabAt(position));
             }
-        } )
+        })
         dialog.setCancelable(true)
         dialog.setContentView(bottomshet!!)
         dialog.show()
     }
 
-    private fun getdatachooseall(): ArrayList<Field> {
-        val fieldList = ArrayList<Field>()
-        fieldList.add(Field("Field 1", false))
-        fieldList.add(Field("Field 2", false))
-        fieldList.add(Field("Field 3", false))
-        fieldList.add(Field("Field 4", false))
-        fieldList.add(Field("Field 5", false))
-        fieldList.add(Field("Field 1", false))
-        fieldList.add(Field("Field 2", false))
-        fieldList.add(Field("Field 3", false))
-        fieldList.add(Field("Field 4", false))
-        fieldList.add(Field("Field 5", false))
-        fieldList.add(Field("Field 1", false))
-        fieldList.add(Field("Field 2", false))
-        fieldList.add(Field("Field 3", false))
-        fieldList.add(Field("Field 4", false))
-        fieldList.add(Field("Field 5", false))
-        return fieldList
-    }
 
     private fun setEventForTop() {
         binding.NguonidHome.setOnClickListener {

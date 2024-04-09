@@ -1,11 +1,15 @@
 package com.example.myappnews.Ui.Fragment.Article
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
+import android.graphics.Bitmap
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -31,6 +35,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.FileProvider
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -52,12 +57,16 @@ import com.example.myappnews.Ui.Fragment.Article.Article_Fragment.Companion.from
 import com.example.myappnews.Ui.Fragment.Article.Article_Fragment.Companion.fromStringToDate
 import com.example.myappnews.Ui.Fragment.Home.Adapt.popupAdapter
 import com.example.myappnews.databinding.ArticleScreenBinding
+import com.facebook.shimmer.ShimmerFrameLayout
 
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import kotlin.math.roundToInt
@@ -73,13 +82,21 @@ class Article_Fragment : Fragment() {
     private var word: TextView? = null;
     private lateinit var speech: String;
     private var phonetic: TextView? = null;
+    private var meanWord: TextView? = null;
     private val apiKey = "76373408e2mshdd1b501acbcbf46p1b09c4jsn6300c60e03f5"
     private val apiHost = "text-to-speech27.p.rapidapi.com"
     private val repository = Repository.getInstance();
     private var mp: MediaPlayer? = null
+    private var mp_Popup: MediaPlayer? = null
+    private val audioUrl = ""
     private var isPlaying = false
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var article: NewsArticle;
+    private var startIndex: Int = 0;
+    private var endIndex: Int = 0;
+    private var content: View? = null;
+    private var loading: ShimmerFrameLayout? = null;
+    private var nothing: View? = null
 
 
     override fun onCreateView(
@@ -94,7 +111,6 @@ class Article_Fragment : Fragment() {
     override fun onResume() {
         super.onResume()
         setEventforBack()
-        Log.i("resume quay lai", "onResume")
         setEventBottomMedia()
         initializeMediaPlayer()
     }
@@ -106,12 +122,16 @@ class Article_Fragment : Fragment() {
         observeDic()
         setEventtopBar(view)
         initContent()
+        binding.btnCapture.setOnClickListener {
+            getBitmapFromView(view, requireActivity()) {
+                shareBitmap(it)
+            }
+        }
         super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onStart() {
         super.onStart()
-        Log.i("onStart article", "onStart article")
         observeSpeech()
     }
 
@@ -131,11 +151,8 @@ class Article_Fragment : Fragment() {
         if (arguments?.getParcelable("Article", NewsArticle::class.java) != null) {
             article = arguments?.getParcelable("Article", NewsArticle::class.java)!!
             val text: String = article.content!!.replace("\\\\n", "<br/>" + " ");
-            callTextToSpeech(text)
+//            callTextToSpeech(text)
             articlelocalViewModel.addArticle(toArticleEntity(article))
-            articlelocalViewModel.readAllArticle.observe(viewLifecycleOwner, Observer {
-                Log.i("du lieu tra ve tu local", it.toString());
-            })
             Log.i("text convert", text);
             binding.txtPageContent.text = Html.fromHtml(text)
             Glide.with(requireContext())
@@ -160,17 +177,23 @@ class Article_Fragment : Fragment() {
         viewModel.word.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 if (it.isEmpty()) {
-                    Log.i("tu dien nhan ve", "null")
+                    nothing?.visibility = View.VISIBLE
+                    content?.visibility = View.INVISIBLE
+                    loading?.stopShimmer()
+                    loading?.visibility = View.INVISIBLE
                 } else {
-                    Log.i("tu dien nhan ve", it[0].toString())
+                    Log.i("tu dien  getit",it.toString() )
                     word!!.text = it[0].word.toString()
                     phonetic!!.text = it[0].phonetic
-
+                    meanWord!!.text = it[0].meanings.toString()
+                    nothing?.visibility = View.GONE
+                    content?.visibility = View.VISIBLE
+                    loading?.stopShimmer()
+                    loading?.visibility = View.GONE
                 }
             } else {
                 Log.i("tu dien khong ton tai", "tu dien khong ton tai")
             }
-
 
         })
         viewModel.translateWord.observe(viewLifecycleOwner, Observer {
@@ -195,15 +218,6 @@ class Article_Fragment : Fragment() {
                 apiHost
             )
         }
-    }
-
-
-    fun convertDurationToMinSec(durationInMillis: Int): String {
-        val seconds = (durationInMillis / 1000) % 60
-        val minutes = (durationInMillis / (1000 * 60)) % 60
-
-        // Sử dụng String.format để định dạng thời gian thành "mm:ss"
-        return String.format("%02d:%02d", minutes, seconds)
     }
 
 
@@ -247,14 +261,16 @@ class Article_Fragment : Fragment() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
                     mp?.seekTo(progress)
-                    binding.textNow.text= mp?.currentPosition?.let { formatDuration(it.toLong()) }
+                    binding.textNow.text = mp?.currentPosition?.let { formatDuration(it.toLong()) }
                 }
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
+
             }
 
         })
@@ -274,11 +290,10 @@ class Article_Fragment : Fragment() {
             Log.i("dương link audio là:>>>", speech.toString());
             mp?.setDataSource(it)
             mp?.prepare()
-            binding.textEnd.text= mp?.duration?.let { it1 -> formatDuration(it1.toLong()) }
+            binding.textEnd.text = mp?.duration?.let { it1 -> formatDuration(it1.toLong()) }
             binding.StartOrStop.visibility = View.VISIBLE
             binding.accelerate.visibility = View.INVISIBLE
         })
-
     }
 
     private fun updateSeekBar() {
@@ -347,13 +362,17 @@ class Article_Fragment : Fragment() {
                         offset
                     )
                     setSpanForWord(left, right);
+                    startIndex = left;
+                    endIndex = right;
                     Log.d("get get article when click:", textView.text.substring(left, right));
                     val margin_top = pxToDp(distanceToTop as Float).toInt() - getStatusBarHeight()
                     println("Distance to top: " + margin_top.toString())
                     if (textView.text.substring(left, right) != " ") {
                         callGetWord(textView.text.substring(left, right))
+                        nothing?.visibility = View.INVISIBLE
+                        loading?.visibility = View.VISIBLE
+                        content?.visibility = View.INVISIBLE
                         addView(0, distanceToTop.toInt())
-                        startCountdown()
                     }
                 }
             }
@@ -406,6 +425,7 @@ class Article_Fragment : Fragment() {
         return Pair(start, end + 1);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun addView(x: Int, y: Int) {
 
         val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -419,19 +439,58 @@ class Article_Fragment : Fragment() {
 
         binding.rlLayout.removeView(viewPopup)
         viewPopup = LayoutInflater.from(context).inflate(R.layout.popup_article, null)
-        loadingButton = viewPopup!!.findViewById<ProgressBar>(R.id.popupLoading);
         bodyPopup = viewPopup!!.findViewById(R.id.linearBody);
         word = viewPopup!!.findViewById(R.id.englishWord);
+        content = viewPopup!!.findViewById(R.id.mainPopWord)
+        loading = viewPopup!!.findViewById(R.id.shimmer_word_container)
+        nothing = viewPopup!!.findViewById(R.id.popNothing)
+        meanWord = viewPopup!!.findViewById(R.id.meanWordVietNam)
         phonetic = viewPopup!!.findViewById(R.id.phonetic1);
 
         val layoutParams = RelativeLayout.LayoutParams(
             CoordinatorLayout.LayoutParams.WRAP_CONTENT,
             CoordinatorLayout.LayoutParams.WRAP_CONTENT,
         )
-        layoutParams.leftMargin = pxToDp(x.toFloat()).toInt() + width / 15 // x là tọa độ x bạn muốn
+
+        layoutParams.leftMargin = pxToDp(x.toFloat()).toInt() + width / 20 // x là tọa độ x bạn muốn
         layoutParams.topMargin = y + width / 5 // y là tọa độ y bạn muốn
 
+        nothing?.visibility = View.INVISIBLE
+        loading?.visibility = View.VISIBLE
+        content?.visibility = View.INVISIBLE
+        loading?.startShimmer()
         binding.rlLayout.addView(viewPopup, layoutParams)
+
+
+        binding.rlLayout.setOnTouchListener { v, event ->
+            val x = event.x.toInt()
+            val y = event.y.toInt()
+
+            val viewLocation = IntArray(2)
+            viewPopup?.getLocationOnScreen(viewLocation)
+
+            val viewLeft = viewLocation[0]
+            val viewTop = viewLocation[1]
+            val viewRight = viewLeft + viewPopup?.width!!
+            val viewBottom = viewTop + viewPopup?.height!!
+
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    if (x < viewLeft || x > viewRight || y < viewTop || y > viewBottom) {
+                        binding.rlLayout.removeView(viewPopup)
+                        removeSpanForWord(startIndex, endIndex);
+                        return@setOnTouchListener true
+                    }
+                }
+
+                MotionEvent.ACTION_MOVE -> {
+                    if (x < viewLeft || x > viewRight || y < viewTop || y > viewBottom) {
+                        return@setOnTouchListener false
+                    }
+                }
+            }
+            false
+        }
 
     }
 
@@ -454,23 +513,19 @@ class Article_Fragment : Fragment() {
 
     }
 
-    private fun getSpannableText(text: String): SpannableStringBuilder {
-        return SpannableStringBuilder(text)
-    }
+    private fun removeSpanForWord(start: Int, end: Int) {
+        val spannableString = getSpannableText(binding.txtPageContent.text.toString())
+        val spans = spannableString.getSpans(start, end, BackgroundColorSpan::class.java)
 
-    private fun startCountdown() {
-        val countDownTimer = object : CountDownTimer(1000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // Mỗi lần đếm (mỗi giây), bạn có thể thực hiện các hành động cần thiết ở đây
-            }
-
-            override fun onFinish() {
-                loadingButton!!.visibility = View.GONE
-            }
+        spans?.forEach { span ->
+            spannableString.removeSpan(span)
         }
 
-        // Bắt đầu bộ đếm
-        countDownTimer.start()
+        binding.txtPageContent.text = spannableString
+    }
+
+    private fun getSpannableText(text: String): SpannableStringBuilder {
+        return SpannableStringBuilder(text)
     }
 
 
@@ -495,6 +550,71 @@ class Article_Fragment : Fragment() {
             val seconds = (duration / 1000 % 60).toInt()
             return String.format("%d:%02d", minutes, seconds)
         }
+    }
+
+    fun getBitmapFromView(view: View, activity: Activity, callback: (Bitmap) -> Unit) {
+        activity.window?.let { window ->
+            val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+            val locationOfViewInWindow = IntArray(2)
+            view.getLocationInWindow(locationOfViewInWindow)
+            try {
+                PixelCopy.request(
+                    window,
+                    Rect(
+                        locationOfViewInWindow[0],
+                        locationOfViewInWindow[1],
+                        locationOfViewInWindow[0] + view.width,
+                        locationOfViewInWindow[1] + view.height
+                    ),
+                    bitmap,
+                    { copyResult ->
+                        if (copyResult == PixelCopy.SUCCESS) {
+                            callback(bitmap)
+                        }
+                        // possible to handle other result codes ...
+                    },
+                    Handler(Looper.myLooper()!!)
+                )
+            } catch (e: IllegalArgumentException) {
+                // PixelCopy may throw IllegalArgumentException, make sure to handle it
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun shareBitmap(bitmap: Bitmap) {
+        // Lưu bitmap vào bộ nhớ và lấy Uri
+        val uri: Uri? = context?.let { saveBitmapToStorage(it, bitmap) }
+
+        // Tạo Intent để chia sẻ ảnh
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "image/*"
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
+
+        // Khởi chạy Intent
+        startActivity(Intent.createChooser(shareIntent, "Chia sẻ ảnh qua"))
+    }
+
+    private fun saveBitmapToStorage(context: Context, bitmap: Bitmap): Uri? {
+        val imagesFolder = File(context.cacheDir, "images")
+        var uri: Uri? = null
+        try {
+            imagesFolder.mkdirs()
+            val file = File(imagesFolder, "shared_image.png")
+
+            val stream: OutputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 90, stream)
+            stream.flush()
+            stream.close()
+            uri = FileProvider.getUriForFile(
+                context,
+                context.applicationContext.packageName.toString() + ".provider",
+                file
+            )
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return uri
     }
 }
 

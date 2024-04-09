@@ -106,7 +106,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingLeft="10dp"
-                        android:text="@string/nguon" />
+                        android:text="@string/chude" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -133,7 +133,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/chude" />
+                        android:text="@string/nguon" />
 
                     <TextView
                         android:layout_width="wrap_content"
