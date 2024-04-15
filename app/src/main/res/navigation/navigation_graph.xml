@@ -18,7 +18,11 @@
         android:id="@+id/search_Fragment"
         android:name="com.example.myappnews.Ui.Fragment.Search.Dictionary_Fragment"
         android:label="Search_Fragment"
-        tools:layout="@layout/search_screen" />
+        tools:layout="@layout/search_screen" >
+        <action
+            android:id="@+id/action_search_Fragment_to_notesFolder"
+            app:destination="@id/notesFolder" />
+    </fragment>
     <fragment
         android:id="@+id/profile_Fragment"
         android:name="com.example.myappnews.Ui.Fragment.Profile.Profile_Fragment"
@@ -42,10 +46,13 @@
         <action
             android:id="@+id/action_article_Fragment_to_home_Fragment"
             app:destination="@id/home_Fragment" />
+        <action
+            android:id="@+id/action_article_Fragment_to_addNote"
+            app:destination="@id/addNote" />
     </fragment>
     <fragment
         android:id="@+id/homeAdmFrag"
-        android:name="com.example.myappnews.Ui.Fragment.management.Admin.HomeAdmFrag"
+        android:name="com.example.myappnews.Ui.Fragment.management.Admin.Await_Frag"
         android:label="HomeAdmFrag"
         tools:layout="@layout/home_admin">
         <action
@@ -78,6 +85,9 @@
         <action
             android:id="@+id/action_mainAdmFrag_to_approvedFragment"
             app:destination="@id/approvedFragment" />
+        <action
+            android:id="@+id/action_mainAdmFrag_to_awaitRqEdit"
+            app:destination="@id/awaitRqEdit" />
     </fragment>
     <fragment
         android:id="@+id/approvedFragment"
@@ -168,6 +178,9 @@
         <action
             android:id="@+id/action_editAwait_to_authorHome"
             app:destination="@id/authorHome" />
+        <action
+            android:id="@+id/action_editAwait_to_deniedEdit"
+            app:destination="@id/deniedEdit" />
     </fragment>
     <fragment
         android:id="@+id/editDenied"
@@ -231,5 +244,40 @@
         <action
             android:id="@+id/action_deniedEdit_to_editDenied"
             app:destination="@id/editDenied" />
+        <action
+            android:id="@+id/action_deniedEdit_to_editAwait"
+            app:destination="@id/editAwait" />
+    </fragment>
+    <fragment
+        android:id="@+id/notesFolder"
+        tools:layout="@layout/notes_folder"
+        android:name="com.example.myappnews.Ui.Fragment.Search.Note.NotesFolder"
+        android:label="NotesFolder" >
+        <action
+            android:id="@+id/action_notesFolder_to_search_Fragment"
+            app:destination="@id/search_Fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addNote"
+        tools:layout="@layout/add_note_layout"
+        android:name="com.example.myappnews.Ui.Fragment.Article.Note.AddNote"
+        android:label="AddNote" >
+        <action
+            android:id="@+id/action_addNote_to_article_Fragment"
+            app:destination="@id/article_Fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/awaitRequireEdit"
+        tools:layout="@layout/await_require_edit"
+        android:name="com.example.myappnews.Ui.Fragment.management.Admin.AwaitRequireEdit.AwaitRequireEdit"
+        android:label="AwaitRequireEdit" />
+    <fragment
+        android:id="@+id/awaitRqEdit"
+        tools:layout="@layout/await_rq_edit"
+        android:name="com.example.myappnews.Ui.Fragment.management.Admin.AwaitRequireEdit.AwaitRqEdit"
+        android:label="AwaitRqEdit" >
+        <action
+            android:id="@+id/action_awaitRqEdit_to_mainAdmFrag"
+            app:destination="@id/mainAdmFrag" />
     </fragment>
 </navigation>

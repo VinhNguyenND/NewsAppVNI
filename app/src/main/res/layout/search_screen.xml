@@ -13,18 +13,43 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
+        <RelativeLayout
             android:id="@+id/textView4"
-            android:layout_width="wrap_content"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:text="Khám phá"
-            android:textColor="@color/black"
-            android:textFontWeight="700"
-            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchView"
+                android:layout_width="250dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="-50dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="#CFCCCC"
+                app:iconifiedByDefault="false"
+                app:queryHint="Search"
+                app:searchIcon="@drawable/ic_search" />
+
+<!--            <TextView-->
+<!--                android:id="@+id/txtKhamPha"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Khám phá"-->
+<!--                android:layout_centerHorizontal="true"-->
+<!--                android:layout_centerVertical="true"-->
+<!--                android:textColor="@color/black"-->
+<!--                android:textFontWeight="700"-->
+<!--                android:textSize="20sp"-->
+<!--                android:visibility="visible" />-->
+        </RelativeLayout>
 
         <ImageView
             android:id="@+id/id_add_dic"
@@ -38,17 +63,6 @@
             app:layout_constraintVertical_bias="0.487"
             app:srcCompat="@drawable/icdicplus24" />
 
-        <ImageView
-            android:id="@+id/id_search_dic"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/id_add_dic"
-            app:layout_constraintHorizontal_bias="0.887"
-            app:layout_constraintStart_toEndOf="@+id/textView4"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.487"
-            app:srcCompat="@drawable/ic_search" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout

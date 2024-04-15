@@ -28,9 +28,20 @@
                 android:src="@drawable/back_24" />
 
             <Space
-                android:layout_width="340dp"
+                android:layout_width="315dp"
                 android:layout_height="0dp" />
 
+            <ImageButton
+                android:id="@+id/eiditAwaitApprove"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:background="@color/white"
+                android:src="@drawable/icedit24" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="0dp" />
 
             <ImageButton
                 android:id="@+id/btnDeleteRequest"

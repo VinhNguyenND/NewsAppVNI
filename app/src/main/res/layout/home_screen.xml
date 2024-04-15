@@ -71,7 +71,7 @@
                             android:layout_height="25dp"
                             android:layout_gravity="center"
                             android:layout_weight="1.5"
-                            android:src="@drawable/ic_folder24" />
+                            android:src="@drawable/icheart24" />
 
                         <ImageView
                             android:layout_width="0dp"
@@ -109,6 +109,7 @@
                         android:text="@string/chude" />
 
                     <TextView
+                        android:id="@+id/txtChuDe"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingLeft="10dp"
@@ -123,6 +124,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/sourceArticleHome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -136,6 +138,7 @@
                         android:text="@string/nguon" />
 
                     <TextView
+                        android:id="@+id/txtNguonHome"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingStart="10dp"

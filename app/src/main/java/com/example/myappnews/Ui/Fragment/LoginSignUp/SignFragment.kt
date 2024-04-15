@@ -44,13 +44,13 @@ class SignFragment : Fragment() {
         auth = Firebase.auth
     }
 
-    private fun SignUp(Email: String, PassWord: String) {
+    private fun SignUp(Email: String, PassWord: String,name:String) {
         binding.signProgress.visibility = View.VISIBLE;
         auth.createUserWithEmailAndPassword(Email, PassWord)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val idUser = auth.currentUser?.uid
-                    val userModel = UserModel(idUser, Email, PassWord, "", "", "User")
+                    val userModel = UserModel(idUser, Email, PassWord, name, "", "User")
                     db.collection("Users")
                         .add(userModel.toMap())
                         .addOnCompleteListener {
@@ -96,7 +96,7 @@ class SignFragment : Fragment() {
             val name = binding.NameSignText.text.toString()
             val passWord = binding.PassWordSignText.text.toString()
             if (email != null && name != null) {
-                SignUp(email, passWord);
+                SignUp(email, passWord,name);
             }
         }
         binding.toLogin.setOnClickListener {

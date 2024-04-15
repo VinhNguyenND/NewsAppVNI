@@ -1,9 +1,11 @@
 package com.example.myappnews.Data.Local.Dictionary.Entity
 
+import android.os.Parcelable
 import androidx.annotation.NonNull
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import kotlinx.android.parcel.Parcelize
 
 @Entity(
     tableName = "DictionaryItem",
@@ -17,6 +19,7 @@ import androidx.room.PrimaryKey
         ),
     ]
 )
+@Parcelize
 class DictionaryItem(
     @PrimaryKey(autoGenerate = true)
     @NonNull
@@ -25,4 +28,8 @@ class DictionaryItem(
     var word:String,
     var phonetic:String,
     var mean:String,
-)
+    var audio:String,
+    var wordMean: String
+): Parcelable {
+
+}

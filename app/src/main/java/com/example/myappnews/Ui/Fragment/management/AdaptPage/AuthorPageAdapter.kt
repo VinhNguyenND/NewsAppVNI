@@ -6,11 +6,8 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.myappnews.Ui.Fragment.management.Admin.ApprovedFragment
-import com.example.myappnews.Ui.Fragment.management.Admin.HomeAdmFrag
-import com.example.myappnews.Ui.Fragment.management.Author.AwaitingApproval.Awaiting
-import com.example.myappnews.Ui.Fragment.management.Author.Denied.Denied
-import com.example.myappnews.Ui.Fragment.management.Author.EditRequest.Request
-import com.example.myappnews.Ui.Fragment.management.Author.Home.HomeAuthor
+import com.example.myappnews.Ui.Fragment.management.Admin.AwaitRequireEdit.AwaitRequireEdit
+import com.example.myappnews.Ui.Fragment.management.Admin.Await_Frag
 
 class AdminPageAdapter(
     context: Context,
@@ -19,14 +16,17 @@ class AdminPageAdapter(
 ) : FragmentStateAdapter(fragmentManager, lifecycle) {
     private val _context = context
     override fun getItemCount(): Int {
-        return 2;
+        return 6;
     }
 
     override fun createFragment(position: Int): Fragment {
         var a: Fragment = ApprovedFragment();
         when (position) {
             1 -> {
-                a = HomeAdmFrag()
+                a = Await_Frag()
+            }
+            2->{
+                a=AwaitRequireEdit()//nho set size
             }
         }
         return a;

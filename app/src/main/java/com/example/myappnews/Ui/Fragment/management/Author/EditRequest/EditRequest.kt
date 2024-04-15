@@ -70,7 +70,7 @@ class EditRequest : Fragment() {
                 field = binding.editTextField.text.toString(), // Lĩnh vực
                 isApprove = newsArticle.isApprove, // Trạng thái duyệt
                 hide = newsArticle.hide, // Ẩn/Hiện
-                requireEdit = -1, // Yêu cầu chỉnh sửa
+                requireEdit = 1, // Yêu cầu chỉnh sửa
                 requiredDate = newsArticle.requiredDate,// Ngày yêu cầu chỉnh sửa
                 cause = newsArticle.cause,
             )
@@ -78,7 +78,7 @@ class EditRequest : Fragment() {
                 .observe(viewLifecycleOwner, Observer {
                     showToast(requireContext(),"Gửi  yêu cầu thành công")
                 })
-//            Log.d("du lieu chuyen sang", article.toString());
+
         }
     }
 }

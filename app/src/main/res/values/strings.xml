@@ -27,4 +27,6 @@
     <string name="chude">Chủ đề</string>
     <string name="dong">Đóng</string>
     <string name="search">Search</string>
+    <string name="downloaded">DownLoaded</string>
+    <string name="trangthai">Trạng thái:</string>
 </resources>

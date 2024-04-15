@@ -17,7 +17,7 @@ import com.example.myappnews.R
 import com.example.myappnews.Ui.Fragment.Home.Adapt.ArticleAdapter
 import com.example.myappnews.databinding.HomeAdminBinding
 
-class HomeAdmFrag : Fragment() {
+class Await_Frag : Fragment() {
 
     private lateinit var binding: HomeAdminBinding
     private val _adminViewModel = AdminViewModel.getInstance()

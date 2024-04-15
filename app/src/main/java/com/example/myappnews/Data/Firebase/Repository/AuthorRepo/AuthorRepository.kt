@@ -149,6 +149,7 @@ class AuthorRepository {
             }
     }
 
+
     fun deleteArticleRequest(id: String) {
         db.collection("Articles")
             .document(id)
@@ -186,7 +187,7 @@ class AuthorRepository {
            .set(newsArticle.toMap(), SetOptions.merge())
            .addOnCompleteListener {
                if(it.isSuccessful){
-                _isResponseEd.postValue(1);
+                  _isResponseEd.postValue(1);
                }else{
                    _isResponseEd.postValue(0)
                }

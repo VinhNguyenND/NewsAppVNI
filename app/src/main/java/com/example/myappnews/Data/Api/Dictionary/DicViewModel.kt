@@ -30,9 +30,9 @@ class DicViewModel() : ViewModel() {
                  val result2= dicRepository.getTranslate("auto", "vi",(a)[0].word );
                  if(result2.isSuccessful&&result2.body()!=null){
                       val translateEndTime = System.nanoTime();
-                      a[0].word=(result2.body() as Translate).trans;
+                      a[0].wordMean=(result2.body() as Translate).trans;
                      _Word.postValue(a);
-                     Log.i("mất thời gian là:>>",(translateEndTime-startTime).toString())
+                     Log.i("mất thời gian là:>>",a.toString())
                  }else{
                      _Word.postValue(a);
                  }

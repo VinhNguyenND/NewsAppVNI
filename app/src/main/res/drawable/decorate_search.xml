@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF"/> <!-- Màu nền -->
+            <corners android:radius="8dp"/> <!-- Độ cong viền -->
+        </shape>
+    </item>
+
+    <!-- Border -->
+    <item android:right="1dp" android:left="1dp" android:top="1dp" android:bottom="1dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#00000000"/> <!-- Màu trong suốt -->
+            <stroke android:color="#CCCCCC" android:width="1dp"/> <!-- Màu viền và độ rộng viền -->
+            <corners android:radius="8dp"/> <!-- Độ cong viền -->
+        </shape>
+    </item>
+</layer-list>

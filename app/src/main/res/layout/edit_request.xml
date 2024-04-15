@@ -28,7 +28,7 @@
                 android:src="@drawable/back_24" />
 
             <Space
-                android:layout_width="344dp"
+                android:layout_width="300dp"
                 android:layout_height="0dp" />
 
 
@@ -39,6 +39,18 @@
                 android:layout_gravity="center"
                 android:background="@color/white"
                 android:src="@drawable/icedit24" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="0dp" />
+
+            <ImageButton
+                android:id="@+id/btnDenied"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/white"
+                android:src="@drawable/ic_denied" />
 
 
         </LinearLayout>
@@ -66,8 +78,8 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="lý do:"
                     android:padding="8dp"
+                    android:text="lý do:"
                     android:textColor="#000000"
                     android:textSize="16sp" />
 

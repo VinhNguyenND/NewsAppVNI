@@ -16,6 +16,7 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.example.myappnews.Data.Firebase.ViewModel.AdminViewModel.AdminViewModel
@@ -53,6 +54,8 @@ class EditAwait : Fragment() {
             article = arguments?.getParcelable("Article", NewsArticle::class.java)!!
             val text: String = article.content!!.replace("\\\\n", "<br/>" + " ");
             binding.txtPageContent.text = Html.fromHtml(text)
+            binding.txtPageTime.text=article.requiredDate.toString();
+            binding.articlePageTittle.text=article.titleArticle.toString();
             Glide.with(requireContext())
                 .load(article.imageUrl?.trim())
                 .error(R.drawable.uploaderror)
@@ -68,6 +71,11 @@ class EditAwait : Fragment() {
     private fun event(view: View) {
         binding.btnbackar.setOnClickListener {
             view.findNavController().popBackStack();
+        }
+        binding.eiditAwaitApprove.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putParcelable("Article", article)
+            Navigation.findNavController(view).navigate(R.id.deniedEdit,bundle)
         }
         binding.btnDeleteRequest.setOnClickListener {
             showCustomDialog()
@@ -90,7 +98,7 @@ class EditAwait : Fragment() {
         val windowAtribute: WindowManager.LayoutParams = window.attributes
         windowAtribute.gravity = Gravity.CENTER
         window.attributes = windowAtribute
-        dialog.findViewById<TextView>(R.id.textView).text="bạn có chắc muốn xóa yêu cầu";
+        dialog.findViewById<TextView>(R.id.textView).text = "bạn có chắc muốn xóa yêu cầu";
         dialog.findViewById<Button>(R.id.btnDongy).setOnClickListener {
             dialog.findViewById<ProgressBar>(R.id.progress_pop_approve).visibility = View.VISIBLE
             _authorViewModel.deleteArticleRequest(idDoc).observe(viewLifecycleOwner, Observer {

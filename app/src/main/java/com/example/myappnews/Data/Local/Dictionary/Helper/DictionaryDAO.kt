@@ -30,6 +30,9 @@ interface DictionaryDAO {
     @Query("SELECT * FROM  DictionaryFolder")
     fun getAllDictionaryFolder(): LiveData<List<DictionaryFolder>>
 
+    @Query("SELECT * FROM DictionaryItem WHERE idDictionaryFolder = :folderId")
+    fun getDictionaryItemsByFolderId(folderId: Int): LiveData<List<DictionaryItem>>
+
 
     @Query("DELETE FROM DictionaryItem WHERE idDictionaryItem = :id")
     suspend fun deleteDictionaryItemById(id: Int)

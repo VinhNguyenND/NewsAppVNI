@@ -37,12 +37,6 @@
             android:hint="Content" />
 
         <EditText
-            android:id="@+id/editTextPubDate"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:hint="Pub Date" />
-
-        <EditText
             android:id="@+id/editTextImageUrl"
             android:layout_width="match_parent"
             android:layout_height="100dp"

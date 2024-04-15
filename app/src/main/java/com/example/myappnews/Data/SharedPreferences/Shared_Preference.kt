@@ -24,8 +24,13 @@ class Shared_Preference(activity: Activity) {
         return sharedPreferences.getString("permission", null)
     }
 
-    fun isLogin():Boolean{
-        return getUid()!=null
+    fun getName(): String? {
+        return sharedPreferences.getString("Name", null)
+    }
+
+
+    fun isLogin(): Boolean {
+        return getUid() != null
     }
 
     fun logout() {
@@ -33,6 +38,7 @@ class Shared_Preference(activity: Activity) {
         editor.remove("Email")
         editor.remove("passWord")
         editor.remove("permission")
+        editor.remove("Name")
         editor.apply()
     }
 }

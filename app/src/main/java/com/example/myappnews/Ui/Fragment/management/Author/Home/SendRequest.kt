@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.myappnews.Data.Firebase.ViewModel.AdminViewModel.AdminViewModel
 import com.example.myappnews.Data.Firebase.ViewModel.AuthorViewModel.AuthorViewModel
 import com.example.myappnews.Data.Model.Article.NewsArticle
 import com.example.myappnews.Data.SharedPreferences.Shared_Preference
@@ -22,6 +23,7 @@ import java.util.Date
 class SendRequest : Fragment() {
     private lateinit var binding: SendRequestBinding
     private val _authorViewModel = AuthorViewModel.getInstance()
+    private val _adminViewModel = AdminViewModel.getInstance()
     private lateinit var _articleAdapter: ArticleAdapter
     private var listArticle = ArrayList<NewsArticle>()
     private lateinit var _shared_Preference: Shared_Preference;
@@ -40,6 +42,7 @@ class SendRequest : Fragment() {
         _shared_Preference = Shared_Preference(requireActivity());
         event(view)
     }
+
 
     private fun event(view: View) {
         binding.btnOk.setOnClickListener {
@@ -62,16 +65,18 @@ class SendRequest : Fragment() {
                 requireEdit = null, // Yêu cầu chỉnh sửa
                 requiredDate = Date() // Ngày yêu cầu chỉnh sửa
             )
-//            _authorViewModel.sendRequest(newsArticle).observeForever {
-//                if(it==true){
-//                    showToast(requireContext(),"Gửi yêu cầu thành công")
-//                }else{
-//                    showToast(requireContext(),"Gửi yêu cầu thất bại")
-//                }
-//            }
-            showToast(requireContext(),"home");
+            _authorViewModel.sendRequest(sha256(LocalDateTime.now().toString()),newsArticle).observeForever {
+                if (it == true) {
+                    showToast(requireContext(), "Gửi yêu cầu thành công")
+                } else {
+                    showToast(requireContext(), "Gửi yêu cầu thất bại")
+                }
+            }
+            showToast(requireContext(), "home");
         }
     }
+
+
 }
 
 fun sha256(input: String): String {

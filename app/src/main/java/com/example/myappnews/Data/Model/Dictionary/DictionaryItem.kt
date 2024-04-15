@@ -10,7 +10,8 @@ data class DictionaryItem(
     var phonetic: String,
     val phonetics: List<Phonetic>,
     val sourceUrls: List<String>,
-    var word: String
+    var word: String,
+    var wordMean: String,
 ) : Parcelable {
     constructor() : this(
         License(), // Thay thế License() bằng giá trị mặc định nếu có
@@ -18,7 +19,8 @@ data class DictionaryItem(
         "", // Thay thế "" bằng giá trị mặc định nếu có
         emptyList(), // Thay thế emptyList() bằng giá trị mặc định nếu có
         emptyList(), // Thay thế emptyList() bằng giá trị mặc định nếu có
-        "" // Thay thế "" bằng giá trị mặc định nếu có
+        "", // Thay thế "" bằng giá trị mặc định nếu có
+        ""
     )
 
 }

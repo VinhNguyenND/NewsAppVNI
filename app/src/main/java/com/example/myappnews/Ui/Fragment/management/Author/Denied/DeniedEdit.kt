@@ -50,6 +50,7 @@ class DeniedEdit : Fragment() {
             binding.editTextImageUrl.setText(article.imageUrl.toString());
             binding.editTextSourceUrl.setText(article.sourceUrl.toString());
             binding.editTextSourceId.setText(article.sourceId).toString();
+            binding.editTextCreator.setText(article.creator.toString());
         }
         _adminViewModel.getIdDoc(article.idArticle!!.trim())
             .observe(viewLifecycleOwner, Observer {
@@ -73,7 +74,7 @@ class DeniedEdit : Fragment() {
                 sourceId = binding.editTextSourceId.text.toString(), // ID nguồn
                 country = binding.editTextCountry.text.toString(), // Quốc gia
                 field = binding.editTextField.text.toString(), // Lĩnh vực
-                isApprove = newsArticle.isApprove, // Trạng thái duyệt
+                isApprove = 0, // Trạng thái duyệt
                 hide = newsArticle.hide, // Ẩn/Hiện
                 requireEdit = newsArticle.requireEdit, // Yêu cầu chỉnh sửa
                 requiredDate = newsArticle.requiredDate// Ngày yêu cầu chỉnh sửa

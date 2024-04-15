@@ -23,7 +23,7 @@ data class NewsArticle(
     var hide: Boolean? = true,//ẩn hiện
     var requireEdit:Int?=null,
     var requiredDate:Date?=null,// thời gian yêu cầu xét duyệt
-    var cause: String? = null,
+    var cause: String? = null,//lý do
 ) : Parcelable {
     fun toMap(): Map<String, Any?> {
         return mapOf(

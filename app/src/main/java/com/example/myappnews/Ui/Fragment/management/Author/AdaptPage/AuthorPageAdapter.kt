@@ -17,7 +17,7 @@ class AuthorPageAdapter(
 ) : FragmentStateAdapter(fragmentManager, lifecycle) {
     private val _context = context
     override fun getItemCount(): Int {
-        return 4;
+        return 6;
     }
 
     override fun createFragment(position: Int): Fragment {

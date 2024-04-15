@@ -26,6 +26,7 @@ import android.util.Log
 import android.view.*
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.MarginLayoutParams
+import android.widget.ImageView
 import android.widget.PopupWindow
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
@@ -41,6 +42,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.room.TypeConverter
 import com.bumptech.glide.Glide
@@ -50,6 +52,8 @@ import com.example.myappnews.Data.Api.TextToSpeech.Repository
 import com.example.myappnews.Data.Firebase.ViewModel.ArticleViewModel.ArViewModel
 import com.example.myappnews.Data.Local.Article.ArticleEntity
 import com.example.myappnews.Data.Local.Article.ArticlelocalViewModel
+import com.example.myappnews.Data.Local.Dictionary.Entity.DictionaryItem
+import com.example.myappnews.Data.Local.Dictionary.Helper.DictionaryViewModel
 import com.example.myappnews.Data.Model.Article.Article
 import com.example.myappnews.Data.Model.Article.NewsArticle
 import com.example.myappnews.R
@@ -75,6 +79,7 @@ import kotlin.system.measureTimeMillis
 class Article_Fragment : Fragment() {
     private lateinit var binding: ArticleScreenBinding
     private lateinit var articlelocalViewModel: ArticlelocalViewModel
+    private lateinit var DictionaryFolder1: DictionaryViewModel
     private lateinit var viewModel: DicViewModel
     private var viewPopup: View? = null
     private var loadingButton: View? = null;
@@ -92,6 +97,7 @@ class Article_Fragment : Fragment() {
     private var isPlaying = false
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var article: NewsArticle;
+    private lateinit var note: DictionaryItem
     private var startIndex: Int = 0;
     private var endIndex: Int = 0;
     private var content: View? = null;
@@ -120,7 +126,7 @@ class Article_Fragment : Fragment() {
         setEventTouchText(binding.txtPageContent)
         initViewModel()
         observeDic()
-        setEventtopBar(view)
+        setEvent(view)
         initContent()
         binding.btnCapture.setOnClickListener {
             getBitmapFromView(view, requireActivity()) {
@@ -144,6 +150,7 @@ class Article_Fragment : Fragment() {
     private fun initViewModel() {
         viewModel = ViewModelProvider(this)[DicViewModel::class.java]
         articlelocalViewModel = ViewModelProvider(this).get(ArticlelocalViewModel::class.java)
+        DictionaryFolder1 = ViewModelProvider(this).get(DictionaryViewModel::class.java)
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -182,10 +189,19 @@ class Article_Fragment : Fragment() {
                     loading?.stopShimmer()
                     loading?.visibility = View.INVISIBLE
                 } else {
-                    Log.i("tu dien  getit",it.toString() )
-                    word!!.text = it[0].word.toString()
+                    Log.i("tu dien  getit", it.toString())
+                    word!!.text = it[0].wordMean.toString()
                     phonetic!!.text = it[0].phonetic
                     meanWord!!.text = it[0].meanings.toString()
+                    note = DictionaryItem(
+                        idDictionaryFolder = 0,
+                        idDictionaryItem = 0,
+                        word = it[0].word.toString(),
+                        phonetic = it[0].phonetic.toString(),
+                        audio = "non",
+                        mean = it[0].meanings.toString(),
+                        wordMean = it[0].wordMean.toString(),
+                    )
                     nothing?.visibility = View.GONE
                     content?.visibility = View.VISIBLE
                     loading?.stopShimmer()
@@ -277,9 +293,14 @@ class Article_Fragment : Fragment() {
         updateSeekBar()
     }
 
-    private fun setEventtopBar(view: View) {
+    private fun setEvent(view: View) {
         binding.btnbackar.setOnClickListener {
             view.findNavController().popBackStack();
+        }
+        binding.btnArshare.setOnClickListener {
+            if(article.linkArticle!=null){
+                shareUri(article.linkArticle.toString())
+            }
         }
     }
 
@@ -446,6 +467,8 @@ class Article_Fragment : Fragment() {
         nothing = viewPopup!!.findViewById(R.id.popNothing)
         meanWord = viewPopup!!.findViewById(R.id.meanWordVietNam)
         phonetic = viewPopup!!.findViewById(R.id.phonetic1);
+        val heart: ImageView = viewPopup!!.findViewById(R.id.heart);
+
 
         val layoutParams = RelativeLayout.LayoutParams(
             CoordinatorLayout.LayoutParams.WRAP_CONTENT,
@@ -461,6 +484,13 @@ class Article_Fragment : Fragment() {
         loading?.startShimmer()
         binding.rlLayout.addView(viewPopup, layoutParams)
 
+
+        heart.setOnClickListener {
+
+            val bundle = Bundle();
+            bundle.putParcelable("dictionaryItem", note)
+            Navigation.findNavController(binding.root).navigate(R.id.addNote, bundle)
+        }
 
         binding.rlLayout.setOnTouchListener { v, event ->
             val x = event.x.toInt()
@@ -615,6 +645,13 @@ class Article_Fragment : Fragment() {
             e.printStackTrace()
         }
         return uri
+    }
+
+    private fun shareUri(uriText: String) {
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "text/plain"
+        shareIntent.putExtra(Intent.EXTRA_TEXT, uriText)
+        startActivity(Intent.createChooser(shareIntent, "Chia sẻ đường dẫn qua:"))
     }
 }
 

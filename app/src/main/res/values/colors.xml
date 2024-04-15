@@ -18,4 +18,7 @@
     <color name="SECONDARY_TEXT">#757575</color>
     <color name="DIVIDER_COLOR">#BDBDBD</color>
     <color name="shimmer_bg_color">#A6A3A3</color>
+    <color name="Red">#FF0000</color>
+    <color name="Green">#00FF0D</color>
+    <color name="grey">#9C9C9C</color>
 </resources>

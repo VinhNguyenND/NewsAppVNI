@@ -5,30 +5,36 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.myappnews.Data.Model.Article.Article
 import com.example.myappnews.Data.Model.Article.NewsArticle
+import com.example.myappnews.Ui.Fragment.management.Author.Home.sha256
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
+import java.time.LocalDateTime
 
 class AdminRepo {
     private val db = Firebase.firestore
     private var _ArticleLiveData = MutableLiveData<ArrayList<NewsArticle>>();
+    private var _ArticlrWaitLiveData = MutableLiveData<ArrayList<NewsArticle>>();
     private var _isApprove = MutableLiveData<Boolean>();
     private var _isDelete = MutableLiveData<Int>();
     private val _idDocument = MutableLiveData<String>();
-    private val _isRequestEdit=MutableLiveData<Int>();
+    private val _isRequestEdit = MutableLiveData<Int>();
     val ArticleAdminLive: LiveData<ArrayList<NewsArticle>>
         get() = _ArticleLiveData;
     val IsApprove: LiveData<Boolean>
         get() = _isApprove
     val IdDoc: LiveData<String>
         get() = _idDocument
-    val IsDelete:LiveData<Int>
+    val IsDelete: LiveData<Int>
         get() = _isDelete
-    val IsRequestEdit:LiveData<Int>
+    val IsRequestEdit: LiveData<Int>
         get() = _isRequestEdit
+
+    val ArticlrWaitLiveData: LiveData<ArrayList<NewsArticle>>
+        get() = _ArticlrWaitLiveData
 
     companion object {
         @Volatile
@@ -63,7 +69,6 @@ class AdminRepo {
                 for (doc in it.result) {
                     arrayArticle.add(doc.toObject<NewsArticle>())
                 }
-                Log.i("du lieu lay ve tu tang data", arrayArticle.toString())
                 _ArticleLiveData.postValue(arrayArticle);
             }
     }
@@ -72,7 +77,7 @@ class AdminRepo {
         _ArticleLiveData.postValue(ArrayList<NewsArticle>())
     }
 
-    fun set_DeleteAr(){
+    fun set_DeleteAr() {
         _isDelete.postValue(0)
     }
 
@@ -105,10 +110,10 @@ class AdminRepo {
             .document(id)
             .delete()
             .addOnCompleteListener(OnCompleteListener {
-                if (it.isSuccessful){
-                _isDelete.postValue(1)
-                }else{
-                _isDelete.postValue(-1)
+                if (it.isSuccessful) {
+                    _isDelete.postValue(1)
+                } else {
+                    _isDelete.postValue(-1)
                 }
             })
             .addOnFailureListener(OnFailureListener {
@@ -116,7 +121,7 @@ class AdminRepo {
             })
     }
 
-    fun approveArticle(id: String, value: Int) {
+    fun approveArticle(idReview: String, id: String, value: Int) {
         db.collection("Articles")
             .document(id)
             .update("isApprove", value)
@@ -126,21 +131,49 @@ class AdminRepo {
             .addOnFailureListener(OnFailureListener {
                 _isApprove.postValue(false)
             })
+        db.collection("Articles")
+            .document(id)
+            .update("hide", false)
+        db.collection("Articles")
+            .document(id)
+            .update("pubDate", LocalDateTime.now())
+        db.collection("Articles")
+            .document(id)
+            .update("idReviewer", idReview)
     }
 
-    fun sendRequestEdit(news: Article){
+    fun sendRequestEdit(news: Article) {
         db.collection("RequestEdit")
             .document(news.idArticle.toString())
             .set(news.toMap(), SetOptions.merge())
             .addOnCompleteListener {
-                if(it.isSuccessful){
+                if (it.isSuccessful) {
                     _isRequestEdit.postValue(0);
-                }else{
+                } else {
                     _isRequestEdit.postValue(-1);
                 }
             }
             .addOnFailureListener {
                 _isRequestEdit.postValue(-1);
+            }
+    }
+
+    fun getNewsAwaitEdit() {
+        db.collection("RequestEdit")
+            .get()
+            .addOnCompleteListener {
+                val arrayArticle = ArrayList<NewsArticle>();
+                if (it.isSuccessful) {
+                    for (doc in it.result) {
+                        arrayArticle.add(doc.toObject<NewsArticle>())
+                    }
+                    _ArticlrWaitLiveData.postValue(arrayArticle)
+                } else {
+                    _ArticlrWaitLiveData.postValue(arrayArticle)
+                }
+            }
+            .addOnFailureListener {
+                _ArticlrWaitLiveData.postValue(ArrayList<NewsArticle>())
             }
     }
 

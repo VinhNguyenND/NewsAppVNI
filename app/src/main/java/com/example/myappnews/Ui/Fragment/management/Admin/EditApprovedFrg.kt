@@ -33,7 +33,7 @@ class EditApprovedFrg : Fragment() {
     private val _adminViewModel = AdminViewModel.getInstance()
     private lateinit var article: NewsArticle;
     private lateinit var idDoc: String
-    private var isHide = false;
+    private var isHide: Boolean = false;
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -43,15 +43,16 @@ class EditApprovedFrg : Fragment() {
         return binding.root
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initContent()
         event()
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onResume() {
         super.onResume()
+        initContent()
         initData()
     }
 
@@ -71,12 +72,17 @@ class EditApprovedFrg : Fragment() {
                 binding.editApproveShow.setImageResource(R.drawable.ichide24)
                 isHide = true
             }
+            if (article.hide != true) {
+                binding.editApproveShow.setImageResource(R.drawable.icshow24)
+                isHide = false
+            }
             Glide.with(requireContext())
                 .load(article.imageUrl?.trim())
                 .error(R.drawable.uploaderror)
                 .fitCenter()
                 .into(binding.imgArticlePage)
         }
+
     }
 
     private fun event() {
@@ -89,12 +95,13 @@ class EditApprovedFrg : Fragment() {
         binding.editApproveShow.setOnClickListener {
             if (isHide) {
                 isHide = false
-                _adminViewModel.doHide(idDoc, false)
-                binding.editApproveShow.setImageResource(R.drawable.ichide24)
-            } else {
-                isHide = true
-                _adminViewModel.doHide(idDoc, true)
+                _adminViewModel.doHide(idDoc, isHide)
                 binding.editApproveShow.setImageResource(R.drawable.icshow24)
+
+            }else {
+                isHide = true
+                _adminViewModel.doHide(idDoc, isHide)
+                binding.editApproveShow.setImageResource(R.drawable.ichide24)
             }
         }
         binding.editApprove.setOnClickListener {

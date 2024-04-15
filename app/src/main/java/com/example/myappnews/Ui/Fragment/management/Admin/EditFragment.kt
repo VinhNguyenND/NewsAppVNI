@@ -23,12 +23,14 @@ import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
 import com.example.myappnews.Data.Firebase.ViewModel.AdminViewModel.AdminViewModel
 import com.example.myappnews.Data.Model.Article.NewsArticle
+import com.example.myappnews.Data.SharedPreferences.Shared_Preference
 import com.example.myappnews.R
 import com.example.myappnews.databinding.EditFragmentBinding
 
 class EditFragment : Fragment() {
     private lateinit var binding: EditFragmentBinding
     private val _adminViewModel = AdminViewModel.getInstance()
+    private lateinit var _shared_Preference: Shared_Preference;
     private lateinit var article: NewsArticle;
     private lateinit var idDoc: String
     override fun onCreateView(
@@ -43,6 +45,7 @@ class EditFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+         _shared_Preference = Shared_Preference(requireActivity());
         initContent()
         event()
     }
@@ -79,7 +82,7 @@ class EditFragment : Fragment() {
         window.attributes = windowAtribute
         dialog.findViewById<Button>(R.id.btnDongy).setOnClickListener {
             dialog.findViewById<ProgressBar>(R.id.progress_pop_approve).visibility = View.VISIBLE
-            _adminViewModel.doApprove(idDoc, 1).observe(viewLifecycleOwner, Observer {
+            _adminViewModel.doApprove(_shared_Preference.getUid().toString(),idDoc, 1).observe(viewLifecycleOwner, Observer {
                 dialog.hide()
                 if (it == true) {
                     showToast(requireContext(), "Bạn đã chấp nhận thành công")
@@ -91,7 +94,7 @@ class EditFragment : Fragment() {
         }
         dialog.findViewById<Button>(R.id.btnLoaiBo).setOnClickListener {
             dialog.findViewById<ProgressBar>(R.id.progress_pop_approve).visibility = View.VISIBLE
-            _adminViewModel.doApprove(idDoc, -1).observe(viewLifecycleOwner, Observer {
+            _adminViewModel.doApprove(_shared_Preference.getUid().toString(),idDoc, -1).observe(viewLifecycleOwner, Observer {
                 dialog.hide()
                 if (it == true) {
                     showToast(requireContext(), "Bạn đã loại bỏ thành công")

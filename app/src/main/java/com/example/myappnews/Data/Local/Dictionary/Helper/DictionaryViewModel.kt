@@ -3,6 +3,8 @@ package com.example.myappnews.Data.Local.Dictionary.Helper
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.example.myappnews.Data.Local.Dictionary.Entity.DictionaryFolder
 import com.example.myappnews.Data.Local.Dictionary.Entity.DictionaryItem
@@ -60,11 +62,14 @@ class DictionaryViewModel(application: Application) : AndroidViewModel(applicati
 
     }
 
+    fun getItemNoteByIdFolder(id: Int): LiveData<List<DictionaryItem>> {
+        return   repository.getItemNoteByIdFolder(id);
+    }
+
     fun updateDictionaryFolderTime(id: Int, newTime: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.upDateTimeDic(id, newTime)
         }
-
     }
 
     fun getAllFolder(): LiveData<List<DictionaryFolder>> {

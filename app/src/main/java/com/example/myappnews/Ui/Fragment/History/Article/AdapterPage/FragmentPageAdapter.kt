@@ -15,14 +15,11 @@ class FragmentPageAdapter(
 ) : FragmentStateAdapter(fragmentManager, lifecycle) {
     private val _context = context
     override fun getItemCount(): Int {
-        return 2;
+        return 1;
     }
 
     override fun createFragment(position: Int): Fragment {
-        return if (position == 0)
-            ArticlehisFragment(_context)
-        else
-            DictionaryHisFragment()
+        return ArticlehisFragment(_context)
     }
 
 

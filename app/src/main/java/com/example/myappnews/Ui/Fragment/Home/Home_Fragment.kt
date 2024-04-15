@@ -28,10 +28,12 @@ import com.example.myappnews.Data.Model.Article.Article
 import com.example.myappnews.Data.Model.Article.Field
 import com.example.myappnews.Data.Model.item.Field as field
 import com.example.myappnews.Data.Model.Article.NewsArticle
+import com.example.myappnews.Data.Model.Source.Source
 import com.example.myappnews.Interface.Adapter.CommonAdapter
 import com.example.myappnews.R
 import com.example.myappnews.Ui.Fragment.History.Article.AdapterPage.FragmentPageAdapter
 import com.example.myappnews.Ui.Fragment.Home.Adapt.ArticleAdapter
+import com.example.myappnews.Ui.Fragment.Home.Adapt.SourceAdapter
 import com.example.myappnews.Ui.Fragment.Home.Adapt.popupAdapter
 import com.example.myappnews.databinding.HomeScreenBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -47,8 +49,11 @@ class Home_Fragment : Fragment() {
     private lateinit var articlelocalViewModel: ArticlelocalViewModel
     private var listArticle = ArrayList<NewsArticle>()
     private var listField = ArrayList<Field>()
+    private var listSource = ArrayList<Source>()
     private var topic = "All";
+    private var source = "All";
     private lateinit var adapter: popupAdapter
+    private lateinit var sourceAdapter: SourceAdapter
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -85,27 +90,43 @@ class Home_Fragment : Fragment() {
         })
     }
 
+    private fun initLayout(){
+        binding.txtNguonHome.text=source;
+        binding.txtChuDe.text=topic
+    }
+
     override fun onResume() {
         super.onResume()
-        getAllArticle(topic)
+        getAllArticle(topic,source)
+        initLayout()
         getAllField()
+        getAllSource()
 
     }
 
     override fun onPause() {
         super.onPause()
         listArticle = ArrayList<NewsArticle>()
+        listSource = ArrayList<Source>()
     }
 
-    private fun getAllArticle(topic: String) {
+    private fun getAllArticle(topic: String, source: String) {
         binding.shimmerViewContainer.startShimmer()
-        ArticleViewModel.getAllArticle(topic).observe(viewLifecycleOwner, Observer {
+        ArticleViewModel.getNewByTopic(topic,source).observe(viewLifecycleOwner, Observer {
             listArticle = it;
             _articleAdapter.submitList(it);
             binding.shimmerViewContainer.stopShimmer()
             binding.shimmerViewContainer.hideShimmer()
             binding.shimmerViewContainer.visibility = View.GONE
         })
+    }
+
+    private fun getAllSource() {
+        ArticleViewModel.getAllSource().observe(viewLifecycleOwner,
+            Observer {
+                listSource = it;
+                sourceAdapter.submitList(listSource)
+            })
     }
 
     private fun getAllField() {
@@ -115,6 +136,7 @@ class Home_Fragment : Fragment() {
                 adapter.submitList(listField);
             }
         )
+
     }
 
     private fun initShimer() {
@@ -127,9 +149,10 @@ class Home_Fragment : Fragment() {
 
     private fun initAdapter() {
         adapter = popupAdapter(listField, requireContext())
+        sourceAdapter = SourceAdapter(listSource, requireContext())
     }
 
-    @SuppressLint("ResourceType")
+
     private fun showCustomDialog() {
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -151,6 +174,7 @@ class Home_Fragment : Fragment() {
         }
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         adapter.setClickListener(object : CommonAdapter {
+            @SuppressLint("SetTextI18n")
             override fun setOnClickListener(position: Int) {
                 for (i in listField.indices) {
                     if (i != position) {
@@ -160,11 +184,62 @@ class Home_Fragment : Fragment() {
                 listField[position].choose = !listField[position].choose;
                 adapter.submitList(listField);
                 topic = listField[position].fieldId.toString();
-                ArticleViewModel.getAllArticle(listField[position].fieldId.toString());
+                ArticleViewModel.getNewByTopic(topic, source);
+                if (listField[position].fieldId!!.length > 4) {
+                    binding.txtChuDe.text = listField[position].fieldId!!.substring(0, 4) + ".."
+                } else {
+                    binding.txtChuDe.text = listField[position].fieldId
+                }
                 dialog.dismiss()
             }
         })
         recyclerView.adapter = adapter
+        dialog.show()
+
+    }
+
+
+    private fun showCustomDialogSource() {
+        val dialog = Dialog(requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.all_pop_up_window)
+        val window: Window? = dialog.window;
+        if (window == null) {
+            return
+        }
+        window.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+        val windowAtribute: WindowManager.LayoutParams = window.attributes
+        windowAtribute.gravity = Gravity.CENTER
+        window.attributes = windowAtribute
+        val recyclerView = dialog.findViewById<RecyclerView>(R.id.allchoosepopuprc)
+        dialog.findViewById<TextView>(R.id.btncloseallpop).setOnClickListener {
+            dialog.cancel()
+        }
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        sourceAdapter.setClickListener(object : CommonAdapter {
+            @SuppressLint("SetTextI18n")
+            override fun setOnClickListener(position: Int) {
+                for (i in listSource.indices) {
+                    if (i != position) {
+                        listSource[i].choose = false
+                    }
+                }
+                listSource[position].choose = !listSource[position].choose!!;
+                sourceAdapter.submitList(listSource);
+                source = listSource[position].SourceName.toString();
+                ArticleViewModel.getNewByTopic(topic, source)
+                if (listSource[position].SourceName!!.length  > 4) {
+                    binding.txtNguonHome.text = listSource[position].SourceName!!.substring(0, 3) + ".."
+                } else {
+                    binding.txtNguonHome.text = listSource[position].SourceName
+                }
+                dialog.dismiss()
+            }
+        })
+        recyclerView.adapter = sourceAdapter
 
         dialog.show()
     }
@@ -179,7 +254,6 @@ class Home_Fragment : Fragment() {
         val adapter = FragmentPageAdapter(requireContext(), childFragmentManager, lifecycle)
 
         tablayout.addTab(tablayout.newTab().setText("Tin Tức"))
-        tablayout.addTab(tablayout.newTab().setText("Từ Vựng"))
         btnXoatatca.setOnClickListener {
             articlelocalViewModel.deleteAllData()
         }
@@ -217,6 +291,9 @@ class Home_Fragment : Fragment() {
         }
         binding.historyHome.setOnClickListener {
             showBottmSheet()
+        }
+        binding.sourceArticleHome.setOnClickListener {
+            showCustomDialogSource()
         }
     }
 

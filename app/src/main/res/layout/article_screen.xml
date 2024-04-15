@@ -66,11 +66,11 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
-        android:layout_marginBottom="50dp"
         android:id="@+id/ar_scr"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
+        android:layout_marginBottom="50dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <RelativeLayout
@@ -130,11 +130,47 @@
                     android:textColor="#000000"
                     android:textIsSelectable="true"
                     android:textSize="16sp" />
-                <Button
-                    android:id="@+id/btnCapture"
-                    android:text="chup man hinh"
-                    android:layout_width="150dp"
-                    android:layout_height="65dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="3">
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="65dp"
+                        android:layout_weight="0.2" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnCapture"
+                        android:layout_width="0dp"
+                        android:layout_height="65dp"
+                        android:layout_weight="1"
+                        android:drawableLeft="@drawable/icprint24"
+                        android:text="Print"
+                        app:cornerRadius="15dp"
+                        app:elevation="10dp" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="65dp"
+                        android:layout_weight="0.6" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnArshare"
+                        android:layout_width="0dp"
+                        android:layout_height="65dp"
+                        android:layout_weight="1"
+                        android:drawableLeft="@drawable/icshare24"
+                        android:text="Share"
+                        app:cornerRadius="15dp" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="65dp"
+                        android:layout_weight="0.2" />
+                </LinearLayout>
             </LinearLayout>
         </RelativeLayout>
 
@@ -207,9 +243,9 @@
                 <SeekBar
                     android:id="@+id/seekPageContent"
                     android:layout_width="130dp"
-                    android:progressBackgroundTint="@color/white"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:progressBackgroundTint="@color/white" />
 
                 <TextView
                     android:id="@+id/text_end"

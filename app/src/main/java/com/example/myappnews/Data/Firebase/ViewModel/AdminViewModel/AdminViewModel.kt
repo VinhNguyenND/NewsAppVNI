@@ -11,6 +11,7 @@ import com.example.myappnews.Data.Model.Article.NewsArticle
 class AdminViewModel : ViewModel() {
     private val ArRepository = AdminRepo.getInstance();
     private val liveDataAr = MutableLiveData<ArrayList<NewsArticle>>();
+    private var _ArticlrWaitLiveData = MutableLiveData<ArrayList<NewsArticle>>();
     private val _isApprove = MutableLiveData<Boolean>();
     private val _idDocument = MutableLiveData<String>();
     private var _isDelete = MutableLiveData<Int>();
@@ -50,8 +51,8 @@ class AdminViewModel : ViewModel() {
         return liveDataAr
     }
 
-    fun doApprove(id: String, value: Int): LiveData<Boolean> {
-        ArRepository.approveArticle(id, value);
+    fun doApprove(idReview: String, id: String, value: Int): LiveData<Boolean> {
+        ArRepository.approveArticle(idReview, id, value);
         ArRepository.IsApprove.observeForever {
             _isApprove.postValue(it)
         }
@@ -76,5 +77,13 @@ class AdminViewModel : ViewModel() {
             _isRequestEdit.postValue(it)
         }
         return _isRequestEdit
+    }
+
+    fun getNewsAwaitEdit(): LiveData<ArrayList<NewsArticle>> {
+        ArRepository.getNewsAwaitEdit()
+        ArRepository.ArticlrWaitLiveData.observeForever {
+            _ArticlrWaitLiveData.postValue(it)
+        }
+        return _ArticlrWaitLiveData;
     }
 }

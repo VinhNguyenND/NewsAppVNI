@@ -52,6 +52,7 @@ class MainAdmFrag : Fragment() {
         val adapter = AdminPageAdapter(requireContext(), childFragmentManager, lifecycle)
         tablayout.addTab(tablayout.newTab().setText("Danh sách đã duyệt"))
         tablayout.addTab(tablayout.newTab().setText("Đang chờ xét duyệt"))
+        tablayout.addTab(tablayout.newTab().setText("Đang chờ chỉnh sửa"))
         viewpager2.adapter = adapter
         tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {

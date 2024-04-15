@@ -56,8 +56,6 @@ class LoginFragment : Fragment() {
                         showToast(requireContext(), "Đăng Nhập thành công")
                     } else if (it == 0) {
                         showToast(requireContext(), "Đăng Nhập Thất Bại")
-                    } else {
-                        showToast(requireContext(), "Lỗi Đăng Nhập")
                     }
                 })
         }

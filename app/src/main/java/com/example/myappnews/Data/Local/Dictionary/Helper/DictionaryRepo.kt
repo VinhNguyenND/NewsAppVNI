@@ -1,12 +1,15 @@
 package com.example.myappnews.Data.Local.Dictionary.Helper
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.myappnews.Data.Local.Dictionary.Entity.DictionaryFolder
 import com.example.myappnews.Data.Local.Dictionary.Entity.DictionaryItem
 
 class DictionaryRepo (private val dictionaryDao: DictionaryDAO){
     val readAllDictionaryItem: LiveData<List<DictionaryItem>> = dictionaryDao.getAllDictionaryItem();
     val readAllDictionaryFolder:LiveData<List<DictionaryFolder>> =dictionaryDao.getAllDictionaryFolder()
+
+
 
     suspend fun addDictionaryItem(dictionaryItem: DictionaryItem) {
        dictionaryDao.insertDictionaryItem(dictionaryItem)
@@ -34,5 +37,9 @@ class DictionaryRepo (private val dictionaryDao: DictionaryDAO){
 
     suspend fun upDateTimeDic(id:Int,newTime:Long){
         dictionaryDao.updateDictionaryFolderTime(id, newTime)
+    }
+
+     fun getItemNoteByIdFolder(id:Int):LiveData<List<DictionaryItem>>{
+      return dictionaryDao.getDictionaryItemsByFolderId(id)
     }
 }

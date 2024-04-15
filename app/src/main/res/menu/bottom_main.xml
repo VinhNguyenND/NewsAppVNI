@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-  <item
-      android:id="@+id/home_Fragment"
-      android:icon="@drawable/ic_news"
-      android:title="@string/news"
-      android:contentDescription="@string/news"
-     />
-  <item
-      android:id="@+id/search_Fragment"
-      android:icon="@drawable/baseline_content_paste_24"
-      android:title="@string/Search"
-      android:contentDescription="@string/news"
-      />
-  <item
-      android:id="@+id/profile_Fragment"
-      android:icon="@drawable/baseline_account_circle_24"
-      android:title="@string/Profile"
-      android:contentDescription="@string/Profile"
-      />
+    <item
+        android:id="@+id/home_Fragment"
+        android:contentDescription="@string/news"
+        android:icon="@drawable/ic_news"
+        android:title="@string/news" />
+    <item
+        android:id="@+id/downLoadedFragment"
+        android:contentDescription="@string/downloaded"
+        android:icon="@drawable/ic_folder24"
+        android:title="@string/downloaded" />
+    <item
+        android:id="@+id/search_Fragment"
+        android:contentDescription="@string/news"
+        android:icon="@drawable/baseline_content_paste_24"
+        android:title="@string/Search" />
+    <item
+        android:id="@+id/profile_Fragment"
+        android:contentDescription="@string/Profile"
+        android:icon="@drawable/baseline_account_circle_24"
+        android:title="@string/Profile" />
+
 </menu>
