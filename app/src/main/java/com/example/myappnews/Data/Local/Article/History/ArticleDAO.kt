@@ -1,11 +1,10 @@
-package com.example.myappnews.Data.Local.Article
+package com.example.myappnews.Data.Local.Article.History
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.myappnews.Data.Model.Article.Article
 
 @Dao
 interface ArticleDAO {

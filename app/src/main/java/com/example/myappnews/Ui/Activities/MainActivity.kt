@@ -58,36 +58,56 @@ class MainActivity : AppCompatActivity() {
                     "Home_Fragment" -> {
                         binding.bottomMain.visibility = View.VISIBLE
                     }
+
                     "Search_Fragment" -> {
                         binding.bottomMain.visibility = View.VISIBLE
                     }
+
                     "Profile_Fragment" -> {
                         binding.bottomMain.visibility = View.VISIBLE
                     }
+
+                    "DownLoadedFragment" -> {
+                        binding.bottomMain.visibility = View.VISIBLE
+                    }
+
                     "Article_Fragment" -> {
                         binding.bottomMain.visibility = View.INVISIBLE
                     }
+
                     "HomeAdmFrag" -> {
                         binding.bottomMain.visibility = View.INVISIBLE
                     }
+
                     "MainAdmFrag" -> {
                         binding.bottomMain.visibility = View.INVISIBLE
                     }
+
                     "LoginFragment" -> {
                         binding.bottomMain.visibility = View.INVISIBLE
                     }
+
                     "SignFragment" -> {
                         binding.bottomMain.visibility = View.INVISIBLE
                     }
+
                     "AuthorHome" -> {
                         binding.bottomMain.visibility = View.INVISIBLE
                     }
+
                     "AddNote" -> {
                         binding.bottomMain.visibility = View.INVISIBLE
                     }
+
                     "NotesFolder" -> {
                         binding.bottomMain.visibility = View.INVISIBLE
+
                     }
+
+                    "ArticleDown" -> {
+                        binding.bottomMain.visibility = View.INVISIBLE
+                    }
+
                     else -> "Invalid day"
                 }
             }

@@ -1,4 +1,4 @@
-package com.example.myappnews.Data.Local.Article
+package com.example.myappnews.Data.Local.Article.History
 
 import androidx.lifecycle.LiveData
 

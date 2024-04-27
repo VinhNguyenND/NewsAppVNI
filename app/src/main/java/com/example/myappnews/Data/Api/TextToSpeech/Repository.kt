@@ -1,5 +1,6 @@
 package com.example.myappnews.Data.Api.TextToSpeech
 
+import android.app.Activity
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Build
@@ -8,6 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.myappnews.Data.Api.TextToSpeech.ObjectAudio.FileWriter
+import com.example.myappnews.Data.SharedPreferences.Shared_Preference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -33,7 +35,7 @@ class Repository {
 
     }
 
-    public suspend fun callTextToSpeech(text: String, apiKey: String, apiHost: String) {
+    public suspend fun callTextToSpeech(activity: Activity,text: String, apiKey: String, apiHost: String) {
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("https://text-to-speech27.p.rapidapi.com/speech?text=$text&lang=en-us")
@@ -52,7 +54,9 @@ class Repository {
                     val inputStream = responseBody?.byteStream()
                     try {
                         if (inputStream != null) {
-                             FileWriter.initializeFile(inputStream)
+                             FileWriter.initializeFile(sharedPreference = Shared_Preference(activity),
+                                 inputStream = inputStream
+                             )
                             _TextToSpechApi.postValue(FileWriter.getFilePath())
                         } else {
                             _TextToSpechApi.postValue("");

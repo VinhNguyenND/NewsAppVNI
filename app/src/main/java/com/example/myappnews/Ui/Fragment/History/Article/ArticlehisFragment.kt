@@ -11,12 +11,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myappnews.Data.Firebase.ViewModel.ArticleViewModel.ArViewModel
-import com.example.myappnews.Data.Local.Article.ArticlelocalViewModel
+import com.example.myappnews.Data.Local.Article.History.ArticlelocalViewModel
 import com.example.myappnews.Data.Model.Article.NewsArticle
 import com.example.myappnews.Interface.Adapter.CommonAdapter
 import com.example.myappnews.R
-import com.example.myappnews.Ui.Fragment.Article.Article_Fragment
 import com.example.myappnews.Ui.Fragment.Article.toNewsArticle
 import com.example.myappnews.Ui.Fragment.Home.Adapt.ArticleAdapter
 import com.example.myappnews.databinding.HistoryArticleBinding

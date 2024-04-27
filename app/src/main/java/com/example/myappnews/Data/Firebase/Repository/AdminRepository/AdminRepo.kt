@@ -8,11 +8,13 @@ import com.example.myappnews.Data.Model.Article.NewsArticle
 import com.example.myappnews.Ui.Fragment.management.Author.Home.sha256
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
 import java.time.LocalDateTime
+import java.util.Date
 
 class AdminRepo {
     private val db = Firebase.firestore
@@ -22,6 +24,7 @@ class AdminRepo {
     private var _isDelete = MutableLiveData<Int>();
     private val _idDocument = MutableLiveData<String>();
     private val _isRequestEdit = MutableLiveData<Int>();
+    private val _isUpdateSuccess = MutableLiveData<Int>();
     val ArticleAdminLive: LiveData<ArrayList<NewsArticle>>
         get() = _ArticleLiveData;
     val IsApprove: LiveData<Boolean>
@@ -34,7 +37,10 @@ class AdminRepo {
         get() = _isRequestEdit
 
     val ArticlrWaitLiveData: LiveData<ArrayList<NewsArticle>>
-        get() = _ArticlrWaitLiveData
+        get() = _ArticlrWaitLiveData;
+
+    val IsUpdateSuccess: LiveData<Int>
+        get() = _isUpdateSuccess;
 
     companion object {
         @Volatile
@@ -136,26 +142,28 @@ class AdminRepo {
             .update("hide", false)
         db.collection("Articles")
             .document(id)
-            .update("pubDate", LocalDateTime.now())
+            .update("pubDate", FieldValue.serverTimestamp())
         db.collection("Articles")
             .document(id)
             .update("idReviewer", idReview)
     }
 
-    fun sendRequestEdit(news: Article) {
-        db.collection("RequestEdit")
-            .document(news.idArticle.toString())
-            .set(news.toMap(), SetOptions.merge())
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    _isRequestEdit.postValue(0);
-                } else {
+    fun sendRequestEdit(news: NewsArticle) {
+        news.idArticle?.let {
+            db.collection("RequestEdit")
+                .document(it)
+                .set(news.toMap(), SetOptions.merge())
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        _isRequestEdit.postValue(0);
+                    } else {
+                        _isRequestEdit.postValue(-1);
+                    }
+                }
+                .addOnFailureListener {
                     _isRequestEdit.postValue(-1);
                 }
-            }
-            .addOnFailureListener {
-                _isRequestEdit.postValue(-1);
-            }
+        }
     }
 
     fun getNewsAwaitEdit() {
@@ -174,6 +182,57 @@ class AdminRepo {
             }
             .addOnFailureListener {
                 _ArticlrWaitLiveData.postValue(ArrayList<NewsArticle>())
+            }
+    }
+
+    fun deleteRequired(id: String) {
+        db.collection("RequestEdit")
+            .document(id)
+            .delete()
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    _isDelete.postValue(1)
+                } else {
+                    _isDelete.postValue(-1)
+                }
+            }
+            .addOnFailureListener {
+                _isDelete.postValue(-1)
+            }
+    }
+
+    fun publishRequired(news: NewsArticle) {
+        db.collection("Articles")
+            .whereEqualTo("idArticle", news.idArticle)
+            .get()
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    var id: String? = null;
+                    for (doc in it.result) {
+                        id = doc.id
+                    }
+                    if (id != null) {
+                        db.collection("Articles")
+                            .document(id)
+                            .set(news, SetOptions.merge())
+                            .addOnCompleteListener {
+                                _isUpdateSuccess.postValue(1)
+                            }
+                            .addOnFailureListener {
+                                _isUpdateSuccess.postValue(0)
+                            }
+                    } else {
+                        _isUpdateSuccess.postValue(0)
+                    }
+                    db.collection("RequestEdit")
+                        .document(news.idArticle.toString())
+                        .delete()
+                } else {
+                    _isUpdateSuccess.postValue(-1)
+                }
+            }
+            .addOnFailureListener {
+                _isUpdateSuccess.postValue(-1)
             }
     }
 

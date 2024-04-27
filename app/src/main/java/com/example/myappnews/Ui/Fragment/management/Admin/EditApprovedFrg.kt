@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -65,6 +66,7 @@ class EditApprovedFrg : Fragment() {
     private fun initContent() {
         if (arguments?.getParcelable("Article", NewsArticle::class.java) != null) {
             article = arguments?.getParcelable("Article", NewsArticle::class.java)!!
+
             val text: String = article.content!!.replace("\\\\n", "<br/>" + " ");
             binding.txtPageContent.text = Html.fromHtml(text)
             binding.articlePageTittle.text = article.titleArticle
@@ -98,7 +100,7 @@ class EditApprovedFrg : Fragment() {
                 _adminViewModel.doHide(idDoc, isHide)
                 binding.editApproveShow.setImageResource(R.drawable.icshow24)
 
-            }else {
+            } else {
                 isHide = true
                 _adminViewModel.doHide(idDoc, isHide)
                 binding.editApproveShow.setImageResource(R.drawable.ichide24)
@@ -161,7 +163,7 @@ class EditApprovedFrg : Fragment() {
         dialog.findViewById<Button>(R.id.btnOkCausepop)
             .setOnClickListener {
                 val cause = dialog.findViewById<EditText>(R.id.txtCause).text.toString()
-                val Article = Article(
+                val Article = NewsArticle(
                     content = article.content,
                     idArticle = article.idArticle,
                     isApprove = article.isApprove,
@@ -193,6 +195,8 @@ class EditApprovedFrg : Fragment() {
                         }
                     }
                 );
+//                Log.d("yeu cau edit", Article.toString());
+//                Log.d("so sang voi yeu cau edit", article.toString())
             }
         dialog.findViewById<Button>(R.id.btnCancelpop)
             .setOnClickListener {

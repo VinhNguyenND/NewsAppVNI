@@ -95,7 +95,7 @@ class EditFragment : Fragment() {
         dialog.findViewById<Button>(R.id.btnLoaiBo).setOnClickListener {
             dialog.findViewById<ProgressBar>(R.id.progress_pop_approve).visibility = View.VISIBLE
             _adminViewModel.doApprove(_shared_Preference.getUid().toString(),idDoc, -1).observe(viewLifecycleOwner, Observer {
-                dialog.hide()
+                dialog.dismiss()
                 if (it == true) {
                     showToast(requireContext(), "Bạn đã loại bỏ thành công")
                 } else {

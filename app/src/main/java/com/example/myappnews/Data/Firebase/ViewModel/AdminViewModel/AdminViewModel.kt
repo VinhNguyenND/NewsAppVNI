@@ -16,6 +16,7 @@ class AdminViewModel : ViewModel() {
     private val _idDocument = MutableLiveData<String>();
     private var _isDelete = MutableLiveData<Int>();
     private val _isRequestEdit = MutableLiveData<Int>();
+    private val _isUpdateSuccess = MutableLiveData<Int>();
 
     companion object {
         @Volatile
@@ -71,7 +72,7 @@ class AdminViewModel : ViewModel() {
         ArRepository.showOrHide(id, isFalse)
     }
 
-    fun sendRequestEdit(news: Article): LiveData<Int> {
+    fun sendRequestEdit(news: NewsArticle): LiveData<Int> {
         ArRepository.sendRequestEdit(news)
         ArRepository.IsRequestEdit.observeForever {
             _isRequestEdit.postValue(it)
@@ -85,5 +86,21 @@ class AdminViewModel : ViewModel() {
             _ArticlrWaitLiveData.postValue(it)
         }
         return _ArticlrWaitLiveData;
+    }
+
+    fun deleteRequireEdit(id: String): LiveData<Int> {
+        ArRepository.deleteRequired(id)
+        ArRepository.IsDelete.observeForever {
+            _isDelete.postValue(it)
+        }
+        return _isDelete
+    }
+
+    fun publishRequired(news: NewsArticle): LiveData<Int> {
+        ArRepository.publishRequired(news = news)
+        ArRepository.IsUpdateSuccess.observeForever {
+            _isUpdateSuccess.postValue(it)
+        }
+        return _isUpdateSuccess
     }
 }

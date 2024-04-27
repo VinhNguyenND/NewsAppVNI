@@ -280,4 +280,22 @@
             android:id="@+id/action_awaitRqEdit_to_mainAdmFrag"
             app:destination="@id/mainAdmFrag" />
     </fragment>
+    <fragment
+        android:id="@+id/downLoadedFragment"
+        tools:layout="@layout/downloadedfragment"
+        android:name="com.example.myappnews.Ui.Fragment.Article.downLoad.DownLoadedFragment"
+        android:label="DownLoadedFragment" >
+        <action
+            android:id="@+id/action_downLoadedFragment_to_articleDown"
+            app:destination="@id/articleDown" />
+    </fragment>
+    <fragment
+        android:id="@+id/articleDown"
+        tools:layout="@layout/article_down_loaded"
+        android:name="com.example.myappnews.Ui.Fragment.Article.downLoad.ArticleDown"
+        android:label="ArticleDown" >
+        <action
+            android:id="@+id/action_articleDown_to_downLoadedFragment"
+            app:destination="@id/downLoadedFragment" />
+    </fragment>
 </navigation>

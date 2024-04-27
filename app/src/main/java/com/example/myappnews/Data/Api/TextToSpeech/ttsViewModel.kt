@@ -1,10 +1,12 @@
 package com.example.myappnews.Data.Api.TextToSpeech
 
+import android.app.Activity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myappnews.Data.SharedPreferences.Shared_Preference
 import kotlinx.coroutines.launch
 class ttsViewModel:ViewModel() {
 
@@ -20,8 +22,8 @@ class ttsViewModel:ViewModel() {
     }
 
 
-    suspend fun callApiTextToSpeech(content: String, apiKey: String, apiHost: String){
-        _textRepository.callTextToSpeech(content,apiKey,apiHost);
+    suspend fun callApiTextToSpeech(activity: Activity,content: String, apiKey: String, apiHost: String){
+        _textRepository.callTextToSpeech(activity,content,apiKey,apiHost);
     }
 
 

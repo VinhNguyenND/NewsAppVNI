@@ -13,10 +13,13 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import androidx.navigation.Navigator
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myappnews.Data.Local.Dictionary.Entity.DictionaryFolder
@@ -37,6 +40,10 @@ class AddNote : Fragment() {
     private lateinit var _folderAdapter: FolderAdapter
     private var listFolder = ArrayList<DictionaryFolder>()
     private lateinit var dictionary: DictionaryItem
+    private var isSort = false;
+    private lateinit var observer: Observer<List<DictionaryFolder>>
+    private lateinit var observer1: Observer<List<DictionaryFolder>>
+    private lateinit var observer2: Observer<List<DictionaryFolder>>
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -50,8 +57,10 @@ class AddNote : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViewModel()
+        initObserve()
         initRcView(requireContext())
         initContent()
+        event()
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -66,22 +75,83 @@ class AddNote : Fragment() {
         super.onResume()
         DictionaryFolder.readAllDicFolder.observe(
             viewLifecycleOwner,
-            Observer {
-                listFolder = ArrayList<DictionaryFolder>()
-                for (doc in it) {
-                    listFolder.add(doc)
-                }
-                _folderAdapter.submitList(listFolder)
-            }
+            observer
         )
+    }
+
+    private fun initObserve() {
+        observer = Observer {
+            listFolder = ArrayList<DictionaryFolder>()
+            for (doc in it) {
+                listFolder.add(doc)
+            }
+            _folderAdapter.submitList(listFolder)
+        }
+
+        observer1 = Observer {
+            isSort = true;
+            listFolder = ArrayList<DictionaryFolder>()
+            for (doc in it) {
+                listFolder.add(doc)
+            }
+            _folderAdapter.submitList(listFolder)
+        }
+
+        observer2 = Observer {
+            isSort = false;
+            listFolder = ArrayList<DictionaryFolder>()
+            for (doc in it) {
+                listFolder.add(doc)
+            }
+            _folderAdapter.submitList(listFolder)
+        }
     }
 
     private fun initViewModel() {
         DictionaryFolder = ViewModelProvider(this).get(DictionaryViewModel::class.java)
     }
 
+    private fun event() {
+        binding.btnSort.setOnClickListener {
+            if (!isSort) {
+                DictionaryFolder.readAllDicFolder.removeObserver(observer)
+                DictionaryFolder.getFolderSortDecrease().removeObserver(observer2)
+                binding.btnSort.setImageResource(R.drawable.ic_a_to_z_24);
+                DictionaryFolder.getFolderSortIncrease().observe(
+                    viewLifecycleOwner,
+                    observer1
+                )
+            } else {
+                DictionaryFolder.readAllDicFolder.removeObserver(observer)
+                DictionaryFolder.getFolderSortIncrease().removeObserver(observer1)
+                binding.btnSort.setImageResource(R.drawable.ic_z_a_24);
+                DictionaryFolder.getFolderSortDecrease().observe(
+                    viewLifecycleOwner,
+                    observer2
+                )
+            }
+        };
+        binding.btnAddFolder.setOnClickListener {
+            showCustomDialog()
+        }
+        binding.searchView2.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                _folderAdapter.filter.filter(query)
+                return false;
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                _folderAdapter.filter.filter(newText)
+                return false;
+            }
+        })
+        binding.btnback.setOnClickListener {
+            binding.root.findNavController().popBackStack()
+        }
+    }
+
     private fun initRcView(context: Context) {
-        _folderAdapter = FolderAdapter(listFolder, context,ViewModelProvider(this))
+        _folderAdapter = FolderAdapter(listFolder, context, ViewModelProvider(this))
         binding.rcvFolderAddNote.let {
             it.adapter = _folderAdapter
             it.layoutManager = LinearLayoutManager(
@@ -94,7 +164,7 @@ class AddNote : Fragment() {
                 try {
                     DictionaryFolder.insertDictionaryItem(
                         DictionaryItem(
-                            idDictionaryFolder =listFolder[position].idDictionaryFolder ,
+                            idDictionaryFolder = listFolder[position].idDictionaryFolder,
                             idDictionaryItem = 0,
                             phonetic = dictionary.phonetic,
                             mean = dictionary.mean,
@@ -105,7 +175,7 @@ class AddNote : Fragment() {
                     )
                     showToast(requireContext(), "them thanh cong")
                 } catch (e: Exception) {
-                  Log.d("loi local data",e.toString())
+                    Log.d("loi local data", e.toString())
                 }
             }
         })

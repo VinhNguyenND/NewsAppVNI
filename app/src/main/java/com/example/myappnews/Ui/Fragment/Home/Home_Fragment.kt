@@ -3,17 +3,13 @@ package com.example.myappnews.Ui.Fragment.Home
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams
 import android.view.Window
 import android.view.WindowManager
-import android.widget.TableLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -23,10 +19,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.myappnews.Data.Firebase.ViewModel.ArticleViewModel.ArViewModel
-import com.example.myappnews.Data.Local.Article.ArticlelocalViewModel
-import com.example.myappnews.Data.Model.Article.Article
+import com.example.myappnews.Data.Local.Article.History.ArticlelocalViewModel
 import com.example.myappnews.Data.Model.Article.Field
-import com.example.myappnews.Data.Model.item.Field as field
 import com.example.myappnews.Data.Model.Article.NewsArticle
 import com.example.myappnews.Data.Model.Source.Source
 import com.example.myappnews.Interface.Adapter.CommonAdapter
@@ -38,8 +32,6 @@ import com.example.myappnews.Ui.Fragment.Home.Adapt.popupAdapter
 import com.example.myappnews.databinding.HomeScreenBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.tabs.TabLayout
-import com.google.android.play.integrity.internal.ad
-import org.w3c.dom.Text
 
 class Home_Fragment : Fragment() {
     private lateinit var binding: HomeScreenBinding;

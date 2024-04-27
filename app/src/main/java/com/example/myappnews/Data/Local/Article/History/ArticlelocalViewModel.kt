@@ -1,4 +1,4 @@
-package com.example.myappnews.Data.Local.Article
+package com.example.myappnews.Data.Local.Article.History
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -9,10 +9,10 @@ import kotlinx.coroutines.launch
 
 class ArticlelocalViewModel(application: Application):AndroidViewModel(application) {
      val readAllArticle:LiveData<List<ArticleEntity>>
-    private val repository:ArticleRepository
+    private val repository: ArticleRepository
 
     init {
-        val articleDao=ArticleHelper.getDataBase(application).articleDao()
+        val articleDao= ArticleHelper.getDataBase(application).articleDao()
         repository= ArticleRepository(articleDao)
         readAllArticle=repository.readAllData
     }

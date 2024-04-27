@@ -6,38 +6,29 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.text.Html
 import android.text.Layout
 import android.text.Spannable
 import android.text.SpannableStringBuilder
-import android.text.TextUtils
 import android.text.style.BackgroundColorSpan
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
-import android.view.ViewGroup.LayoutParams
-import android.view.ViewGroup.MarginLayoutParams
 import android.widget.ImageView
-import android.widget.PopupWindow
-import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.SeekBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.FileProvider
-import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -46,12 +37,13 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.room.TypeConverter
 import com.bumptech.glide.Glide
-import com.example.myappnews.Data.Api.Dictionary.DicRepository
 import com.example.myappnews.Data.Api.Dictionary.DicViewModel
+import com.example.myappnews.Data.Api.TextToSpeech.ObjectAudio.FileWriter
 import com.example.myappnews.Data.Api.TextToSpeech.Repository
-import com.example.myappnews.Data.Firebase.ViewModel.ArticleViewModel.ArViewModel
-import com.example.myappnews.Data.Local.Article.ArticleEntity
-import com.example.myappnews.Data.Local.Article.ArticlelocalViewModel
+import com.example.myappnews.Data.Local.Article.Down.ArticleDownEntity
+import com.example.myappnews.Data.Local.Article.Down.ArticleDownViewModel
+import com.example.myappnews.Data.Local.Article.History.ArticleEntity
+import com.example.myappnews.Data.Local.Article.History.ArticlelocalViewModel
 import com.example.myappnews.Data.Local.Dictionary.Entity.DictionaryItem
 import com.example.myappnews.Data.Local.Dictionary.Helper.DictionaryViewModel
 import com.example.myappnews.Data.Model.Article.Article
@@ -59,13 +51,11 @@ import com.example.myappnews.Data.Model.Article.NewsArticle
 import com.example.myappnews.R
 import com.example.myappnews.Ui.Fragment.Article.Article_Fragment.Companion.fromDateToString
 import com.example.myappnews.Ui.Fragment.Article.Article_Fragment.Companion.fromStringToDate
-import com.example.myappnews.Ui.Fragment.Home.Adapt.popupAdapter
+import com.example.myappnews.Ui.Fragment.management.Author.Home.showToast
 import com.example.myappnews.databinding.ArticleScreenBinding
 import com.facebook.shimmer.ShimmerFrameLayout
 
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
@@ -80,6 +70,7 @@ class Article_Fragment : Fragment() {
     private lateinit var binding: ArticleScreenBinding
     private lateinit var articlelocalViewModel: ArticlelocalViewModel
     private lateinit var DictionaryFolder1: DictionaryViewModel
+    private lateinit var articleDownViewModel: ArticleDownViewModel
     private lateinit var viewModel: DicViewModel
     private var viewPopup: View? = null
     private var loadingButton: View? = null;
@@ -92,8 +83,6 @@ class Article_Fragment : Fragment() {
     private val apiHost = "text-to-speech27.p.rapidapi.com"
     private val repository = Repository.getInstance();
     private var mp: MediaPlayer? = null
-    private var mp_Popup: MediaPlayer? = null
-    private val audioUrl = ""
     private var isPlaying = false
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var article: NewsArticle;
@@ -116,6 +105,7 @@ class Article_Fragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        initShimer()
         setEventforBack()
         setEventBottomMedia()
         initializeMediaPlayer()
@@ -151,6 +141,7 @@ class Article_Fragment : Fragment() {
         viewModel = ViewModelProvider(this)[DicViewModel::class.java]
         articlelocalViewModel = ViewModelProvider(this).get(ArticlelocalViewModel::class.java)
         DictionaryFolder1 = ViewModelProvider(this).get(DictionaryViewModel::class.java)
+        articleDownViewModel = ViewModelProvider(this).get(ArticleDownViewModel::class.java)
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -158,10 +149,11 @@ class Article_Fragment : Fragment() {
         if (arguments?.getParcelable("Article", NewsArticle::class.java) != null) {
             article = arguments?.getParcelable("Article", NewsArticle::class.java)!!
             val text: String = article.content!!.replace("\\\\n", "<br/>" + " ");
-//            callTextToSpeech(text)
+            callTextToSpeech(text)
             articlelocalViewModel.addArticle(toArticleEntity(article))
             Log.i("text convert", text);
             binding.txtPageContent.text = Html.fromHtml(text)
+            binding.txtPageTime.text = article.pubDate.toString()
             Glide.with(requireContext())
                 .load(article.imageUrl?.trim())
                 .error(R.drawable.uploaderror)
@@ -229,6 +221,7 @@ class Article_Fragment : Fragment() {
     private fun callTextToSpeech(content: String) {
         viewLifecycleOwner.lifecycleScope.launch {
             repository.callTextToSpeech(
+                requireActivity(),
                 content,
                 apiKey,
                 apiHost
@@ -275,9 +268,18 @@ class Article_Fragment : Fragment() {
         binding.seekPageContent.setOnSeekBarChangeListener(object :
             SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                binding.textNow.text = mp?.currentPosition?.let { formatDuration(it.toLong()) }
                 if (fromUser) {
                     mp?.seekTo(progress)
                     binding.textNow.text = mp?.currentPosition?.let { formatDuration(it.toLong()) }
+                }
+                if (seekBar != null) {
+                    if (progress == seekBar.max) {
+                        seekBar.progress = 0;
+                        binding.textNow.text = "0:00"
+                        binding.StartOrStop.setImageResource(R.drawable.ic_play24)
+                        isPlaying = false
+                    }
                 }
             }
 
@@ -289,8 +291,14 @@ class Article_Fragment : Fragment() {
 
             }
 
+
         })
         updateSeekBar()
+    }
+
+
+    private fun initShimer() {
+        binding.audioHide.startShimmer()
     }
 
     private fun setEvent(view: View) {
@@ -298,9 +306,51 @@ class Article_Fragment : Fragment() {
             view.findNavController().popBackStack();
         }
         binding.btnArshare.setOnClickListener {
-            if(article.linkArticle!=null){
+            if (article.linkArticle != null) {
                 shareUri(article.linkArticle.toString())
             }
+        }
+        binding.decree5s.setOnClickListener {
+            seekBackward(5000)
+        }
+        binding.btnGo5s.setOnClickListener {
+            seekForward(5000)
+        }
+
+        binding.downArticle.setOnClickListener {
+            FileWriter.saveToInternal(article.idArticle.toString() + ".tmp", requireContext())
+                .observe(viewLifecycleOwner,
+                    Observer {
+                        if (it != null) {
+                            val Article = ArticleDownEntity(
+                                idArticle = article.idArticle.toString(),
+                                titleArticle = article.titleArticle.toString(),
+                                linkArticle = article.linkArticle.toString(),
+                                creator = article.creator.toString(),
+                                content = article.content.toString(),
+                                pubDate = article.pubDate.toString(),
+                                imageUrl = article.imageUrl.toString(),
+                                sourceUrl = article.sourceUrl.toString(),
+                                sourceId = article.sourceId.toString(),
+                                country = article.country.toString(),
+                                field = article.field.toString(),
+                                sourceVoice = it.toString(),
+                            )
+                            showToast(requireContext(),Article.sourceVoice.toString())
+                            articleDownViewModel.addArticle(Article)
+                            articleDownViewModel.isArticleInserted.observe(
+                                viewLifecycleOwner,
+                                Observer { isSuccess ->
+                                    if (isSuccess) {
+                                        showToast(requireContext(), "Article down successfully")
+                                    } else {
+                                        showToast(requireContext(), "Failed to down article")
+                                    }
+                                })
+                        } else {
+                            showToast(requireContext(), "Failed to down article")
+                        }
+                    })
         }
     }
 
@@ -308,12 +358,17 @@ class Article_Fragment : Fragment() {
     private fun observeSpeech() {
         repository.TextToSpechApi.observe(viewLifecycleOwner, Observer {
             speech = it;
-            Log.i("dương link audio là:>>>", speech.toString());
+            showToast(requireContext(),it)
             mp?.setDataSource(it)
             mp?.prepare()
             binding.textEnd.text = mp?.duration?.let { it1 -> formatDuration(it1.toLong()) }
             binding.StartOrStop.visibility = View.VISIBLE
+            binding.downArticle.visibility = View.VISIBLE
             binding.accelerate.visibility = View.INVISIBLE
+            binding.audioHide.stopShimmer()
+            binding.audioHide.hideShimmer()
+            binding.audioHide.visibility = View.GONE
+            binding.audioVisible.visibility = View.VISIBLE
         })
     }
 
@@ -336,18 +391,52 @@ class Article_Fragment : Fragment() {
         binding.StartOrStop.setImageResource(android.R.drawable.ic_media_play)
     }
 
-    private fun stopAudio() {
-        mp?.stop()
-        mp?.prepareAsync()
-        mp?.seekTo(0)
-        isPlaying = false
-        binding.StartOrStop.setImageResource(android.R.drawable.ic_media_play)
+//    private fun stopAudio() {
+//        mp?.stop()
+//        mp?.prepareAsync()
+//        mp?.seekTo(0)
+//        isPlaying = false
+//        binding.StartOrStop.setImageResource(android.R.drawable.ic_media_play)
+//    }
+
+    private fun seekForward(milliSeconds: Int) {
+        val currentPosition = mp?.currentPosition
+        val duration = mp?.duration
+
+
+        if (currentPosition != null) {
+            if (currentPosition + milliSeconds < duration!!) {
+                mp?.seekTo(currentPosition + milliSeconds)
+                binding.textNow.text = mp?.currentPosition?.let { formatDuration(it.toLong()) }
+                binding.seekPageContent.progress = currentPosition + milliSeconds
+            } else {
+                mp?.seekTo(duration)
+                binding.textNow.text = mp?.currentPosition?.let { formatDuration(it.toLong()) }
+                binding.seekPageContent.progress = duration
+                mp?.pause()
+            }
+        }
+
     }
 
+    private fun seekBackward(milliSeconds: Int) {
+        val currentPosition = mp?.currentPosition
+
+        if (currentPosition != null) {
+            if (currentPosition - milliSeconds > 0) {
+                mp?.seekTo(currentPosition - milliSeconds)
+                binding.textNow.text = mp?.currentPosition?.let { formatDuration(it.toLong()) }
+                binding.seekPageContent.progress = currentPosition - milliSeconds
+            } else {
+                mp?.seekTo(0)
+                binding.textNow.text = mp?.currentPosition?.let { formatDuration(it.toLong()) }
+                binding.seekPageContent.progress = 0
+            }
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.i("destroy view article", "destroy view article")
         speech = null.toString();
         binding.StartOrStop.visibility = View.INVISIBLE
         binding.accelerate.visibility = View.VISIBLE
@@ -356,7 +445,6 @@ class Article_Fragment : Fragment() {
         if (fileToDelete.exists()) {
             fileToDelete.delete()
         }
-        Log.d("link xoa laf:>>", fileToDelete.absolutePath)
         mp!!.release();
         mp = null;
     }

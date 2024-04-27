@@ -43,4 +43,9 @@ interface DictionaryDAO {
     @Query("UPDATE DictionaryFolder SET timeUpdate = :newTime WHERE idDictionaryFolder = :id")
     suspend fun updateDictionaryFolderTime(id: Int, newTime: Long): Int
 
+    @Query("SELECT * FROM DictionaryFolder  ORDER BY nameDictionaryFolder ASC ")
+     fun getFolderSortIncrease(): LiveData<List<DictionaryFolder>>
+
+    @Query("SELECT * FROM DictionaryFolder  ORDER BY nameDictionaryFolder DESC")
+     fun getFolderSortDecrease(): LiveData<List<DictionaryFolder>>
 }

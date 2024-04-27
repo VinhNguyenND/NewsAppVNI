@@ -62,7 +62,7 @@ class EditRequest : Fragment() {
                 linkArticle = binding.editTextLink.text.toString(), // Link bài báo
                 creator = binding.editTextCreator.text.toString(), // Tên tác giả
                 content = binding.editTextContent.text.toString(), // Nội dung
-                pubDate = null, // Ngày xuất bản
+                pubDate = article.pubDate, // Ngày xuất bản
                 imageUrl = binding.editTextImageUrl.text.toString(), // URL ảnh
                 sourceUrl = binding.editTextSourceUrl.text.toString(), // URL nguồn
                 sourceId = binding.editTextSourceId.text.toString(), // ID nguồn

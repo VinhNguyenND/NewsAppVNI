@@ -8,6 +8,15 @@ class Shared_Preference(activity: Activity) {
     val sharedPreferences = activity.getSharedPreferences("News_sharedPref", Context.MODE_PRIVATE)
     val editor = sharedPreferences.edit()
 
+    fun save(filePath:String){
+        editor.putString("audioPath", filePath)
+        editor.apply()
+    }
+
+    fun getFilePath():String?{
+        return sharedPreferences.getString("audioPath", null)
+    }
+
     fun getUid(): String? {
         return sharedPreferences.getString("Uid", null)
     }

@@ -1,4 +1,4 @@
-package com.example.myappnews.Data.Local.Article
+package com.example.myappnews.Data.Local.Article.History
 
 import android.content.Context
 import androidx.room.Database
@@ -22,7 +22,7 @@ abstract class ArticleHelper : RoomDatabase() {
                     ArticleHelper::class.java,
                     name = "article_database",
                 ).build()
-                INSTANCE=intance
+                INSTANCE =intance
                 return intance
             }
         }

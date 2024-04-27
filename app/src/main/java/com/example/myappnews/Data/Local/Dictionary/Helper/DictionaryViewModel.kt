@@ -63,7 +63,7 @@ class DictionaryViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     fun getItemNoteByIdFolder(id: Int): LiveData<List<DictionaryItem>> {
-        return   repository.getItemNoteByIdFolder(id);
+        return repository.getItemNoteByIdFolder(id);
     }
 
     fun updateDictionaryFolderTime(id: Int, newTime: Long) {
@@ -78,5 +78,13 @@ class DictionaryViewModel(application: Application) : AndroidViewModel(applicati
 
     fun getALlDic(): LiveData<List<DictionaryItem>> {
         return repository.readAllDictionaryItem
+    }
+
+    fun getFolderSortIncrease(): LiveData<List<DictionaryFolder>> {
+        return repository.getFolderSortIncrease()
+    }
+
+    fun getFolderSortDecrease(): LiveData<List<DictionaryFolder>> {
+        return  repository.getFolderSortDecrease()
     }
 }

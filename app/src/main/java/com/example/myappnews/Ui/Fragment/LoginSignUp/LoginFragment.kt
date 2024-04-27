@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
 import com.example.myappnews.Data.Firebase.ViewModel.ArticleViewModel.ArViewModel
-import com.example.myappnews.Data.Local.Article.ArticlelocalViewModel
 import com.example.myappnews.R
 import com.example.myappnews.databinding.LoginScreenBinding
 
