@@ -7,18 +7,17 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutSpecial"
-        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#EBEDED">
+        android:background="#EBEDED"
+        android:visibility="visible">
 
-        <androidx.cardview.widget.CardView
+        <FrameLayout
             android:id="@+id/cardView"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="200dp"
-            app:cardBackgroundColor="#BDDAF1"
-            app:cardCornerRadius="30dp"
-            app:cardElevation="10dp"
+            android:background="@drawable/profile_background"
+            android:layout_marginHorizontal="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -58,7 +57,7 @@
                 android:layout_gravity="left"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="50dp"
-                android:text="Nxv1812002@gmail.com"
+                android:fontFamily="sans-serif"
                 android:textColor="@color/black"
                 android:textSize="16sp" />
 
@@ -69,19 +68,20 @@
                 android:layout_gravity="left"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="100dp"
-                android:text="Nguyen Xuan Vinh"
+                android:fontFamily="sans-serif"
                 android:textColor="@color/black"
                 android:textSize="16sp" />
 
             <ImageView
                 android:id="@+id/addMin"
-                android:layout_gravity="right"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
+                android:layout_gravity="right"
+                android:visibility="gone"
                 app:srcCompat="@drawable/icadmin48" />
 
 
-        </androidx.cardview.widget.CardView>
+        </FrameLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/btnDangXuat"
@@ -203,4 +203,12 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/image_no_internet_profile"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/no_internet"
+        android:visibility="gone" />
 </RelativeLayout>

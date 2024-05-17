@@ -18,14 +18,15 @@ import com.example.myappnews.R
 import com.example.myappnews.Ui.Fragment.Article.toNewsArticle
 import com.example.myappnews.Ui.Fragment.Home.Adapt.ArticleAdapter
 import com.example.myappnews.databinding.HistoryArticleBinding
+import com.google.android.material.bottomsheet.BottomSheetDialog
 
-class ArticlehisFragment(context: Context) : Fragment() {
+class ArticlehisFragment(context: Context, bottomSheet: BottomSheetDialog) : Fragment() {
     private lateinit var binding: HistoryArticleBinding
     private val _context = context
     private lateinit var articlelocalViewModel: ArticlelocalViewModel
     private lateinit var _articleAdapter: ArticleAdapter
     private var listArticle = listOf<NewsArticle>()
-
+    private val _bottomSheet = bottomSheet
     override fun onResume() {
         super.onResume()
     }
@@ -63,11 +64,13 @@ class ArticlehisFragment(context: Context) : Fragment() {
             override fun setOnClickListener(position: Int) {
                 val bundle = Bundle()
                 bundle.putParcelable("Article", listArticle[position])
-                Navigation.findNavController(binding.root).navigate(R.id.article_Fragment, bundle)
+                bundle.putInt("ishistory",0)
+                _bottomSheet.dismiss()
+                Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
+                    .navigate(R.id.article_Fragment,bundle);
             }
         })
     }
-
 
 
     private fun getAllArticle() {

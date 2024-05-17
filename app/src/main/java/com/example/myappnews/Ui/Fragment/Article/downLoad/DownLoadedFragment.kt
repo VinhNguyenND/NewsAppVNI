@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -38,6 +39,7 @@ class DownLoadedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initViewModel()
         initRcView(requireContext());
+        event()
         super.onViewCreated(view, savedInstanceState)
     }
 
@@ -70,9 +72,22 @@ class DownLoadedFragment : Fragment() {
                 }
                 listArticle = Article
                 _articleAdapter.submitList(listArticle)
-                Log.d("dữ liệu đã tải", listArticle[0].idArticle)
             }
         )
+    }
+
+    private fun event() {
+        binding.searchViewDown.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                _articleAdapter.filter.filter(query)
+                return false;
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                _articleAdapter.filter.filter(newText)
+                return false;
+            }
+        })
     }
 
     private fun initViewModel() {

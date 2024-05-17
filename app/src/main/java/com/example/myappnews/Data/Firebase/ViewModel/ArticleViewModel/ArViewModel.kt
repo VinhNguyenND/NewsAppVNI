@@ -5,19 +5,25 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import com.example.myappnews.Data.Enum.CommentFilter
 import com.example.myappnews.Data.Firebase.Repository.ArticleRepo.ArticleRepository
 import com.example.myappnews.Data.Model.Article.Field
 import com.example.myappnews.Data.Model.Article.NewsArticle
+import com.example.myappnews.Data.Model.Comment.Comment
 import com.example.myappnews.Data.Model.Source.Source
 import com.example.myappnews.Data.Model.User.UserModel
 
 class ArViewModel() : ViewModel() {
     private val ArRepository = ArticleRepository.getInstance();
     private val liveDataAr = MutableLiveData<ArrayList<NewsArticle>>();
+    private val liveDataSearch = MutableLiveData<ArrayList<NewsArticle>>();
+    private val liveDataHeart = MutableLiveData<ArrayList<NewsArticle>>();
+    private val liveDataArticleField = MutableLiveData<ArrayList<NewsArticle>>();
     private var _isAuthen = MutableLiveData<Int>();
     private var _FieldLiveData = MutableLiveData<ArrayList<Field>>();
     private var _source = MutableLiveData<ArrayList<Source>>()
     private var _User = MutableLiveData<UserModel>();
+    private var _imageByte = MutableLiveData<ByteArray>();
 
 
     companion object {
@@ -30,13 +36,6 @@ class ArViewModel() : ViewModel() {
         }
     }
 
-//    fun getAllArticle(field: String): LiveData<ArrayList<NewsArticle>> {
-//        ArRepository.getAllNewsArticle(field);
-//        ArRepository.ArticleLiveData.observeForever(Observer {
-//            liveDataAr.postValue(it);
-//        })
-//        return liveDataAr
-//    }
 
     fun getNewByTopic(field: String, source: String): LiveData<ArrayList<NewsArticle>> {
         ArRepository.getNewByTopic(field, source);
@@ -46,6 +45,13 @@ class ArViewModel() : ViewModel() {
         return liveDataAr
     }
 
+    fun getAllNews(): LiveData<ArrayList<NewsArticle>> {
+        ArRepository.getAllNewsArticle()
+        ArRepository.ArticleSearch.observeForever {
+            liveDataSearch.postValue(it)
+        }
+        return liveDataSearch
+    }
 
     fun getAllField(): LiveData<ArrayList<Field>> {
         ArRepository.getAllField()
@@ -71,8 +77,8 @@ class ArViewModel() : ViewModel() {
         return _source;
     }
 
-    fun setImage(imageUri: ByteArray, id: String) {
-        ArRepository.setImage(imageUri, id)
+    fun setImage(imageUri: ByteArray, id: String, Name: String) {
+        ArRepository.setImage(imageUri, id, Name)
     }
 
     fun getUser(id: String): LiveData<UserModel> {
@@ -83,5 +89,65 @@ class ArViewModel() : ViewModel() {
         return _User;
     }
 
+    fun doLike(like: Int, id: String) {
+        ArRepository.doLike(like, id)
+    }
 
+    fun getHeart(): LiveData<ArrayList<NewsArticle>> {
+        ArRepository.getHeart()
+        ArRepository.ArticleHeart.observeForever {
+            liveDataHeart.postValue(it)
+        }
+        return liveDataHeart;
+    }
+
+    fun getArticleField(newsArticle: NewsArticle): LiveData<ArrayList<NewsArticle>> {
+        ArRepository.getArticleField(newsArticle)
+        ArRepository.ArticleField.observeForever {
+            liveDataArticleField.postValue(it);
+        }
+        return liveDataArticleField;
+    }
+
+
+    fun postImage(byteArray: ByteArray) {
+        ArRepository.postImage(byteArray)
+    }
+
+    fun getImage(): LiveData<ByteArray> {
+        ArRepository.ImageByte.observeForever {
+            _imageByte.postValue(it)
+        }
+        return _imageByte;
+    }
+
+    fun sendMainMessage(comment: Comment) {
+        ArRepository.sendMainMessage(comment)
+    }
+
+    fun sendChildMessage(parent: Comment, child: Comment) {
+        ArRepository.sendChildMessage(parent, child)
+    }
+
+    fun getMainMessage(type: CommentFilter,id: String): LiveData<ArrayList<Comment>> {
+        ArRepository.getMainMessage(type,id)
+        return ArRepository.getMainComments
+    }
+
+    fun getChildComment(comment: Comment): LiveData<ArrayList<Comment>> {
+        ArRepository.getChildComment(comment)
+        return ArRepository.getChildComments
+    }
+
+    fun deleteComment(parent: Comment):LiveData<Boolean> {
+        ArRepository.deleteComment(parent)
+        return  ArRepository.deleteCommentSuccess
+    }
+
+     fun likeComment(comment: Comment,id: String,isLike:Boolean) {
+         ArRepository.likeComment(comment, id,isLike)
+     }
+     fun removeComemt(){
+         ArRepository.removeComemt()
+     }
 }

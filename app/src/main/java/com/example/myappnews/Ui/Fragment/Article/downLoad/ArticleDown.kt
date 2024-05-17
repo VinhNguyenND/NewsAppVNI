@@ -1,6 +1,7 @@
 package com.example.myappnews.Ui.Fragment.Article.downLoad
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
@@ -8,18 +9,27 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Html
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.SeekBar
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.Navigator
 import androidx.navigation.findNavController
 import androidx.room.TypeConverter
 import com.bumptech.glide.Glide
 import com.example.myappnews.Data.Local.Article.Down.ArticleDownEntity
+import com.example.myappnews.Data.Local.Article.Down.ArticleDownViewModel
 import com.example.myappnews.R
 import com.example.myappnews.Ui.Fragment.management.Author.Home.showToast
 import com.example.myappnews.databinding.ArticleDownLoadedBinding
@@ -31,6 +41,7 @@ import java.util.Date
 
 class ArticleDown : Fragment() {
     private lateinit var binding: ArticleDownLoadedBinding
+    private lateinit var articleDownViewModel: ArticleDownViewModel
     private var speech = "";
     private var mp: MediaPlayer? = null
     private var isPlaying = false
@@ -49,6 +60,7 @@ class ArticleDown : Fragment() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initViewModel()
         setEvent(view)
     }
 
@@ -159,8 +171,8 @@ class ArticleDown : Fragment() {
         binding.btnGo5s.setOnClickListener {
             seekForward(5000)
         }
-        binding.downArticle.setOnClickListener {
-
+        binding.deleteDown.setOnClickListener {
+            showDeleteDialog(view);
         }
     }
 
@@ -217,8 +229,40 @@ class ArticleDown : Fragment() {
             showToast(requireContext(), "Xóa thành công");
             Navigation.findNavController(view).popBackStack();
         } else {
-            showToast(requireContext(), "Xóa thành công");
+            showToast(requireContext(), "Xóa thất bại");
         }
+    }
+
+    private fun showDeleteDialog(view: View) {
+        val dialog = Dialog(requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.delete_approve_pop)
+        val window: Window = dialog.window ?: return;
+        window.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+        dialog.findViewById<TextView>(R.id.textView).text = "Bạn có muốn xóa bài báo";
+        val windowAtribute: WindowManager.LayoutParams = window.attributes
+        windowAtribute.gravity = Gravity.CENTER
+        window.attributes = windowAtribute
+
+        dialog.findViewById<Button>(R.id.btnDongy).setOnClickListener {
+            articleDownViewModel.deleteById(article).observe(viewLifecycleOwner, Observer {
+                if (it) {
+                    article.sourceVoice?.let { it1 -> deleteFile(it1, view) }
+                }
+            })
+            dialog.dismiss()
+        }
+        dialog.findViewById<Button>(R.id.btnLoaiBo).setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+    private fun initViewModel() {
+        articleDownViewModel = ViewModelProvider(this).get(ArticleDownViewModel::class.java)
     }
 
     private fun seekBackward(milliSeconds: Int) {

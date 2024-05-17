@@ -3,10 +3,13 @@ package com.example.myappnews.Data.Firebase.Repository.ArticleRepo
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import android.widget.Switch
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.myappnews.Data.Enum.CommentFilter
 import com.example.myappnews.Data.Model.Article.Field
 import com.example.myappnews.Data.Model.Article.NewsArticle
+import com.example.myappnews.Data.Model.Comment.Comment
 import com.example.myappnews.Data.Model.Source.Source
 import com.example.myappnews.Data.Model.User.UserModel
 import com.google.android.gms.tasks.OnCompleteListener
@@ -16,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.auth.User
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
@@ -34,8 +38,16 @@ class ArticleRepository {
     private var _User = MutableLiveData<UserModel>();
     private var _source = MutableLiveData<ArrayList<Source>>()
     private var storageRef = Firebase.storage.reference
-
+    private var _ArticleSearch = MutableLiveData<ArrayList<NewsArticle>>();
+    private var _ArticleLike = MutableLiveData<ArrayList<NewsArticle>>();
+    private var _articlefield = MutableLiveData<ArrayList<NewsArticle>>();
+    private var _imageByte = MutableLiveData<ByteArray>();
     private var timeLast = MutableLiveData<Date>()
+    private var isSendCommentMain = MutableLiveData<Boolean>();
+    private var isSendCommentChild = MutableLiveData<Boolean>();
+    private var getMainComment = MutableLiveData<ArrayList<Comment>>();
+    private var getChildComment = MutableLiveData<ArrayList<Comment>>();
+    private var _deleteCommentSuccess = MutableLiveData<Boolean>();
     val ArticleLiveData: LiveData<ArrayList<NewsArticle>>
         get() = _ArticleLiveData;
 
@@ -47,6 +59,26 @@ class ArticleRepository {
         get() = _User
     val SourceAll: LiveData<ArrayList<Source>>
         get() = _source
+    val ArticleSearch: LiveData<ArrayList<NewsArticle>>
+        get() = _ArticleSearch
+
+    val ArticleHeart: LiveData<ArrayList<NewsArticle>>
+        get() = _ArticleLike
+    val ArticleField: LiveData<ArrayList<NewsArticle>>
+        get() = _articlefield
+    val ImageByte: LiveData<ByteArray>
+        get() = _imageByte
+    val IsSendComment: LiveData<Boolean>
+        get() = isSendCommentMain
+    val IsSendCommentChild: LiveData<Boolean>
+        get() = isSendCommentChild
+
+    val getMainComments: LiveData<ArrayList<Comment>>
+        get() = getMainComment
+    val getChildComments: LiveData<ArrayList<Comment>>
+        get() = getChildComment
+    val deleteCommentSuccess: LiveData<Boolean>
+        get() = _deleteCommentSuccess
 
     companion object {
         @Volatile
@@ -58,33 +90,18 @@ class ArticleRepository {
         }
     }
 
-//    fun getAllNewsArticle(field: String) {
-//        if (field == "All") {
-//            db.collection("Articles")
-//                .get()
-//                .addOnCompleteListener {
-//                    val arrayArticle = ArrayList<NewsArticle>();
-//                    for (doc in it.result) {
-//                        arrayArticle.add(doc.toObject<NewsArticle>())
-//                    }
-//                    Log.i("du lieu lay ve tu tang data", arrayArticle.toString())
-//                    _ArticleLiveData.postValue(arrayArticle);
-//                }
-//        } else {
-//            db.collection("Articles")
-//                .whereEqualTo("field", field)
-//                .get()
-//                .addOnCompleteListener {
-//                    val arrayArticle = ArrayList<NewsArticle>();
-//                    for (doc in it.result) {
-//                        arrayArticle.add(doc.toObject<NewsArticle>())
-//                    }
-//                    Log.i("du lieu lay ve tu tang data", arrayArticle.toString())
-//                    _ArticleLiveData.postValue(arrayArticle);
-//                }
-//
-//        }
-//    }
+    fun getAllNewsArticle() {
+        db.collection("Articles")
+            .get()
+            .addOnCompleteListener {
+                val arrayArticle = ArrayList<NewsArticle>();
+                for (doc in it.result) {
+                    arrayArticle.add(doc.toObject<NewsArticle>())
+                }
+                Log.i("du lieu lay ve tu tang data", arrayArticle.toString())
+                _ArticleSearch.postValue(arrayArticle);
+            }
+    }
 
     fun getNewByTopic(field: String, source: String) {
         if (field == "All" && source == "All") {
@@ -96,7 +113,6 @@ class ArticleRepository {
                     for (doc in it.result) {
                         arrayArticle.add(doc.toObject<NewsArticle>())
                     }
-                    Log.i("du lieu lay ve tu tang data", arrayArticle.toString())
                     _ArticleLiveData.postValue(arrayArticle);
                 }
         }
@@ -259,13 +275,13 @@ class ArticleRepository {
         }
     }
 
-    fun setImage(imageUri: ByteArray, id: String) {
+    fun setImage(imageUri: ByteArray, id: String, Name: String) {
         val storage = storageRef.child("images/" + id + ".jpg")
         storage.putBytes(imageUri)
             .addOnSuccessListener(OnSuccessListener {
                 storage.downloadUrl.addOnSuccessListener { uri ->
                     db.collection("Users")
-                        .whereEqualTo("idUser", "NFiLEacfViMRSPipEXyFECarfTh1")
+                        .whereEqualTo("idUser", id)
                         .get()
                         .addOnCompleteListener {
                             if (it.isSuccessful) {
@@ -273,12 +289,268 @@ class ArticleRepository {
                                 for (doc in it.result) {
                                     idDoc = doc.id;
                                 }
+                                val user = mapOf(
+                                    "Image" to uri,
+                                    "Name" to Name,
+                                )
                                 db.collection("Users")
                                     .document(idDoc)
-                                    .update("Image", uri)
+                                    .update(user)
                             }
                         }
                 }
             })
     }
+
+
+    fun doLike(like: Int, id: String) {
+        db.collection("Articles")
+            .document(id)
+            .update("like", like)
+    }
+
+    fun getHeart() {
+        db.collection("Articles")
+            .whereEqualTo("like", 1)
+            .get()
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    val arrayArticle = ArrayList<NewsArticle>();
+                    for (doc in it.result) {
+                        arrayArticle.add(doc.toObject<NewsArticle>())
+                    }
+                    _ArticleLike.postValue(arrayArticle)
+                }
+            }
+            .addOnFailureListener {
+                _ArticleLike.postValue(ArrayList<NewsArticle>());
+            }
+    }
+
+    fun getArticleField(newsArticle: NewsArticle) {
+        db.collection("Articles")
+            .whereEqualTo("field", newsArticle.field)
+//            .orderBy("pubDate", Query.Direction.DESCENDING)
+            .limit(5)
+            .get()
+            .addOnCompleteListener {
+                val arrayArticle = ArrayList<NewsArticle>();
+                if (it.isSuccessful) {
+                    for (doc in it.result) {
+                        arrayArticle.add(doc.toObject<NewsArticle>())
+                    }
+                    _articlefield.postValue(arrayArticle)
+                } else {
+                    _articlefield.postValue(arrayArticle)
+                }
+            }
+            .addOnFailureListener {
+                _articlefield.postValue(ArrayList<NewsArticle>())
+            }
+    }
+
+    fun postImage(imageUri: ByteArray) {
+        _imageByte.postValue(imageUri)
+    }
+
+    fun sendMainMessage(comment: Comment) {
+        comment.idComment?.let {
+            db.collection("Comments")
+                .document(it)
+                .set(comment.toMap(), SetOptions.merge())
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        isSendCommentMain.postValue(true)
+                    } else {
+                        isSendCommentMain.postValue(false)
+                    }
+                }
+                .addOnFailureListener {
+                    isSendCommentMain.postValue(false)
+                }
+        }
+    }
+
+    fun getMainMessage(type: CommentFilter, idArticle: String) {
+        when (type) {
+            CommentFilter.Likes -> {
+                db.collection("Comments")
+                    .whereEqualTo("idArticle", idArticle)
+                    .get()
+                    .addOnCompleteListener {
+                        val list = ArrayList<Comment>()
+                        if (it.isSuccessful) {
+                            for (doc in it.result) {
+                                list.add(doc.toObject<Comment>())
+                            }
+                            list.sortWith<Comment>(object : Comparator<Comment> {
+                                override fun compare(
+                                    time1: Comment?,
+                                    time2: Comment?
+                                ): Int {
+                                    if (time1 != null) {
+                                        if (time2 != null) {
+                                            if (time1.time != null && time2.time != null)
+                                                return time2.time!!.compareTo(time1.time)
+                                        }
+                                    }
+                                    return 0
+                                }
+                            })
+                            getMainComment.postValue(list)
+                        } else {
+                            getMainComment.postValue(ArrayList<Comment>())
+                        }
+                    }
+                    .addOnFailureListener {
+                        getMainComment.postValue(ArrayList<Comment>())
+                    }
+            }
+
+            CommentFilter.Oldest -> {
+                db.collection("Comments")
+                    .whereEqualTo("idArticle", idArticle)
+                    .get()
+                    .addOnCompleteListener {
+                        val list = ArrayList<Comment>()
+                        if (it.isSuccessful) {
+                            for (doc in it.result) {
+                                list.add(doc.toObject<Comment>())
+                            }
+                            list.sortWith<Comment>(object : Comparator<Comment> {
+                                override fun compare(
+                                    time1: Comment?,
+                                    time2: Comment?
+                                ): Int {
+                                    if (time1 != null) {
+                                        if (time2 != null) {
+                                            if (time1.time != null && time2.time != null)
+                                                return time1.time!!.compareTo(time2.time)
+                                        }
+                                    }
+                                    return 0
+                                }
+                            })
+                            getMainComment.postValue(list)
+                        } else {
+                            getMainComment.postValue(list)
+                        }
+                    }
+                    .addOnFailureListener {
+                        getMainComment.postValue(ArrayList<Comment>())
+                    }
+            }
+
+            CommentFilter.Latest -> {
+                db.collection("Comments")
+                    .whereEqualTo("idArticle", idArticle)
+                    .get()
+                    .addOnCompleteListener {
+                        val list = ArrayList<Comment>()
+                        if (it.isSuccessful) {
+                            for (doc in it.result) {
+                                list.add(doc.toObject<Comment>())
+                            }
+                            list.sortWith<Comment>(object : Comparator<Comment> {
+                                override fun compare(
+                                    time1: Comment?,
+                                    time2: Comment?
+                                ): Int {
+                                    if (time1 != null) {
+                                        if (time2 != null) {
+                                            if (time1.time != null && time2.time != null)
+                                                return time2.time!!.compareTo(time1.time)
+                                        }
+                                    }
+                                    return 0
+                                }
+                            })
+                            getMainComment.postValue(list)
+                        }
+                        if (it.isCanceled) {
+                            getMainComment.postValue(ArrayList<Comment>())
+                        }
+                    }
+                    .addOnFailureListener {
+                        getMainComment.postValue(ArrayList<Comment>())
+                    }
+            }
+        }
+    }
+
+    fun getChildComment(comment: Comment) {
+        comment.idComment?.let {
+            db.collection("Comments")
+                .document(it)
+                .collection("childComment")
+                .get()
+                .addOnCompleteListener {
+                    val list = ArrayList<Comment>()
+                    if (it.isSuccessful) {
+                        for (doc in it.result) {
+                            list.add(doc.toObject<Comment>())
+                        }
+                        getChildComment.postValue(list)
+                    } else {
+                        getChildComment.postValue(list)
+                    }
+                }
+                .addOnFailureListener {
+                    getChildComment.postValue(ArrayList<Comment>())
+                }
+        }
+    }
+
+    fun sendChildMessage(parent: Comment, child: Comment) {
+        parent.idComment?.let {
+            child.idComment?.let { it1 ->
+                db.collection("Comments")
+                    .document(it)
+                    .collection("childComment")
+                    .document(it1)
+                    .set(child.toMap(), SetOptions.merge())
+                    .addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            isSendCommentChild.postValue(true)
+                        } else {
+                            isSendCommentChild.postValue(false)
+                        }
+                    }
+                    .addOnFailureListener {
+                        isSendCommentChild.postValue(false)
+                    }
+            }
+        }
+    }
+
+    fun deleteComment(parent: Comment) {
+        parent.idComment?.let {
+            db.collection("Comments")
+                .document(it)
+                .delete()
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        _deleteCommentSuccess.postValue(true)
+                    }
+                }
+        }
+    }
+
+    fun likeComment(comment: Comment, id: String, isLike: Boolean) {
+        comment.idComment?.let {
+            val listLike = comment.like
+            if (isLike) {
+                listLike.add(id)
+            }
+            comment.like = listLike
+            db.collection("Comments")
+                .document(it)
+                .update(comment.toMap())
+        }
+    }
+
+    fun removeComemt() {
+        getMainComment.postValue(ArrayList<Comment>())
+    }
+
 }

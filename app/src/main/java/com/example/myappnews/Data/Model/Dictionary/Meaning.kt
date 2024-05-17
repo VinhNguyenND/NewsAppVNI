@@ -20,26 +20,30 @@ data class Meaning(
     )
 
     override fun toString(): String {
-        var antonyms: String = "null"
-        var definitions: String = "null";
-        var partOfSpeech: String = "null";
-        var synonyms: String = "null";
+        var antonyms: String = ""
+        var definitions: String = "";
+        var partOfSpeech: String = "";
+        var synonyms: String = "";
         if (this.antonyms.size > 0) {
-            antonyms= this.antonyms.toString()
+            antonyms = "\nantonyms: ";
+            for (doc in this.antonyms) {
+                antonyms +=" " +doc;
+            }
         }
         if (this.definitions.size > 0) {
-           definitions=this.definitions.toString()
+            definitions = "\ndefinitions: "
+            for (doc in this.definitions) {
+                definitions += doc;
+            }
         }
-        if (this.partOfSpeech.length>0) {
-          partOfSpeech=this.partOfSpeech
+        if (this.partOfSpeech.length > 0) {
+            partOfSpeech = "\npartOfSpeech: " + this.partOfSpeech
         }
         if (this.synonyms.size > 0) {
-         synonyms=this.synonyms.toString()
+            synonyms = "\nsynonyms: " + this.synonyms.toString()
         }
-        return "Meanings:\n +antonyms:$antonyms; \n  +definitions: $definitions; \n  +partOfSpeech:$partOfSpeech; \n  +synonyms:$synonyms \n"
+        return "Meanings:$antonyms    $definitions   $partOfSpeech   $synonyms";
     }
-
-
 
 
 }

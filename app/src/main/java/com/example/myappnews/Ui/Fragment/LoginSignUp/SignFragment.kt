@@ -11,7 +11,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
+import com.example.myappnews.Data.Firebase.ViewModel.ArticleViewModel.ArViewModel
 import com.example.myappnews.Data.Model.User.UserModel
 import com.example.myappnews.R
 import com.example.myappnews.databinding.SignupScreenBinding
@@ -22,6 +24,7 @@ import com.google.firebase.firestore.firestore
 
 class SignFragment : Fragment() {
     private lateinit var binding: SignupScreenBinding;
+    private val articleViewModel = ArViewModel.getInstance()
     private lateinit var auth: FirebaseAuth
     private val db = Firebase.firestore
     override fun onCreateView(
@@ -44,7 +47,7 @@ class SignFragment : Fragment() {
         auth = Firebase.auth
     }
 
-    private fun SignUp(Email: String, PassWord: String,name:String) {
+    private fun SignUp(Email: String, PassWord: String, name: String) {
         binding.signProgress.visibility = View.VISIBLE;
         auth.createUserWithEmailAndPassword(Email, PassWord)
             .addOnCompleteListener { task ->
@@ -55,18 +58,25 @@ class SignFragment : Fragment() {
                         .add(userModel.toMap())
                         .addOnCompleteListener {
                             binding.signProgress.visibility = View.INVISIBLE;
-                            showToast(requireContext(), "Tạo tài khoản thành công")
-                            val nav= Navigation.findNavController(binding.root)
-                            nav.popBackStack(nav.graph.startDestinationId, false)
+                            if (it.isSuccessful) {
+                                articleViewModel.SignIn(requireActivity(), Email, PassWord).observe(
+                                    viewLifecycleOwner, Observer {
+                                        val nav = Navigation.findNavController(binding.root)
+                                        nav.popBackStack(nav.graph.startDestinationId, false)
+                                    }
+                                )
+                            } else {
+                                showToast(requireContext(), "Sign up fail");
+                            }
                         }
                         .addOnFailureListener {
                             binding.signProgress.visibility = View.INVISIBLE;
-                            showToast(requireContext(), "Tạo tài khoản Thất Bại")
+                            showToast(requireContext(), "Sign up fail")
                             auth.currentUser?.delete()
                         }
                 } else {
                     binding.signProgress.visibility = View.INVISIBLE;
-                    showToast(requireContext(), "Tạo tài khoản Thất Bại")
+                    showToast(requireContext(), "Sign up fail")
                 }
             }
     }
@@ -96,7 +106,7 @@ class SignFragment : Fragment() {
             val name = binding.NameSignText.text.toString()
             val passWord = binding.PassWordSignText.text.toString()
             if (email != null && name != null) {
-                SignUp(email, passWord,name);
+                SignUp(email, passWord, name);
             }
         }
         binding.toLogin.setOnClickListener {

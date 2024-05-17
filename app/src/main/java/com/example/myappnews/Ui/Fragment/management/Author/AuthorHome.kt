@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import androidx.viewpager2.widget.ViewPager2
 import com.example.myappnews.Ui.Fragment.management.Author.AdaptPage.AuthorPageAdapter
 import com.example.myappnews.databinding.AuthorHomeBinding
@@ -24,6 +25,7 @@ class AuthorHome : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initLayout()
+        event(view)
     }
 
     private fun initLayout() {
@@ -56,5 +58,10 @@ class AuthorHome : Fragment() {
                 tablayout.selectTab(tablayout.getTabAt(position));
             }
         })
+    }
+    private  fun event(view: View){
+        binding.btnBackAuthor.setOnClickListener {
+            Navigation.findNavController(view).popBackStack()
+        }
     }
 }

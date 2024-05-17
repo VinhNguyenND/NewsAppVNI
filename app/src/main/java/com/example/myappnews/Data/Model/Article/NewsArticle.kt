@@ -24,6 +24,9 @@ data class NewsArticle(
     var requireEdit:Int?=null,
     var requiredDate:Date?=null,// thời gian yêu cầu xét duyệt
     var cause: String? = null,//lý do
+    var causeDenied:String?=null,
+    var like:Int?=null,//thích
+    var numSeen:Int?=null,
 ) : Parcelable {
     fun toMap(): Map<String, Any?> {
         return mapOf(
@@ -44,7 +47,8 @@ data class NewsArticle(
             "hide" to hide,
             "requireEdit" to requireEdit,
             "requiredDate" to requiredDate,
-            "cause" to cause
+            "cause" to cause,
+            "causeDenied" to causeDenied,
         )
     }
 }

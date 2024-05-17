@@ -24,19 +24,23 @@ data class Definition(
         var definition: String = "";
         var example: String = "";
         var synonyms: String = "";
-        if(this.antonyms.size>0){
-            antonyms=this.antonyms.joinToString(" ")
+        if (this.antonyms.size > 0) {
+            for (doc in this.antonyms) {
+                antonyms += "\n" + doc
+            }
         }
-        if(this.definition.length>0){
-            definition=this.definition
+        if (this.definition.length > 0) {
+            definition = "\ndefinition: " + this.definition
         }
-        if(this.synonyms.size>0){
-            synonyms=this.synonyms.joinToString(" ")
+        if (this.synonyms.size > 0) {
+            for (doc in this.synonyms) {
+                synonyms += " " + doc
+            }
         }
-        if (this.example.length>0){
-            example=this.example
+        if (this.example.length > 0) {
+            example = "\nexample: " + this.example
         }
-        return "Definition:\n +antonyms: $antonyms; \n +definition: $definition; \n +example: $example; \n +synonyms: $synonyms;\n "
+        return " $antonyms  $definition  $example  $synonyms "
     }
 
 }

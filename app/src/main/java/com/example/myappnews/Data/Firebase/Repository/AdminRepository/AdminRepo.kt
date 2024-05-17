@@ -149,21 +149,19 @@ class AdminRepo {
     }
 
     fun sendRequestEdit(news: NewsArticle) {
-        news.idArticle?.let {
-            db.collection("RequestEdit")
-                .document(it)
-                .set(news.toMap(), SetOptions.merge())
-                .addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        _isRequestEdit.postValue(0);
-                    } else {
-                        _isRequestEdit.postValue(-1);
-                    }
-                }
-                .addOnFailureListener {
+        db.collection("RequestEdit")
+            .document(news.idArticle!!)
+            .set(news.toMap(), SetOptions.merge())
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    _isRequestEdit.postValue(0);
+                } else {
                     _isRequestEdit.postValue(-1);
                 }
-        }
+            }
+            .addOnFailureListener {
+                _isRequestEdit.postValue(-1);
+            }
     }
 
     fun getNewsAwaitEdit() {
@@ -198,6 +196,22 @@ class AdminRepo {
             }
             .addOnFailureListener {
                 _isDelete.postValue(-1)
+            }
+    }
+
+    fun approvePush(news: NewsArticle) {
+        db.collection("Articles")
+            .document(news.idArticle!!)
+            .set(news.toMap(), SetOptions.merge())
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    _isRequestEdit.postValue(0);
+                } else {
+                    _isRequestEdit.postValue(-1);
+                }
+            }
+            .addOnFailureListener {
+                _isRequestEdit.postValue(-1);
             }
     }
 

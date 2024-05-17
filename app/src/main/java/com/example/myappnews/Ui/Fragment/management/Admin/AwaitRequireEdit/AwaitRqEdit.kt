@@ -17,6 +17,7 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
 import com.example.myappnews.Data.Firebase.ViewModel.AdminViewModel.AdminViewModel
 import com.example.myappnews.Data.Model.Article.Article
@@ -56,6 +57,9 @@ class AwaitRqEdit : Fragment() {
         binding.idEditAgain.setOnClickListener {
             showAgainEdit()
         }
+        binding.btnbackadEdit.setOnClickListener {
+            Navigation.findNavController(binding.root).popBackStack()
+        }
     }
 
     private fun observe() {
@@ -69,8 +73,9 @@ class AwaitRqEdit : Fragment() {
             val text: String = article.content!!.replace("\\\\n", "<br/>" + " ");
             binding.txtPageContent.text = Html.fromHtml(text)
             binding.articlePageTittle.text = article.titleArticle
-
-
+            binding.txtPageTime.text=article.pubDate.toString()
+            binding.idTrangthaiEidit.text = article.requireEdit?.let { resonseStatus(it) }
+            article.pubDate.toString()
             Glide.with(requireContext())
                 .load(article.imageUrl?.trim())
                 .error(R.drawable.uploaderror)
@@ -133,7 +138,7 @@ class AwaitRqEdit : Fragment() {
                     }
                 }
             )
-            Log.d("ban da lay du lieu de chap nhan",Article.toString())
+            Log.d("ban da lay du lieu de chap nhan", Article.toString())
             dialog.dismiss()
         }
         cancel.setOnClickListener {
@@ -225,11 +230,13 @@ class AwaitRqEdit : Fragment() {
                 _adminViewModel.sendRequestEdit(Article).observe(
                     viewLifecycleOwner,
                     Observer {
-                        if (it == 0) {
-                            showToast(requireContext(), "thanh cong");
-                        } else {
-                            showToast(requireContext(), "that bai");
-                            dialog.dismiss()
+                        if (isAdded && isVisible) {
+                            if (it == 0) {
+                                showToast(requireContext(), "thanh cong");
+                            } else {
+                                showToast(requireContext(), "that bai");
+                                dialog.dismiss()
+                            }
                         }
                     }
                 );
@@ -240,4 +247,16 @@ class AwaitRqEdit : Fragment() {
             }
         dialog.show()
     }
+}
+
+fun resonseStatus(status: Int): String {
+    var status1 = "";
+    if (status == 1) {
+        status1 = "Đang chờ phê duyệt"
+    } else if (status == 0) {
+        status1 = "Đang chờ chỉnh sửa"
+    } else {
+        status1 = "Từ chối chỉnh sửa"
+    }
+    return status1;
 }

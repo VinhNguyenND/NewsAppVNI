@@ -2,6 +2,7 @@ package com.example.myappnews.Data.SharedPreferences
 
 import android.app.Activity
 import android.content.Context
+import com.example.myappnews.Ui.Fragment.Article.comment.generateRandomAlphabet
 
 class Shared_Preference(activity: Activity) {
 
@@ -19,6 +20,14 @@ class Shared_Preference(activity: Activity) {
 
     fun getUid(): String? {
         return sharedPreferences.getString("Uid", null)
+    }
+
+    fun getUidComment():String{
+       var id= sharedPreferences.getString("Uid", null);
+        if(id==null){
+            id=generateRandomAlphabet(10);
+        }
+        return  id
     }
 
     fun getEmail(): String? {

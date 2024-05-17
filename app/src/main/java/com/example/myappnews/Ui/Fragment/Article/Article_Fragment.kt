@@ -35,11 +35,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.room.TypeConverter
 import com.bumptech.glide.Glide
 import com.example.myappnews.Data.Api.Dictionary.DicViewModel
 import com.example.myappnews.Data.Api.TextToSpeech.ObjectAudio.FileWriter
 import com.example.myappnews.Data.Api.TextToSpeech.Repository
+import com.example.myappnews.Data.Firebase.ViewModel.AdminViewModel.AdminViewModel
+import com.example.myappnews.Data.Firebase.ViewModel.ArticleViewModel.ArViewModel
 import com.example.myappnews.Data.Local.Article.Down.ArticleDownEntity
 import com.example.myappnews.Data.Local.Article.Down.ArticleDownViewModel
 import com.example.myappnews.Data.Local.Article.History.ArticleEntity
@@ -48,9 +52,11 @@ import com.example.myappnews.Data.Local.Dictionary.Entity.DictionaryItem
 import com.example.myappnews.Data.Local.Dictionary.Helper.DictionaryViewModel
 import com.example.myappnews.Data.Model.Article.Article
 import com.example.myappnews.Data.Model.Article.NewsArticle
+import com.example.myappnews.Interface.Adapter.CommonAdapter
 import com.example.myappnews.R
 import com.example.myappnews.Ui.Fragment.Article.Article_Fragment.Companion.fromDateToString
 import com.example.myappnews.Ui.Fragment.Article.Article_Fragment.Companion.fromStringToDate
+import com.example.myappnews.Ui.Fragment.Home.Adapt.ArticleAdapter
 import com.example.myappnews.Ui.Fragment.management.Author.Home.showToast
 import com.example.myappnews.databinding.ArticleScreenBinding
 import com.facebook.shimmer.ShimmerFrameLayout
@@ -71,9 +77,12 @@ class Article_Fragment : Fragment() {
     private lateinit var articlelocalViewModel: ArticlelocalViewModel
     private lateinit var DictionaryFolder1: DictionaryViewModel
     private lateinit var articleDownViewModel: ArticleDownViewModel
+    private val _adminViewModel = AdminViewModel.getInstance()
+    private val ArticleViewModel = ArViewModel.getInstance();
+    private var listArticle = ArrayList<NewsArticle>();
+    private lateinit var _articleAdapter: ArticleAdapter
     private lateinit var viewModel: DicViewModel
     private var viewPopup: View? = null
-    private var loadingButton: View? = null;
     private var bodyPopup: View? = null;
     private var word: TextView? = null;
     private lateinit var speech: String;
@@ -84,9 +93,11 @@ class Article_Fragment : Fragment() {
     private val repository = Repository.getInstance();
     private var mp: MediaPlayer? = null
     private var isPlaying = false
+    private var isLike = false
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var article: NewsArticle;
-    private lateinit var note: DictionaryItem
+    private lateinit var note: DictionaryItem;
+    private var idDoc = "";
     private var startIndex: Int = 0;
     private var endIndex: Int = 0;
     private var content: View? = null;
@@ -117,6 +128,7 @@ class Article_Fragment : Fragment() {
         initViewModel()
         observeDic()
         setEvent(view)
+        initRcView(requireContext())
         initContent()
         binding.btnCapture.setOnClickListener {
             getBitmapFromView(view, requireActivity()) {
@@ -137,6 +149,24 @@ class Article_Fragment : Fragment() {
         speech = "";
     }
 
+    private fun initRcView(context: Context) {
+        _articleAdapter = ArticleAdapter(listArticle, context)
+        binding.arRcv.let {
+            it.adapter = _articleAdapter
+            it.layoutManager = LinearLayoutManager(
+                parentFragment?.requireContext(),
+                RecyclerView.VERTICAL, false
+            )
+        }
+        _articleAdapter.setClickListener(object : CommonAdapter {
+            override fun setOnClickListener(position: Int) {
+                val bundle = Bundle()
+                bundle.putParcelable("Article", listArticle[position])
+                Navigation.findNavController(binding.root).navigate(R.id.article_Fragment, bundle)
+            }
+        })
+    }
+
     private fun initViewModel() {
         viewModel = ViewModelProvider(this)[DicViewModel::class.java]
         articlelocalViewModel = ViewModelProvider(this).get(ArticlelocalViewModel::class.java)
@@ -149,9 +179,35 @@ class Article_Fragment : Fragment() {
         if (arguments?.getParcelable("Article", NewsArticle::class.java) != null) {
             article = arguments?.getParcelable("Article", NewsArticle::class.java)!!
             val text: String = article.content!!.replace("\\\\n", "<br/>" + " ");
-            callTextToSpeech(text)
+            if (arguments?.getInt("ishistory") == 0) {
+                binding.txtRelate.visibility = View.GONE
+                binding.arRcv.visibility = View.GONE
+            }
+            if (article.like == 1) {
+                isLike = true;
+                binding.btnLike.setImageResource(R.drawable.ic_heart_red_24)
+            } else {
+                isLike = false
+                binding.btnLike.setImageResource(R.drawable.icheart24)
+            }
+            article.idArticle?.let {
+                _adminViewModel.getIdDoc(it).observe(
+                    viewLifecycleOwner,
+                    Observer {
+                        idDoc = it
+                    }
+                )
+            }
+            ArticleViewModel.getArticleField(article).observe(
+                viewLifecycleOwner,
+                Observer {
+                    listArticle = it
+                    _articleAdapter.submitList(listArticle)
+                }
+            )
+//            callTextToSpeech(text)
             articlelocalViewModel.addArticle(toArticleEntity(article))
-            Log.i("text convert", text);
+            binding
             binding.txtPageContent.text = Html.fromHtml(text)
             binding.txtPageTime.text = article.pubDate.toString()
             Glide.with(requireContext())
@@ -184,14 +240,14 @@ class Article_Fragment : Fragment() {
                     Log.i("tu dien  getit", it.toString())
                     word!!.text = it[0].wordMean.toString()
                     phonetic!!.text = it[0].phonetic
-                    meanWord!!.text = it[0].meanings.toString()
+                    meanWord!!.text = it[0].meanings[0].toString()
                     note = DictionaryItem(
                         idDictionaryFolder = 0,
                         idDictionaryItem = 0,
                         word = it[0].word.toString(),
                         phonetic = it[0].phonetic.toString(),
-                        audio = "non",
-                        mean = it[0].meanings.toString(),
+                        audio = "",
+                        mean = it[0].meanings[0].toString(),
                         wordMean = it[0].wordMean.toString(),
                     )
                     nothing?.visibility = View.GONE
@@ -284,20 +340,19 @@ class Article_Fragment : Fragment() {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-
             }
-
-
         })
         updateSeekBar()
     }
 
 
     private fun initShimer() {
+        binding.audioHide.visibility = View.VISIBLE
+        binding.audioVisible.visibility = View.GONE
+        binding.audioHide.showShimmer(true)
         binding.audioHide.startShimmer()
     }
 
@@ -315,6 +370,12 @@ class Article_Fragment : Fragment() {
         }
         binding.btnGo5s.setOnClickListener {
             seekForward(5000)
+        }
+        binding.comment.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putParcelable("Article",article)
+            bundle.putInt("ishistory", 1)
+            Navigation.findNavController(binding.root).navigate(R.id.commentFragment,bundle)
         }
 
         binding.downArticle.setOnClickListener {
@@ -336,7 +397,6 @@ class Article_Fragment : Fragment() {
                                 field = article.field.toString(),
                                 sourceVoice = it.toString(),
                             )
-                            showToast(requireContext(),Article.sourceVoice.toString())
                             articleDownViewModel.addArticle(Article)
                             articleDownViewModel.isArticleInserted.observe(
                                 viewLifecycleOwner,
@@ -352,13 +412,25 @@ class Article_Fragment : Fragment() {
                         }
                     })
         }
+
+        binding.btnLike.setOnClickListener {
+            if (isLike) {
+                ArticleViewModel.doLike(0, idDoc)
+                isLike = false;
+                binding.btnLike.setImageResource(R.drawable.icheart24)
+            } else {
+                ArticleViewModel.doLike(1, idDoc)
+                isLike = true;
+                binding.btnLike.setImageResource(R.drawable.ic_heart_red_24)
+            }
+
+        }
     }
 
-    //lay audio
     private fun observeSpeech() {
         repository.TextToSpechApi.observe(viewLifecycleOwner, Observer {
             speech = it;
-            showToast(requireContext(),it)
+            showToast(requireContext(), it)
             mp?.setDataSource(it)
             mp?.prepare()
             binding.textEnd.text = mp?.duration?.let { it1 -> formatDuration(it1.toLong()) }
@@ -402,8 +474,6 @@ class Article_Fragment : Fragment() {
     private fun seekForward(milliSeconds: Int) {
         val currentPosition = mp?.currentPosition
         val duration = mp?.duration
-
-
         if (currentPosition != null) {
             if (currentPosition + milliSeconds < duration!!) {
                 mp?.seekTo(currentPosition + milliSeconds)

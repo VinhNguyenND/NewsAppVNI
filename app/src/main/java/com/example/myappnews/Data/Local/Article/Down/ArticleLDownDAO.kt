@@ -13,7 +13,7 @@ interface ArticleLDownDAO {
     @Query("DELETE FROM ArticlesDown")
     suspend fun disDownAllArticles()
     @Query("DELETE FROM ArticlesDown WHERE idArticle=:id")
-    suspend fun deleteDownArticle(id:String)
+    suspend fun deleteDownArticle(id:String):Int
 
     @Query("SELECT * FROM ArticlesDown")
     fun getAllDownArticle(): LiveData<List<ArticleDownEntity>>

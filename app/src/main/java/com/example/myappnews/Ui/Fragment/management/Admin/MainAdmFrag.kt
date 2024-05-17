@@ -27,24 +27,18 @@ class MainAdmFrag : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initLayout()
-//        event()
+        event(view)
     }
 
     private fun navigate(id: Int) {
         Navigation.findNavController(binding.root).navigate(id)
     }
 
-//    private fun event() {
-//        binding.btnDanhSachBaiCanDuyet.setOnClickListener {
-//            navigate(R.id.homeAdmFrag)
-//        }
-//        binding.btnDanhSachBaiDaDuyet.setOnClickListener {
-//            navigate(R.id.approvedFragment)
-//        }
-//        binding.btnback.setOnClickListener {
-//             Navigation.findNavController(binding.root).popBackStack()
-//        }
-//    }
+    private fun event(view: View) {
+        binding.btnBackAdmin.setOnClickListener {
+            Navigation.findNavController(view).popBackStack()
+        }
+    }
 
     private fun initLayout() {
         val tablayout = binding.tabLayoutAdmin;
@@ -74,6 +68,8 @@ class MainAdmFrag : Fragment() {
             override fun onPageSelected(position: Int) {
                 tablayout.selectTab(tablayout.getTabAt(position));
             }
+
+
         })
     }
 }

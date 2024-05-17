@@ -1,6 +1,7 @@
 package com.example.myappnews.Ui.Fragment.management.Author.EditRequest
 
 import android.app.Dialog
+import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
@@ -11,8 +12,10 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
@@ -21,8 +24,10 @@ import com.example.myappnews.Data.Firebase.ViewModel.AdminViewModel.AdminViewMod
 import com.example.myappnews.Data.Firebase.ViewModel.AuthorViewModel.AuthorViewModel
 import com.example.myappnews.Data.Model.Article.NewsArticle
 import com.example.myappnews.R
+import com.example.myappnews.Ui.Fragment.Profile.imageViewToByteArray
 import com.example.myappnews.Ui.Fragment.management.Author.Home.showToast
 import com.example.myappnews.databinding.EditRequestBinding
+import java.io.ByteArrayOutputStream
 
 class RequestEdit : Fragment() {
     private lateinit var binding: EditRequestBinding
@@ -106,21 +111,24 @@ class RequestEdit : Fragment() {
                 idReviewer = article.idReviewer,  // Thiếu trong binding
                 titleArticle = article.titleArticle, // Tiêu đề
                 linkArticle = article.linkArticle, // Link bài báo
-                creator =article.creator, // Tên tác giả
+                creator = article.creator, // Tên tác giả
                 content = article.content, // Nội dung
                 pubDate = article.pubDate, // Ngày xuất bản
                 imageUrl = article.imageUrl, // URL ảnh
-                sourceUrl =article.sourceUrl, // URL nguồn
+                sourceUrl = article.sourceUrl, // URL nguồn
                 sourceId = article.sourceId, // ID nguồn
                 country = article.country, // Quốc gia
                 field = article.field, // Lĩnh vực
                 isApprove = article.isApprove, // Trạng thái duyệt
                 hide = article.hide, // Ẩn/Hiện
                 requireEdit = -1, // Yêu cầu chỉnh sửa
-                requiredDate =article.requiredDate,// Ngày yêu cầu chỉnh sửa
+                requiredDate = article.requiredDate,// Ngày yêu cầu chỉnh sửa
                 cause = article.cause,
             )
-            _authorViewModel.responseRqEdit(newsArticle)
+            _authorViewModel.responseRqEdit(
+                newsArticle,
+                imageToByteArray(binding.imgArticlePage)
+            )
                 .observe(viewLifecycleOwner, Observer {
                     showToast(requireContext(), "Gửi  yêu cầu thành công")
                 })
@@ -132,4 +140,15 @@ class RequestEdit : Fragment() {
         dialog.show()
     }
 
+
+}
+
+fun imageToByteArray(imageView: ImageView): ByteArray {
+
+    val bitmap: Bitmap = (imageView.drawable).toBitmap()
+
+    // Chuyển đổi Bitmap thành mảng byte
+    val outputStream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+    return outputStream.toByteArray()
 }

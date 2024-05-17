@@ -1,6 +1,8 @@
 package com.example.myappnews.Ui.Fragment.management.Author.EditRequest
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +19,7 @@ import com.example.myappnews.Interface.Adapter.CommonAdapter
 import com.example.myappnews.R
 import com.example.myappnews.Ui.Fragment.Home.Adapt.ArticleAdapter
 import com.example.myappnews.databinding.EditRequestAuthorBinding
+import org.apache.poi.xwpf.usermodel.XWPFDocument
 
 class Request : Fragment() {
     private lateinit var binding: EditRequestAuthorBinding
@@ -70,4 +73,6 @@ class Request : Fragment() {
                 _articleAdapter.submitList(it);
             })
     }
+
+
 }

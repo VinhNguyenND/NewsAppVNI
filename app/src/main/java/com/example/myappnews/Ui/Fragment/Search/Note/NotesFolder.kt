@@ -87,7 +87,7 @@ class NotesFolder : Fragment() {
     }
 
     private fun initRcView(context: Context) {
-        _ItemAdapter = ItemNoteAdapter(listNote, context,ViewModelProvider(this))
+        _ItemAdapter = ItemNoteAdapter(listNote, context,ViewModelProvider(this),DictionaryFolder1)
         binding.noteFolderRcv.let {
             it.adapter = _ItemAdapter
             it.layoutManager = LinearLayoutManager(

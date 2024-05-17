@@ -10,8 +10,9 @@ class ArticleDownRepo(private val articleDown: ArticleLDownDAO) {
         return result > 0;
     }
 
-    suspend fun deleteDownArticle(id: String) {
-        articleDown.deleteDownArticle(id)
+    suspend fun deleteDownArticle(id: String):Boolean {
+       val result=articleDown.deleteDownArticle(id)
+        return  result>0;
     }
 
     suspend fun deleteAllArticle() {

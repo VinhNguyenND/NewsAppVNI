@@ -4,20 +4,24 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myappnews.Data.Local.Article.Down.ArticleDownEntity
 import com.example.myappnews.Interface.Adapter.CommonAdapter
 import com.example.myappnews.R
 import com.example.myappnews.databinding.ItemArticleBinding
+import java.util.Locale
 
 class DownRecycle(private val listArticle: List<ArticleDownEntity>, context: Context) :
-    RecyclerView.Adapter<DownRecycle.ArticleViewHolder>() {
+    RecyclerView.Adapter<DownRecycle.ArticleViewHolder>(), Filterable {
 
 
     private lateinit var _onClickListener: CommonAdapter
     private val _context = context
     private var _listArticle = listArticle
+    private var _listFilter = _listArticle
 
     fun setClickListener(OnClickListener: CommonAdapter) {
         this._onClickListener = OnClickListener
@@ -26,6 +30,7 @@ class DownRecycle(private val listArticle: List<ArticleDownEntity>, context: Con
     @SuppressLint("NotifyDataSetChanged")
     fun submitList(listArticle: List<ArticleDownEntity>) {
         this._listArticle = listArticle
+        this._listFilter = _listArticle
         notifyDataSetChanged()
     }
 
@@ -66,5 +71,36 @@ class DownRecycle(private val listArticle: List<ArticleDownEntity>, context: Con
             return 0
         }
         return this._listArticle.size
+    }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val strSearch = constraint.toString();
+                _listArticle = if (strSearch.isEmpty()) {
+                    _listFilter
+                } else {
+                    val listFolder = ArrayList<ArticleDownEntity>()
+                    for (item in _listFilter) {
+                        if (item.titleArticle?.lowercase(Locale.ROOT)
+                                ?.contains(strSearch) == true
+                        ) {
+                            listFolder.add(item)
+                        }
+                    }
+                    listFolder;
+                }
+                val filterResults = FilterResults()
+                filterResults.values = _listArticle
+                return filterResults;
+            }
+
+            @SuppressLint("NotifyDataSetChanged")
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                _listArticle = results!!.values as ArrayList<ArticleDownEntity>
+                notifyDataSetChanged()
+            }
+
+        }
     }
 }

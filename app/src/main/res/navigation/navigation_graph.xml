@@ -13,12 +13,15 @@
         <action
             android:id="@+id/action_home_Fragment_to_article_Fragment"
             app:destination="@id/article_Fragment" />
+        <action
+            android:id="@+id/action_home_Fragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
     </fragment>
     <fragment
         android:id="@+id/search_Fragment"
         android:name="com.example.myappnews.Ui.Fragment.Search.Dictionary_Fragment"
         android:label="Search_Fragment"
-        tools:layout="@layout/search_screen" >
+        tools:layout="@layout/search_screen">
         <action
             android:id="@+id/action_search_Fragment_to_notesFolder"
             app:destination="@id/notesFolder" />
@@ -49,6 +52,9 @@
         <action
             android:id="@+id/action_article_Fragment_to_addNote"
             app:destination="@id/addNote" />
+        <action
+            android:id="@+id/action_article_Fragment_to_commentFragment"
+            app:destination="@id/commentFragment" />
     </fragment>
     <fragment
         android:id="@+id/homeAdmFrag"
@@ -66,7 +72,7 @@
         android:id="@+id/editFragment"
         android:name="com.example.myappnews.Ui.Fragment.management.Admin.EditFragment"
         android:label="EditFragment"
-        tools:layout="@layout/edit_fragment" >
+        tools:layout="@layout/edit_fragment">
         <action
             android:id="@+id/action_editFragment_to_homeAdmFrag2"
             app:destination="@id/homeAdmFrag" />
@@ -91,9 +97,9 @@
     </fragment>
     <fragment
         android:id="@+id/approvedFragment"
-        tools:layout="@layout/approved_fragment"
         android:name="com.example.myappnews.Ui.Fragment.management.Admin.ApprovedFragment"
-        android:label="ApprovedFragment" >
+        android:label="ApprovedFragment"
+        tools:layout="@layout/approved_fragment">
         <action
             android:id="@+id/action_approvedFragment_to_mainAdmFrag"
             app:destination="@id/mainAdmFrag" />
@@ -103,18 +109,18 @@
     </fragment>
     <fragment
         android:id="@+id/editApprovedFrg"
-        tools:layout="@layout/edit_approved"
         android:name="com.example.myappnews.Ui.Fragment.management.Admin.EditApprovedFrg"
-        android:label="EditApprovedFrg" >
+        android:label="EditApprovedFrg"
+        tools:layout="@layout/edit_approved">
         <action
             android:id="@+id/action_editApprovedFrg_to_approvedFragment"
             app:destination="@id/approvedFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
-        tools:layout="@layout/login_screen"
         android:name="com.example.myappnews.Ui.Fragment.LoginSignUp.LoginFragment"
-        android:label="LoginFragment" >
+        android:label="LoginFragment"
+        tools:layout="@layout/login_screen">
         <action
             android:id="@+id/action_loginFragment_to_profile_Fragment"
             app:destination="@id/profile_Fragment" />
@@ -126,10 +132,10 @@
             app:destination="@id/home_Fragment" />
     </fragment>
     <fragment
-        tools:layout="@layout/signup_screen"
         android:id="@+id/signFragment"
         android:name="com.example.myappnews.Ui.Fragment.LoginSignUp.SignFragment"
-        android:label="SignFragment" >
+        android:label="SignFragment"
+        tools:layout="@layout/signup_screen">
         <action
             android:id="@+id/action_signFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
@@ -139,9 +145,9 @@
     </fragment>
     <fragment
         android:id="@+id/authorHome"
-        tools:layout="@layout/author_home"
         android:name="com.example.myappnews.Ui.Fragment.management.Author.AuthorHome"
-        android:label="AuthorHome" >
+        android:label="AuthorHome"
+        tools:layout="@layout/author_home">
         <action
             android:id="@+id/action_authorHome_to_profile_Fragment"
             app:destination="@id/profile_Fragment" />
@@ -163,18 +169,18 @@
     </fragment>
     <fragment
         android:id="@+id/articlePosted"
-        tools:layout="@layout/article_posted"
         android:name="com.example.myappnews.Ui.Fragment.management.Author.Home.ArticlePosted"
-        android:label="ArticlePosted" >
+        android:label="ArticlePosted"
+        tools:layout="@layout/article_posted">
         <action
             android:id="@+id/action_articlePosted_to_authorHome"
             app:destination="@id/authorHome" />
     </fragment>
     <fragment
         android:id="@+id/editAwait"
-        tools:layout="@layout/edit_await"
         android:name="com.example.myappnews.Ui.Fragment.management.Author.AwaitingApproval.EditAwait"
-        android:label="EditAwait" >
+        android:label="EditAwait"
+        tools:layout="@layout/edit_await">
         <action
             android:id="@+id/action_editAwait_to_authorHome"
             app:destination="@id/authorHome" />
@@ -184,9 +190,9 @@
     </fragment>
     <fragment
         android:id="@+id/editDenied"
-        tools:layout="@layout/edit_denied"
         android:name="com.example.myappnews.Ui.Fragment.management.Author.Denied.EditDenied"
-        android:label="EditDenied" >
+        android:label="EditDenied"
+        tools:layout="@layout/edit_denied">
         <action
             android:id="@+id/action_editDenied_to_authorHome"
             app:destination="@id/authorHome" />
@@ -196,9 +202,9 @@
     </fragment>
     <fragment
         android:id="@+id/request"
-        tools:layout="@layout/edit_request_author"
         android:name="com.example.myappnews.Ui.Fragment.management.Author.EditRequest.Request"
-        android:label="Request" >
+        android:label="Request"
+        tools:layout="@layout/edit_request_author">
         <action
             android:id="@+id/action_request_to_authorHome"
             app:destination="@id/authorHome" />
@@ -208,9 +214,9 @@
     </fragment>
     <fragment
         android:id="@+id/requestEdit"
-        tools:layout="@layout/request_edit"
         android:name="com.example.myappnews.Ui.Fragment.management.Author.EditRequest.RequestEdit"
-        android:label="RequestEdit" >
+        android:label="RequestEdit"
+        tools:layout="@layout/request_edit">
         <action
             android:id="@+id/action_requestEdit_to_request"
             app:destination="@id/request" />
@@ -220,27 +226,27 @@
     </fragment>
     <fragment
         android:id="@+id/editRequest"
-        tools:layout="@layout/denied_edit"
         android:name="com.example.myappnews.Ui.Fragment.management.Author.EditRequest.EditRequest"
-        android:label="EditRequest" >
+        android:label="EditRequest"
+        tools:layout="@layout/denied_edit">
         <action
             android:id="@+id/action_editRequest_to_requestEdit"
             app:destination="@id/requestEdit" />
     </fragment>
     <fragment
         android:id="@+id/sendRequest"
-        tools:layout="@layout/send_request"
         android:name="com.example.myappnews.Ui.Fragment.management.Author.Home.SendRequest"
-        android:label="SendRequest" >
+        android:label="SendRequest"
+        tools:layout="@layout/send_request">
         <action
             android:id="@+id/action_sendRequest_to_authorHome"
             app:destination="@id/authorHome" />
     </fragment>
     <fragment
         android:id="@+id/deniedEdit"
-        tools:layout="@layout/denied_edit"
         android:name="com.example.myappnews.Ui.Fragment.management.Author.Denied.DeniedEdit"
-        android:label="DeniedEdit" >
+        android:label="DeniedEdit"
+        tools:layout="@layout/denied_edit">
         <action
             android:id="@+id/action_deniedEdit_to_editDenied"
             app:destination="@id/editDenied" />
@@ -250,52 +256,79 @@
     </fragment>
     <fragment
         android:id="@+id/notesFolder"
-        tools:layout="@layout/notes_folder"
         android:name="com.example.myappnews.Ui.Fragment.Search.Note.NotesFolder"
-        android:label="NotesFolder" >
+        android:label="NotesFolder"
+        tools:layout="@layout/notes_folder">
         <action
             android:id="@+id/action_notesFolder_to_search_Fragment"
             app:destination="@id/search_Fragment" />
     </fragment>
     <fragment
         android:id="@+id/addNote"
-        tools:layout="@layout/add_note_layout"
         android:name="com.example.myappnews.Ui.Fragment.Article.Note.AddNote"
-        android:label="AddNote" >
+        android:label="AddNote"
+        tools:layout="@layout/add_note_layout">
         <action
             android:id="@+id/action_addNote_to_article_Fragment"
             app:destination="@id/article_Fragment" />
     </fragment>
     <fragment
         android:id="@+id/awaitRequireEdit"
-        tools:layout="@layout/await_require_edit"
         android:name="com.example.myappnews.Ui.Fragment.management.Admin.AwaitRequireEdit.AwaitRequireEdit"
-        android:label="AwaitRequireEdit" />
+        android:label="AwaitRequireEdit"
+        tools:layout="@layout/await_require_edit" />
     <fragment
         android:id="@+id/awaitRqEdit"
-        tools:layout="@layout/await_rq_edit"
         android:name="com.example.myappnews.Ui.Fragment.management.Admin.AwaitRequireEdit.AwaitRqEdit"
-        android:label="AwaitRqEdit" >
+        android:label="AwaitRqEdit"
+        tools:layout="@layout/await_rq_edit">
         <action
             android:id="@+id/action_awaitRqEdit_to_mainAdmFrag"
             app:destination="@id/mainAdmFrag" />
     </fragment>
     <fragment
         android:id="@+id/downLoadedFragment"
-        tools:layout="@layout/downloadedfragment"
         android:name="com.example.myappnews.Ui.Fragment.Article.downLoad.DownLoadedFragment"
-        android:label="DownLoadedFragment" >
+        android:label="DownLoadedFragment"
+        tools:layout="@layout/downloadedfragment">
         <action
             android:id="@+id/action_downLoadedFragment_to_articleDown"
             app:destination="@id/articleDown" />
     </fragment>
     <fragment
         android:id="@+id/articleDown"
-        tools:layout="@layout/article_down_loaded"
         android:name="com.example.myappnews.Ui.Fragment.Article.downLoad.ArticleDown"
-        android:label="ArticleDown" >
+        android:label="ArticleDown"
+        tools:layout="@layout/article_down_loaded">
         <action
             android:id="@+id/action_articleDown_to_downLoadedFragment"
             app:destination="@id/downLoadedFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.myappnews.Ui.Fragment.Article.Search.SearchFragment"
+        android:label="SearchFragment"
+        tools:layout="@layout/search_article_fragment">
+        <action
+            android:id="@+id/action_searchFragment_to_home_Fragment"
+            app:destination="@id/home_Fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/articlehisFragment"
+        tools:layout="@layout/history_article"
+        android:name="com.example.myappnews.Ui.Fragment.History.Article.ArticlehisFragment"
+        android:label="ArticlehisFragment" >
+        <action
+            android:id="@+id/action_articlehisFragment_to_article_Fragment"
+            app:destination="@id/article_Fragment" />
+    </fragment>
+    <fragment
+        tools:layout="@layout/comment_main_layout"
+        android:id="@+id/commentFragment"
+        android:name="com.example.myappnews.Ui.Fragment.Article.comment.CommentFragment"
+        android:label="CommentFragment" >
+        <action
+            android:id="@+id/action_commentFragment_to_article_Fragment"
+            app:destination="@id/article_Fragment" />
     </fragment>
 </navigation>

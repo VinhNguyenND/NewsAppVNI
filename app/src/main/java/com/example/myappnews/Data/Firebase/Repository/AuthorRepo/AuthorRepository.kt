@@ -6,10 +6,12 @@ import androidx.lifecycle.MutableLiveData
 import com.example.myappnews.Data.Model.Article.NewsArticle
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import java.security.MessageDigest
 import java.time.LocalDateTime
 
@@ -19,11 +21,12 @@ class AuthorRepository {
     private val _awaitApproval = MutableLiveData<ArrayList<NewsArticle>>()
     private val _denied = MutableLiveData<ArrayList<NewsArticle>>()
     private val _requireEdit = MutableLiveData<ArrayList<NewsArticle>>()
-
+    private val _isDeleteDenied = MutableLiveData<Boolean>()
     private val _isRequest = MutableLiveData<Boolean>()
-    private val _isDeleteRequest=MutableLiveData<Boolean>()
-    private val _isPostAgain=MutableLiveData<Boolean>()
-    private val  _isResponseEd=MutableLiveData<Int>();
+    private var storageRef = Firebase.storage.reference
+    private val _isDeleteRequest = MutableLiveData<Boolean>()
+    private val _isPostAgain = MutableLiveData<Boolean>()
+    private val _isResponseEd = MutableLiveData<Int>();
 
     companion object {
         @Volatile
@@ -45,12 +48,14 @@ class AuthorRepository {
         get() = _requireEdit
     val IsRequest: LiveData<Boolean>
         get() = _isRequest
-    val IsDeleteRequest:LiveData<Boolean>
+    val IsDeleteRequest: LiveData<Boolean>
         get() = _isDeleteRequest
-    val IsPostAgain:LiveData<Boolean>
+    val IsPostAgain: LiveData<Boolean>
         get() = _isPostAgain
-    val IsResponseEd:LiveData<Int>
+    val IsResponseEd: LiveData<Int>
         get() = _isResponseEd
+    val IsDeleteDenied: LiveData<Boolean>
+        get() = _isDeleteDenied
 
     fun getAllPosted(id: String) {
         db.collection("Articles")
@@ -90,6 +95,24 @@ class AuthorRepository {
             }.addOnFailureListener {
                 _awaitApproval.postValue(ArrayList<NewsArticle>())
             }
+    }
+
+    fun deleteDenied(newsArticle: NewsArticle) {
+        newsArticle.idArticle?.let {
+            db.collection("Articles")
+                .document(it)
+                .delete()
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        _isDeleteDenied.postValue(true)
+                    } else {
+                        _isDeleteDenied.postValue(false)
+                    }
+                }.addOnFailureListener {
+                    _isDeleteDenied.postValue(false)
+                }
+        }
+
     }
 
     fun getAllDenied(id: String) {
@@ -134,7 +157,7 @@ class AuthorRepository {
             }
     }
 
-    fun sendRequest(id: String,newsArticle: NewsArticle) {
+    fun sendRequest(id: String, newsArticle: NewsArticle) {
         db.collection("Articles")
             .document(id)
             .set(newsArticle.toMap(), SetOptions.merge())
@@ -145,6 +168,33 @@ class AuthorRepository {
                     _isRequest.postValue(false)
                 }
             }.addOnFailureListener {
+                _isRequest.postValue(false)
+            }
+    }
+
+    fun sendArticleEdit(newsArticle: NewsArticle, imageUri: ByteArray) {
+        val storage = storageRef.child("imagesArticle/" + newsArticle.idArticle + ".jpg")
+        storage.putBytes(imageUri)
+            .addOnSuccessListener(OnSuccessListener {
+                storage.downloadUrl.addOnSuccessListener { uri ->
+                    newsArticle.imageUrl = uri.toString();
+                    newsArticle.idArticle?.let { it1 ->
+                        db.collection("Articles")
+                            .document(it1)
+                            .set(newsArticle.toMap(), SetOptions.merge())
+                            .addOnCompleteListener {
+                                if (it.isSuccessful) {
+                                    _isRequest.postValue(true)
+                                } else {
+                                    _isRequest.postValue(false)
+                                }
+                            }.addOnFailureListener {
+                                _isRequest.postValue(false)
+                            }
+                    }
+                }
+            })
+            .addOnFailureListener {
                 _isRequest.postValue(false)
             }
     }
@@ -166,14 +216,14 @@ class AuthorRepository {
             })
     }
 
-    fun postAgain(id: String,newsArticle: NewsArticle){
+    fun postAgain(id: String, newsArticle: NewsArticle) {
         db.collection("Articles")
             .document(id)
             .update(newsArticle.toMap())
             .addOnCompleteListener {
-                if(it.isSuccessful){
+                if (it.isSuccessful) {
                     _isPostAgain.postValue(true);
-                }else{
+                } else {
                     _isPostAgain.postValue(false);
                 }
             }.addOnFailureListener {
@@ -181,19 +231,32 @@ class AuthorRepository {
             }
     }
 
-   fun responseRqEdit(newsArticle: NewsArticle){
-       db.collection("RequestEdit")
-           .document(newsArticle.idArticle.toString())
-           .set(newsArticle.toMap(), SetOptions.merge())
-           .addOnCompleteListener {
-               if(it.isSuccessful){
-                  _isResponseEd.postValue(1);
-               }else{
-                   _isResponseEd.postValue(0)
-               }
-           }.addOnFailureListener {
-               _isResponseEd.postValue(-1)
-           }
-   }
+    fun responseRqEdit(newsArticle: NewsArticle, imageUri: ByteArray) {
+        val storage = storageRef.child("imagesArticle/" + newsArticle.idArticle + ".jpg")
+        storage.putBytes(imageUri)
+            .addOnSuccessListener(OnSuccessListener {
+                storage.downloadUrl.addOnSuccessListener { uri ->
+                    newsArticle.imageUrl = uri.toString();
+                    newsArticle.idArticle?.let { it1 ->
+
+                        db.collection("RequestEdit")
+                            .document(newsArticle.idArticle.toString())
+                            .set(newsArticle.toMap(), SetOptions.merge())
+                            .addOnCompleteListener {
+                                if (it.isSuccessful) {
+                                    _isResponseEd.postValue(1);
+                                } else {
+                                    _isResponseEd.postValue(0)
+                                }
+                            }.addOnFailureListener {
+                                _isResponseEd.postValue(-1)
+                            }
+                    }
+                }
+            })
+            .addOnFailureListener {
+                _isRequest.postValue(false)
+            }
+    }
 
 }

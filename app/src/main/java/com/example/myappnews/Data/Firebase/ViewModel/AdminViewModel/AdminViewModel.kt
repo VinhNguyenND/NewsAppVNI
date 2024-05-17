@@ -103,4 +103,12 @@ class AdminViewModel : ViewModel() {
         }
         return _isUpdateSuccess
     }
+
+    fun approvePush(news: NewsArticle): LiveData<Int> {
+        ArRepository.approvePush(news)
+        ArRepository.IsUpdateSuccess.observeForever {
+            _isUpdateSuccess.postValue(it)
+        }
+        return _isUpdateSuccess
+    }
 }

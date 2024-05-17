@@ -6,6 +6,31 @@
     android:orientation="vertical"
     android:weightSum="10">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/top_bar">
+
+        <ImageView
+            android:id="@+id/btnBackAdmin"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.042"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.482"
+            app:srcCompat="@drawable/back_24" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewpager_admin"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="8" />
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout_admin"
         android:layout_width="match_parent"
@@ -13,10 +38,5 @@
         android:layout_weight="1"
         app:tabMode="scrollable" />
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewpager_admin"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="9" />
 
 </LinearLayout>

@@ -13,8 +13,8 @@ class AuthorViewModel : ViewModel() {
     private val _awaitApproval = MutableLiveData<ArrayList<NewsArticle>>()
     private val _denied = MutableLiveData<ArrayList<NewsArticle>>()
     private val _requireEdit = MutableLiveData<ArrayList<NewsArticle>>()
-
     private val _isRequest = MutableLiveData<Boolean>()
+    private val _isDeleteDenied = MutableLiveData<Boolean>()
     private val _isDeleteRequest = MutableLiveData<Boolean>()
     private val _isPostAgain = MutableLiveData<Boolean>()
     private val _isResponseEd = MutableLiveData<Int>();
@@ -53,6 +53,14 @@ class AuthorViewModel : ViewModel() {
         return _denied
     }
 
+    fun deleteDenied(newsArticle: NewsArticle): LiveData<Boolean> {
+        _authorRepo.deleteDenied(newsArticle)
+        _authorRepo.IsDeleteDenied.observeForever {
+            _isDeleteDenied.postValue(it)
+        }
+        return _isDeleteDenied
+    }
+
     fun getAllRequireEdit(id: String): LiveData<ArrayList<NewsArticle>> {
         _authorRepo.getAllRequireEdit(id);
         _authorRepo.RequireEdit.observeForever {
@@ -61,8 +69,16 @@ class AuthorViewModel : ViewModel() {
         return _requireEdit
     }
 
-    fun sendRequest(id: String,newsArticle: NewsArticle): LiveData<Boolean> {
-        _authorRepo.sendRequest(id,newsArticle)
+    fun sendRequest(id: String, newsArticle: NewsArticle): LiveData<Boolean> {
+        _authorRepo.sendRequest(id, newsArticle)
+        _authorRepo.IsRequest.observeForever {
+            _isRequest.postValue(it)
+        }
+        return _isRequest
+    }
+
+    fun sendArticleEdit(newsArticle: NewsArticle, imageUri: ByteArray): LiveData<Boolean> {
+        _authorRepo.sendArticleEdit(newsArticle, imageUri)
         _authorRepo.IsRequest.observeForever {
             _isRequest.postValue(it)
         }
@@ -85,12 +101,12 @@ class AuthorViewModel : ViewModel() {
         return _isPostAgain
     }
 
-     fun responseRqEdit(newsArticle: NewsArticle):LiveData<Int>{
-         _authorRepo.responseRqEdit(newsArticle)
-         _authorRepo.IsResponseEd.observeForever {
-             _isResponseEd.postValue(it);
-         }
-         return _isResponseEd;
-     }
+    fun responseRqEdit(newsArticle: NewsArticle,byteArray: ByteArray): LiveData<Int> {
+        _authorRepo.responseRqEdit(newsArticle,byteArray)
+        _authorRepo.IsResponseEd.observeForever {
+            _isResponseEd.postValue(it);
+        }
+        return _isResponseEd;
+    }
 
 }

@@ -83,7 +83,7 @@ class Dictionary_Fragment : Fragment() {
     }
 
     private fun initRcView(context: Context) {
-        _folderAdapter = FolderAdapter(listFolder, context,ViewModelProvider(this))
+        _folderAdapter = FolderAdapter(listFolder, context, ViewModelProvider(this))
         binding.rcvDictionary.let {
             it.adapter = _folderAdapter
             it.layoutManager = LinearLayoutManager(
@@ -116,6 +116,7 @@ class Dictionary_Fragment : Fragment() {
                     builder.setTitle("Xác nhận xóa")
                         .setMessage("Bạn có chắc chắn muốn xóa folder này?")
                         .setPositiveButton("Đồng ý") { _, _ ->
+                            DictionaryFolder.deleteDictionaryFolderById(listFolder[viewHolder.adapterPosition].idDictionaryFolder)
                             listFolder.removeAt(viewHolder.adapterPosition)
                             _folderAdapter.submitList(listFolder)
                         }
@@ -185,7 +186,7 @@ class Dictionary_Fragment : Fragment() {
         binding.idAddDic.setOnClickListener {
             showCustomDialog()
         }
-        binding.searchView.setOnQueryTextListener(object :SearchView.OnQueryTextListener{
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 _folderAdapter.filter.filter(query)
                 return false;

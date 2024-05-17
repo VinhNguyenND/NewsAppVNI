@@ -105,6 +105,7 @@ class EditAwait : Fragment() {
                 dialog.hide()
                 if (it == true) {
                     showToast(requireContext(), "Bạn đã  xóa thành công")
+                    Navigation.findNavController(binding.root).popBackStack()
                 } else if (it == false) {
                     showToast(requireContext(), "Bạn đã xóa thất bại")
                 }

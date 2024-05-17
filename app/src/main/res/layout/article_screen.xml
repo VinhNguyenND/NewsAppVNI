@@ -28,10 +28,23 @@
                 android:src="@drawable/back_24" />
 
             <Space
-                android:layout_width="340dp"
+                android:layout_width="300dp"
                 android:layout_height="0dp" />
 
             <ImageButton
+                android:id="@+id/comment"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:background="@color/white"
+                android:src="@drawable/iccommentblack24" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="wrap_content" />
+
+            <ImageButton
+                android:id="@+id/btnLike"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -41,25 +54,6 @@
             <Space
                 android:layout_width="10dp"
                 android:layout_height="wrap_content" />
-
-            <!--            <ImageButton-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_gravity="center"-->
-            <!--                android:background="@color/white"-->
-            <!--                android:src="@drawable/ichistory24" />-->
-
-            <!--            <Space-->
-            <!--                android:layout_width="10dp"-->
-            <!--                android:layout_height="wrap_content" />-->
-
-            <!--            <ImageButton-->
-            <!--                android:layout_width="24dp"-->
-            <!--                android:layout_height="24dp"-->
-            <!--                android:layout_gravity="center"-->
-            <!--                android:background="@color/white"-->
-            <!--                android:src="@drawable/icslider24" />-->
-
 
         </LinearLayout>
 
@@ -171,6 +165,24 @@
                         android:layout_height="65dp"
                         android:layout_weight="0.2" />
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/txtRelate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Related topics"
+                    android:textColor="@color/PRIMARY_TEXT"
+                    android:textSize="16sp" />
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="10dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/arRcv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
             </LinearLayout>
         </RelativeLayout>
 

@@ -187,11 +187,13 @@ class EditApprovedFrg : Fragment() {
                 _adminViewModel.sendRequestEdit(Article).observe(
                     viewLifecycleOwner,
                     Observer {
-                        if (it == 0) {
-                            showToast(requireContext(), "thanh cong");
-                        } else {
-                            showToast(requireContext(), "that bai");
-                            dialog.dismiss()
+                        if (isAdded && isVisible) {
+                            if (it == 0) {
+                                showToast(requireContext(), "thanh cong");
+                            } else {
+                                showToast(requireContext(), "that bai");
+                                dialog.dismiss()
+                            }
                         }
                     }
                 );

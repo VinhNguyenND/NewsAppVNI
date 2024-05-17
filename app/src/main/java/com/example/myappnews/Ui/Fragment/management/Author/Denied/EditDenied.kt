@@ -1,14 +1,22 @@
 package com.example.myappnews.Ui.Fragment.management.Author.Denied
 
+import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.example.myappnews.Data.Firebase.ViewModel.AdminViewModel.AdminViewModel
@@ -16,7 +24,9 @@ import com.example.myappnews.Data.Firebase.ViewModel.AuthorViewModel.AuthorViewM
 import com.example.myappnews.Data.Model.Article.NewsArticle
 import com.example.myappnews.Data.SharedPreferences.Shared_Preference
 import com.example.myappnews.R
+import com.example.myappnews.Ui.Fragment.management.Author.Home.showToast
 import com.example.myappnews.databinding.EditDeniedBinding
+import kotlinx.coroutines.delay
 
 class EditDenied : Fragment() {
     private lateinit var binding: EditDeniedBinding
@@ -45,6 +55,8 @@ class EditDenied : Fragment() {
         if (arguments?.getParcelable("Article", NewsArticle::class.java) != null) {
             article = arguments?.getParcelable("Article", NewsArticle::class.java)!!
             val text: String = article.content!!.replace("\\\\n", "<br/>" + " ");
+            binding.causeEdit.text = article.causeDenied
+            binding.articlePageTittle.text = article.titleArticle
             binding.txtPageContent.text = Html.fromHtml(text)
             Glide.with(requireContext())
                 .load(article.imageUrl?.trim())
@@ -67,5 +79,46 @@ class EditDenied : Fragment() {
             bundle.putParcelable("Article", article)
             view.findNavController().navigate(R.id.deniedEdit, bundle)
         }
+        binding.btnDeleteDenied.setOnClickListener {
+            showCustomDialog()
+        }
     }
+
+    private fun showCustomDialog() {
+        val dialog = Dialog(requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.delete_approve_pop)
+        val window: Window? = dialog.window;
+        if (window == null) {
+            return
+        }
+        window.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+        val windowAtribute: WindowManager.LayoutParams = window.attributes
+        windowAtribute.gravity = Gravity.CENTER
+        window.attributes = windowAtribute
+        dialog.findViewById<TextView>(R.id.textView).text = "bạn có chắc muốn xóa yêu cầu";
+        dialog.findViewById<Button>(R.id.btnDongy).setOnClickListener {
+            dialog.findViewById<ProgressBar>(R.id.progress_pop_approve).visibility = View.VISIBLE
+            _authorViewModel.deleteDenied(newsArticle = article)
+                .observe(viewLifecycleOwner, Observer {
+                    dialog.hide()
+                    if (it == true && isAdded && isVisible) {
+                        showToast(requireContext(), "Bạn đã  xóa thành công")
+                        Navigation.findNavController(binding.root).popBackStack()
+                    } else if (it == false) {
+                        showToast(requireContext(), "Bạn đã xóa thất bại")
+                    }
+                })
+
+        }
+        dialog.findViewById<Button>(R.id.btnLoaiBo).setOnClickListener {
+            dialog.findViewById<ProgressBar>(R.id.progress_pop_approve).visibility = View.VISIBLE
+            dialog.hide()
+        }
+        dialog.show()
+    }
+
 }

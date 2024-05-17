@@ -1,23 +1,45 @@
 package com.example.myappnews.Ui.Fragment.management.Author.EditRequest
 
+import android.app.Activity
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.example.myappnews.Data.Firebase.ViewModel.AuthorViewModel.AuthorViewModel
 import com.example.myappnews.Data.Model.Article.NewsArticle
+import com.example.myappnews.R
+import com.example.myappnews.Ui.Fragment.Profile.byteToImage
+import com.example.myappnews.Ui.Fragment.Profile.getImageBytesFromUri
+import com.example.myappnews.Ui.Fragment.Profile.openCamera
+import com.example.myappnews.Ui.Fragment.management.Author.Denied.imageViewToByteArray
 import com.example.myappnews.Ui.Fragment.management.Author.Home.showToast
 import com.example.myappnews.databinding.DeniedEditBinding
+import com.github.dhaval2404.imagepicker.ImagePicker
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 
 class EditRequest : Fragment() {
     private lateinit var binding: DeniedEditBinding
     private val _authorViewModel = AuthorViewModel.getInstance()
     private lateinit var article: NewsArticle;
+    private var byteArrayImage = ByteArray(1000)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -45,10 +67,31 @@ class EditRequest : Fragment() {
             binding.editTextCountry.setText(article.country.toString());
             binding.editTextLink.setText(article.linkArticle.toString());
             binding.editTextField.setText(article.field.toString());
-            binding.editTextImageUrl.setText(article.imageUrl.toString());
             binding.editTextSourceUrl.setText(article.sourceUrl.toString());
             binding.editTextSourceId.setText(article.sourceId.toString());
             binding.editTextCreator.setText(article.creator.toString());
+            Glide.with(requireContext())
+                .asBitmap()
+                .load(article.imageUrl?.trim())
+                .error(R.drawable.uploaderror)
+                .fitCenter()
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap>?
+                    ) {
+                        val outputStream = ByteArrayOutputStream()
+                        resource.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                        val byteArray = outputStream.toByteArray()
+                        byteArrayImage = byteArray;
+                        binding.imageUpload.setImageBitmap(byteToImage(byteArray))
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        binding.imageUpload.setImageResource(R.drawable.uploaderror)
+                        byteArrayImage = imageViewToByteArray(binding.imageUpload)
+                    }
+                })
         }
     }
 
@@ -62,8 +105,7 @@ class EditRequest : Fragment() {
                 linkArticle = binding.editTextLink.text.toString(), // Link bài báo
                 creator = binding.editTextCreator.text.toString(), // Tên tác giả
                 content = binding.editTextContent.text.toString(), // Nội dung
-                pubDate = article.pubDate, // Ngày xuất bản
-                imageUrl = binding.editTextImageUrl.text.toString(), // URL ảnh
+                pubDate = article.pubDate, // Ngày xuất bản / URL ảnh
                 sourceUrl = binding.editTextSourceUrl.text.toString(), // URL nguồn
                 sourceId = binding.editTextSourceId.text.toString(), // ID nguồn
                 country = binding.editTextCountry.text.toString(), // Quốc gia
@@ -74,11 +116,70 @@ class EditRequest : Fragment() {
                 requiredDate = newsArticle.requiredDate,// Ngày yêu cầu chỉnh sửa
                 cause = newsArticle.cause,
             )
-            _authorViewModel.responseRqEdit(newsArticle)
+            _authorViewModel.responseRqEdit(newsArticle, byteArrayImage)
                 .observe(viewLifecycleOwner, Observer {
-                    showToast(requireContext(),"Gửi  yêu cầu thành công")
+                    showToast(requireContext(), "Gửi  yêu cầu thành công")
                 })
 
         }
+        binding.btnPutImage.setOnClickListener {
+            ImagePicker.with(this)
+                .compress(1024)         //Final image size will be less than 1 MB(Optional)
+                .maxResultSize(
+                    1080,
+                    1080
+                )
+                .createIntent { intent ->
+                    startForProfileImageResult.launch(intent)
+                }
+        }
+        binding.btnBack.setOnClickListener {
+            Navigation.findNavController(binding.root).popBackStack()
+        }
     }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            100 -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    openCamera(requireActivity())
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Camera and Storage permission denied",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
+
+    private val startForProfileImageResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            val resultCode = result.resultCode
+            val data = result.data
+            if (resultCode == Activity.RESULT_OK) {
+                val fileUri = data?.data
+                showToast(requireContext(), fileUri.toString())
+                if (fileUri != null) {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val imageBytes: ByteArray? = getImageBytesFromUri(requireContext(), fileUri)
+                        if (imageBytes != null) {
+                            byteArrayImage = imageBytes
+                        }
+                    }
+                    binding.imageUpload.setImageURI(fileUri)
+                }
+            } else if (resultCode == ImagePicker.RESULT_ERROR) {
+                showToast(requireContext(), "up load fail")
+            } else {
+                Toast.makeText(requireContext(), "Image picker cancel", Toast.LENGTH_SHORT).show()
+            }
+        }
 }

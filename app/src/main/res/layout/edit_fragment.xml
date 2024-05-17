@@ -37,19 +37,19 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="@color/white"
-                android:src="@drawable/icstamp" />
+                android:src="@drawable/icapprove24" />
 
             <Space
                 android:layout_width="10dp"
                 android:layout_height="wrap_content" />
 
             <ImageButton
-                android:visibility="invisible"
+                android:id="@+id/btnDenied"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="@color/white"
-                android:src="@drawable/icedit24" />
+                android:src="@drawable/ic_denied" />
 
 
         </LinearLayout>
