@@ -12,13 +12,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myappnews.Data.Firebase.ViewModel.AdminViewModel.AdminViewModel
 import com.example.myappnews.Data.Model.Article.NewsArticle
+import com.example.myappnews.Data.SharedPreferences.Shared_Preference
 import com.example.myappnews.Interface.Adapter.CommonAdapter
 import com.example.myappnews.R
 import com.example.myappnews.Ui.Fragment.Home.Adapt.ArticleAdapter
 import com.example.myappnews.databinding.ApprovedFragmentBinding
 
+//danh sach da xet duyet
 class ApprovedFragment : Fragment() {
-
+    private lateinit var _shared_Preference: Shared_Preference;
     private lateinit var binding: ApprovedFragmentBinding
     private val _adminViewModel = AdminViewModel.getInstance()
     private lateinit var rcvHomeAdapter: ArticleAdapter
@@ -35,18 +37,14 @@ class ApprovedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _shared_Preference = Shared_Preference(requireActivity());
+        initShimer()
         initRcView(requireContext())
-        event()
     }
 
     override fun onResume() {
         super.onResume()
         getAllArticle()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        _adminViewModel.set_ArticleLiveData()
     }
 
     private fun initRcView(context: Context) {
@@ -68,16 +66,29 @@ class ApprovedFragment : Fragment() {
     }
 
     private fun getAllArticle() {
-        _adminViewModel.getAllApprove(1).observe(viewLifecycleOwner, Observer {
-            listArticle = it;
-            rcvHomeAdapter.submitList(it);
-        })
+        binding.shimmerViewContainer.startShimmer()
+        _shared_Preference.getUid()?.let {
+            _adminViewModel.getAllApprove(1, it).observe(viewLifecycleOwner, Observer {
+                listArticle = it;
+                rcvHomeAdapter.submitList(it);
+                if (it.isNotEmpty()) {
+                    binding.shimmerViewContainer.stopShimmer()
+                    binding.shimmerViewContainer.hideShimmer()
+                    binding.shimmerViewContainer.visibility = View.GONE
+                    binding.noDataFound.visibility = View.GONE
+                } else {
+                    binding.shimmerViewContainer.stopShimmer()
+                    binding.shimmerViewContainer.hideShimmer()
+                    binding.shimmerViewContainer.visibility = View.GONE
+                    binding.noDataFound.visibility = View.VISIBLE
+                }
+            })
+        }
     }
 
-    private fun event(){
-
+    private fun initShimer() {
+        binding.shimmerViewContainer.visibility = View.VISIBLE
     }
-
 
 
 }

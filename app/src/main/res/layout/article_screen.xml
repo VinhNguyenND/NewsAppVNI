@@ -11,51 +11,51 @@
         android:background="@color/white"
         app:layout_scrollFlags="enterAlways">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <Space
-                android:layout_width="10dp"
-                android:layout_height="0dp" />
 
             <ImageButton
                 android:id="@+id/btnbackar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginStart="16dp"
                 android:background="@color/white"
-                android:src="@drawable/back_24" />
-
-            <Space
-                android:layout_width="300dp"
-                android:layout_height="0dp" />
+                android:src="@drawable/back_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
                 android:id="@+id/comment"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center"
+                android:layout_marginEnd="12dp"
                 android:background="@color/white"
-                android:src="@drawable/iccommentblack24" />
-
-            <Space
-                android:layout_width="10dp"
-                android:layout_height="wrap_content" />
+                android:src="@drawable/iccommentblack24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnLike"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.615" />
 
             <ImageButton
                 android:id="@+id/btnLike"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginEnd="16dp"
                 android:background="@color/white"
-                android:src="@drawable/icheart24" />
+                android:src="@drawable/icheart24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.615" />
 
-            <Space
-                android:layout_width="10dp"
-                android:layout_height="wrap_content" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -73,6 +73,7 @@
             android:layout_height="wrap_content">
 
             <LinearLayout
+                android:id="@+id/shareLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
@@ -211,15 +212,25 @@
                     android:layout_height="match_parent"
                     android:background="@color/black"
                     android:orientation="horizontal"
-                    android:visibility="gone">
+                    android:visibility="visible"
+                    android:weightSum="10">
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="3" />
 
                     <ImageView
                         android:id="@+id/decree5s"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_gravity="center"
-                        android:layout_marginStart="15dp"
                         android:src="@drawable/ic_replay5s" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.25" />
 
 
                     <FrameLayout
@@ -241,18 +252,10 @@
                     </FrameLayout>
 
 
-                    <ImageView
-                        android:id="@+id/btnGo5s"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="5dp"
-                        android:src="@drawable/ic_forward5s" />
-
                     <Space
-                        android:layout_width="5dp"
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_marginStart="10dp" />
+                        android:layout_weight="1" />
 
                     <TextView
                         android:id="@+id/text_now"
@@ -262,12 +265,22 @@
                         android:text="0:00"
                         android:textColor="@color/white" />
 
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.25" />
+
                     <SeekBar
                         android:id="@+id/seekPageContent"
-                        android:layout_width="130dp"
+                        android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:progressBackgroundTint="@color/white" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.25" />
 
                     <TextView
                         android:id="@+id/text_end"
@@ -277,18 +290,11 @@
                         android:text="0:00"
                         android:textColor="@color/white" />
 
+
                     <Space
-                        android:layout_width="40dp"
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_marginStart="10dp" />
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="10dp"
-                        android:src="@drawable/ic_speed_run24" />
-
+                        android:layout_weight="0.25" />
 
                     <ImageView
                         android:id="@+id/downArticle"
@@ -300,12 +306,19 @@
                         android:src="@drawable/ic_download24"
                         android:visibility="invisible" />
 
-                    <!--                <ImageView-->
-                    <!--                    android:layout_width="20dp"-->
-                    <!--                    android:layout_height="20dp"-->
-                    <!--                    android:layout_gravity="center"-->
-                    <!--                    android:layout_marginStart="10dp"-->
-                    <!--                    android:src="@drawable/ic_forward5s" />-->
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.25" />
+
+                    <ImageView
+                        android:id="@+id/btnGo5s"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="5dp"
+                        android:src="@drawable/ic_forward5s" />
+
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <com.facebook.shimmer.ShimmerFrameLayout
@@ -313,7 +326,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:id="@+id/listContainer"

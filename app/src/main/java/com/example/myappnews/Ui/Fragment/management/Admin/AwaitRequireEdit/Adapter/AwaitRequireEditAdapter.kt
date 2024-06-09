@@ -5,8 +5,10 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.myappnews.Data.Model.Article.NewsArticle
 import com.example.myappnews.Interface.Adapter.CommonAdapter
+import com.example.myappnews.R
 import com.example.myappnews.databinding.ItemWaitEditBinding
 
 class AwaitRequireEditAdapter(private val listArticle: List<NewsArticle>, context: Context) :
@@ -40,15 +42,20 @@ class AwaitRequireEditAdapter(private val listArticle: List<NewsArticle>, contex
 
         fun bind(article: NewsArticle) {
             var status = ""
-             if(article.requireEdit==1){
-                 status="Đang chờ phê duyệt"
-             }else if(article.requireEdit==0){
-                 status="Đang chờ chỉnh sửa"
-             }else{
-                 status="Từ chối chỉnh sửa"
-             }
+            if (article.requireEdit == 1) {
+                status = "Đang chờ phê duyệt"
+            } else if (article.requireEdit == 0) {
+                status = "Đang chờ chỉnh sửa"
+            } else {
+                status = "Từ chối chỉnh sửa"
+            }
+            Glide.with(_context)
+                .load(article.imageUrl?.trim())
+                .error(R.drawable.nodatafound)
+                .fitCenter()
+                .into(binding.imgArticle)
             binding.description.text = article.titleArticle;
-            binding.idTrangThai.text=status
+            binding.idTrangThai.text = status
         }
     }
 

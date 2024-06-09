@@ -1,4 +1,4 @@
-package com.example.myappnews.Ui.Fragment.Search.Note
+package com.example.myappnews.Ui.Fragment.note_dic.Note
 
 import android.app.AlertDialog
 import android.content.Context
@@ -22,7 +22,7 @@ import com.example.myappnews.Data.Local.Dictionary.Entity.DictionaryItem
 import com.example.myappnews.Data.Local.Dictionary.Helper.DictionaryViewModel
 import com.example.myappnews.Interface.Adapter.CommonAdapter
 import com.example.myappnews.R
-import com.example.myappnews.Ui.Fragment.Search.Adapt.ItemNoteAdapter
+import com.example.myappnews.Ui.Fragment.note_dic.Adapt.ItemNoteAdapter
 import com.example.myappnews.Ui.Fragment.management.Author.Home.showToast
 import com.example.myappnews.databinding.NotesFolderBinding
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
@@ -100,87 +100,6 @@ class NotesFolder : Fragment() {
 
             }
         })
-        val callback = object : ItemTouchHelper.SimpleCallback(
-            0,
-            ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT
-        ) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                if (direction == ItemTouchHelper.LEFT) {
-                    val builder = AlertDialog.Builder(requireContext())
-                    builder.setTitle("Xác nhận xóa")
-                        .setMessage("Bạn có chắc chắn muốn xóa folder này?")
-                        .setPositiveButton("Đồng ý") { _, _ ->
-                            listNote.removeAt(viewHolder.adapterPosition)
-                            _ItemAdapter.submitList(listNote)
-                        }
-                        .setNegativeButton("Hủy") { dialog, _ ->
-                            _ItemAdapter.notifyItemChanged(viewHolder.adapterPosition)
-                            dialog.dismiss()
-                        }
-                        .setCancelable(false)
-                        .show()
-                }
-            }
-
-            override fun getSwipeDirs(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
-            ): Int {
-
-                return ItemTouchHelper.LEFT
-            }
-
-
-            override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
-                RecyclerViewSwipeDecorator.Builder(
-                    c,
-                    recyclerView,
-                    viewHolder,
-                    dX,
-                    dY,
-                    actionState,
-                    isCurrentlyActive
-                )
-                    .addBackgroundColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.Red
-                        )
-                    )
-                    .addActionIcon(R.drawable.icdelete24)
-                    .create()
-                    .decorate()
-
-                super.onChildDraw(
-                    c,
-                    recyclerView,
-                    viewHolder,
-                    dX,
-                    dY,
-                    actionState,
-                    isCurrentlyActive
-                )
-            }
-        }
-
-        val itemTouchHelper = ItemTouchHelper(callback)
-        itemTouchHelper.attachToRecyclerView(binding.noteFolderRcv)
     }
 
 

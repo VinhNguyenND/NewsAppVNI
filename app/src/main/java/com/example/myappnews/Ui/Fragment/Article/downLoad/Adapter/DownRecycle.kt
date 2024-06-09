@@ -3,6 +3,7 @@ package com.example.myappnews.Ui.Fragment.Article.downLoad.Adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
@@ -11,6 +12,8 @@ import com.bumptech.glide.Glide
 import com.example.myappnews.Data.Local.Article.Down.ArticleDownEntity
 import com.example.myappnews.Interface.Adapter.CommonAdapter
 import com.example.myappnews.R
+import com.example.myappnews.Ui.Fragment.Article.comment.calculateElapsedTime
+import com.example.myappnews.Ui.Fragment.Home.Adapt.convertDateToString
 import com.example.myappnews.databinding.ItemArticleBinding
 import java.util.Locale
 
@@ -53,6 +56,8 @@ class DownRecycle(private val listArticle: List<ArticleDownEntity>, context: Con
                 .error(R.drawable.uploaderror)
                 .fitCenter()
                 .into(binding.imgArticle)
+            binding.timeArticleCal.visibility= View.GONE
+            binding.whenHaveTime.visibility=View.VISIBLE
         }
     }
 

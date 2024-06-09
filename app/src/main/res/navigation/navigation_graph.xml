@@ -19,7 +19,7 @@
     </fragment>
     <fragment
         android:id="@+id/search_Fragment"
-        android:name="com.example.myappnews.Ui.Fragment.Search.Dictionary_Fragment"
+        android:name="com.example.myappnews.Ui.Fragment.note_dic.Dictionary_Fragment"
         android:label="Search_Fragment"
         tools:layout="@layout/search_screen">
         <action
@@ -256,7 +256,7 @@
     </fragment>
     <fragment
         android:id="@+id/notesFolder"
-        android:name="com.example.myappnews.Ui.Fragment.Search.Note.NotesFolder"
+        android:name="com.example.myappnews.Ui.Fragment.note_dic.Note.NotesFolder"
         android:label="NotesFolder"
         tools:layout="@layout/notes_folder">
         <action

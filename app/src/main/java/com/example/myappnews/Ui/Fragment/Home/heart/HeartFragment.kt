@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myappnews.Data.Api.Internet.InternetViewModel
 import com.example.myappnews.Data.Firebase.ViewModel.ArticleViewModel.ArViewModel
 import com.example.myappnews.Data.Model.Article.NewsArticle
+import com.example.myappnews.Data.SharedPreferences.Shared_Preference
 import com.example.myappnews.Interface.Adapter.CommonAdapter
 import com.example.myappnews.R
 import com.example.myappnews.Ui.Fragment.Home.Adapt.ArticleAdapter
@@ -27,6 +28,7 @@ class HeartFragment(context: Context, bottomSheet: BottomSheetDialog) : Fragment
     private lateinit var internetViewModel: InternetViewModel
     private val ArticleViewModel = ArViewModel.getInstance();
     private var listArticle = ArrayList<NewsArticle>()
+    private lateinit var _shared_Preference: Shared_Preference;
     private lateinit var _articleAdapter: ArticleAdapter
     private val _bottomSheet = bottomSheet
     override fun onCreateView(
@@ -40,6 +42,7 @@ class HeartFragment(context: Context, bottomSheet: BottomSheetDialog) : Fragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _shared_Preference = Shared_Preference(requireActivity());
         initViewModel()
         initRcView(requireContext());
         observeNetwork()
@@ -47,10 +50,12 @@ class HeartFragment(context: Context, bottomSheet: BottomSheetDialog) : Fragment
 
     override fun onResume() {
         super.onResume()
-        ArticleViewModel.getHeart().observe(viewLifecycleOwner, Observer {
-            listArticle = it;
-            _articleAdapter.submitList(listArticle)
-        })
+        _shared_Preference.getUid()?.let {
+            ArticleViewModel.getHeart(it).observe(viewLifecycleOwner, Observer {
+                listArticle = it;
+                _articleAdapter.submitList(listArticle)
+            })
+        }
     }
 
     private fun observeNetwork() {

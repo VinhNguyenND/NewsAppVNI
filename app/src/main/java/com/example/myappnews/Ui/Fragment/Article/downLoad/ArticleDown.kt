@@ -82,6 +82,7 @@ class ArticleDown : Fragment() {
                     mp?.setDataSource(speech)
                     mp?.prepare()
                     binding.seekPageContent.max = mp!!.duration
+                    binding.textEnd.text= mp?.duration?.let { formatDuration(it.toLong()) };
                 } else {
                     Log.e("MediaPlayer", "File not found: $speech")
                 }

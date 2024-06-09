@@ -15,10 +15,11 @@ import com.example.myappnews.Data.Model.Article.NewsArticle
 import com.example.myappnews.Interface.Adapter.CommonAdapter
 import com.example.myappnews.R
 import com.example.myappnews.Ui.Fragment.Home.Adapt.ArticleAdapter
+import com.example.myappnews.Ui.Fragment.management.Author.Home.showToast
 import com.example.myappnews.databinding.HomeAdminBinding
 
+//dang cho xet duyet
 class Await_Frag : Fragment() {
-
     private lateinit var binding: HomeAdminBinding
     private val _adminViewModel = AdminViewModel.getInstance()
     private lateinit var rcvHomeAdapter: ArticleAdapter
@@ -35,8 +36,8 @@ class Await_Frag : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initShimer()
         initRcView(requireContext())
-        event()
     }
 
     override fun onResume() {
@@ -44,14 +45,10 @@ class Await_Frag : Fragment() {
         getAllArticle()
     }
 
-    override fun onPause() {
-        super.onPause()
-        _adminViewModel.set_ArticleLiveData()
-    }
-
     private fun initRcView(context: Context) {
         rcvHomeAdapter = ArticleAdapter(listArticle, context)
         binding.rcvhomeadmin.let {
+            rcvHomeAdapter.setIsRequire(true)
             it.adapter = rcvHomeAdapter
             it.layoutManager = LinearLayoutManager(
                 parentFragment?.requireContext(),
@@ -68,14 +65,26 @@ class Await_Frag : Fragment() {
     }
 
     private fun getAllArticle() {
-        _adminViewModel.getAllApprove(0).observe(viewLifecycleOwner, Observer {
+        binding.shimmerViewContainer.startShimmer()
+        _adminViewModel.getAllAwait(0).observe(viewLifecycleOwner, Observer {
             listArticle = it;
             rcvHomeAdapter.submitList(it);
+            if (it.isNotEmpty()) {
+                binding.shimmerViewContainer.stopShimmer()
+                binding.shimmerViewContainer.hideShimmer()
+                binding.shimmerViewContainer.visibility = View.GONE
+                binding.noDataFound.visibility = View.GONE
+            } else {
+                binding.shimmerViewContainer.stopShimmer()
+                binding.shimmerViewContainer.hideShimmer()
+                binding.shimmerViewContainer.visibility = View.GONE
+                binding.noDataFound.visibility = View.VISIBLE
+            }
         })
     }
 
-    private fun event() {
-
+    private fun initShimer() {
+        binding.shimmerViewContainer.visibility = View.VISIBLE
     }
 
 

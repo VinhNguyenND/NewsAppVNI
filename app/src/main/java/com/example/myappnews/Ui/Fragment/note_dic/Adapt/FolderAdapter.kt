@@ -1,4 +1,4 @@
-package com.example.myappnews.Ui.Fragment.Search.Adapt
+package com.example.myappnews.Ui.Fragment.note_dic.Adapt
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -112,6 +112,6 @@ class FolderAdapter(
 
 fun convertLongToTime(time: Long): String {
     val date = Date(time)
-    val format = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+    val format = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault())
     return format.format(date)
 }

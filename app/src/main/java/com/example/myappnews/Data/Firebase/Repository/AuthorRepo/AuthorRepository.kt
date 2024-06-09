@@ -22,7 +22,7 @@ class AuthorRepository {
     private val _denied = MutableLiveData<ArrayList<NewsArticle>>()
     private val _requireEdit = MutableLiveData<ArrayList<NewsArticle>>()
     private val _isDeleteDenied = MutableLiveData<Boolean>()
-    private val _isRequest = MutableLiveData<Boolean>()
+    private val _isRequest = MutableLiveData<Boolean?>()
     private var storageRef = Firebase.storage.reference
     private val _isDeleteRequest = MutableLiveData<Boolean>()
     private val _isPostAgain = MutableLiveData<Boolean>()
@@ -46,7 +46,7 @@ class AuthorRepository {
         get() = _denied
     val RequireEdit: LiveData<ArrayList<NewsArticle>>
         get() = _requireEdit
-    val IsRequest: LiveData<Boolean>
+    val IsRequest: MutableLiveData<Boolean?>
         get() = _isRequest
     val IsDeleteRequest: LiveData<Boolean>
         get() = _isDeleteRequest
@@ -199,6 +199,9 @@ class AuthorRepository {
             }
     }
 
+     fun setSendArticleEdit(boolean: Boolean?){
+        _isRequest.postValue(null)
+    }
 
     fun deleteArticleRequest(id: String) {
         db.collection("Articles")

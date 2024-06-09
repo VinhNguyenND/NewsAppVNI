@@ -45,7 +45,7 @@ class SearchFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        getAllArticle("All", "All")
+        getAllArticle()
     }
 
     private fun initViewModel() {
@@ -105,11 +105,10 @@ class SearchFragment : Fragment() {
         })
     }
 
-    private fun getAllArticle(topic: String, source: String) {
+    private fun getAllArticle() {
         ArticleViewModel.getAllNews().observe(viewLifecycleOwner, Observer {
             listArticle = it;
             _articleAdapter.submit(listArticle)
-
         })
     }
 }

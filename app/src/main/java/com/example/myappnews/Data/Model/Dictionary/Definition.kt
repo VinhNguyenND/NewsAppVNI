@@ -34,7 +34,7 @@ data class Definition(
         }
         if (this.synonyms.size > 0) {
             for (doc in this.synonyms) {
-                synonyms += " " + doc
+                synonyms += "\nsynonyms: " + doc
             }
         }
         if (this.example.length > 0) {

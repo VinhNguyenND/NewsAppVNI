@@ -1,7 +1,6 @@
-package com.example.myappnews.Ui.Fragment.Search.Adapt
+package com.example.myappnews.Ui.Fragment.note_dic.Adapt
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.view.Gravity
@@ -18,7 +17,6 @@ import com.example.myappnews.Data.Local.Dictionary.Helper.DictionaryViewModel
 import com.example.myappnews.Interface.Adapter.CommonAdapter
 import com.example.myappnews.R
 import com.example.myappnews.databinding.ItemNotesBinding
-import com.google.android.material.button.MaterialButton
 
 class ItemNoteAdapter(
     private val listItemNote: List<DictionaryItem>,
@@ -74,7 +72,7 @@ class ItemNoteAdapter(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT
         )
-        dialog.findViewById<TextView>(R.id.textView).text = "Bạn có muốn xóa bài báo";
+        dialog.findViewById<TextView>(R.id.textView).text = "Bạn có muốn xóa ";
         val windowAtribute: WindowManager.LayoutParams = window.attributes
         windowAtribute.gravity = Gravity.CENTER
         window.attributes = windowAtribute

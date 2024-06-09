@@ -245,7 +245,7 @@ class Home_Fragment : Fragment() {
                         listSource[i].choose = false
                     }
                 }
-                listSource[position].choose = !listSource[position].choose!!;
+                listSource[position].choose = !listSource[position].choose;
                 sourceAdapter.submitList(listSource);
                 source = listSource[position].SourceName.toString();
                 ArticleViewModel.getNewByTopic(topic, source)

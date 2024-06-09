@@ -33,7 +33,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
-                android:background="#CFCCCC"
+                android:background="@drawable/decorate_search"
                 app:iconifiedByDefault="false"
                 app:queryHint="Search"
                 app:searchIcon="@drawable/ic_search" />
@@ -53,14 +53,14 @@
 
         <ImageView
             android:id="@+id/id_add_dic"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.882"
+            app:layout_constraintHorizontal_bias="0.2"
             app:layout_constraintStart_toEndOf="@+id/textView4"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.487"
+            app:layout_constraintVertical_bias="0.5"
             app:srcCompat="@drawable/icdicplus24" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

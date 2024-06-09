@@ -18,11 +18,14 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.example.myappnews.Data.Firebase.ViewModel.AdminViewModel.AdminViewModel
 import com.example.myappnews.Data.Model.Article.Article
 import com.example.myappnews.Data.Model.Article.NewsArticle
+import com.example.myappnews.Data.constant.dismissKeyboard
 import com.example.myappnews.R
+import com.example.myappnews.Ui.Fragment.management.Admin.dismissAllKeyboards
 import com.example.myappnews.Ui.Fragment.management.Author.Home.showToast
 import com.example.myappnews.databinding.AwaitRqEditBinding
 import java.util.Date
@@ -44,27 +47,24 @@ class AwaitRqEdit : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initContent()
-        event()
+        event(view)
     }
 
-    private fun event() {
+    private fun event(view: View) {
         binding.btnApproveRqEdit.setOnClickListener {
-            showYesDialog()
+            showYesDialog(view)
         }
         binding.btnXoaRequiredEdit.setOnClickListener {
-            showDeleteDialog()
+            showDeleteDialog(view)
         }
         binding.idEditAgain.setOnClickListener {
-            showAgainEdit()
+            showAgainEdit(view)
         }
         binding.btnbackadEdit.setOnClickListener {
             Navigation.findNavController(binding.root).popBackStack()
         }
     }
 
-    private fun observe() {
-
-    }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun initContent() {
@@ -73,7 +73,7 @@ class AwaitRqEdit : Fragment() {
             val text: String = article.content!!.replace("\\\\n", "<br/>" + " ");
             binding.txtPageContent.text = Html.fromHtml(text)
             binding.articlePageTittle.text = article.titleArticle
-            binding.txtPageTime.text=article.pubDate.toString()
+            binding.txtPageTime.text = article.pubDate.toString()
             binding.idTrangthaiEidit.text = article.requireEdit?.let { resonseStatus(it) }
             article.pubDate.toString()
             Glide.with(requireContext())
@@ -85,7 +85,7 @@ class AwaitRqEdit : Fragment() {
 
     }
 
-    private fun showYesDialog() {
+    private fun showYesDialog(view: View) {
         val dialog = Dialog(requireContext())
         dialog.setCancelable(false)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -106,6 +106,7 @@ class AwaitRqEdit : Fragment() {
         val text = dialog.findViewById<TextView>(R.id.textView)
         text.text = "Bạn có đồng ý với bài chỉnh sửa"
         ok.setOnClickListener {
+            dismissKeyboard(requireContext(), view)
             val Article = NewsArticle(
                 content = article.content,
                 idArticle = article.idArticle,
@@ -131,14 +132,17 @@ class AwaitRqEdit : Fragment() {
                 Observer {
                     if (it == 1) {
                         showToast(requireContext(), "Cập nhật thành công")
+                        dismissAllKeyboards(requireActivity())
+                        view.findNavController().popBackStack()
                     } else if (it == 0) {
+                        dismissAllKeyboards(requireActivity())
                         showToast(requireContext(), "Cập nhật thất bại")
                     } else {
+                        dismissAllKeyboards(requireActivity())
                         showToast(requireContext(), "Lỗi cập nhật")
                     }
                 }
             )
-            Log.d("ban da lay du lieu de chap nhan", Article.toString())
             dialog.dismiss()
         }
         cancel.setOnClickListener {
@@ -147,7 +151,7 @@ class AwaitRqEdit : Fragment() {
         dialog.show()
     }
 
-    private fun showDeleteDialog() {
+    private fun showDeleteDialog(view: View) {
         val dialog = Dialog(requireContext())
         dialog.setCancelable(false)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -168,12 +172,16 @@ class AwaitRqEdit : Fragment() {
         val text = dialog.findViewById<TextView>(R.id.textView)
         text.text = "Bạn có chắc muốn xóa yêu cầu "
         ok.setOnClickListener {
+            dismissKeyboard(requireContext(), view)
             _adminViewModel.deleteRequireEdit(article.idArticle.toString())
                 .observe(viewLifecycleOwner, Observer {
                     dialog.hide()
                     if (it == 1) {
                         showToast(requireContext(), "Bạn đã  xóa thành công")
+                        dismissAllKeyboards(requireActivity())
+                        view.findNavController().popBackStack()
                     } else if (it == -1) {
+                        dismissAllKeyboards(requireActivity())
                         showToast(requireContext(), "Bạn đã xóa thất bại")
                     }
                 })
@@ -185,7 +193,7 @@ class AwaitRqEdit : Fragment() {
         dialog.show()
     }
 
-    private fun showAgainEdit() {
+    private fun showAgainEdit(view: View) {
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.cause_pop_up)
@@ -232,8 +240,11 @@ class AwaitRqEdit : Fragment() {
                     Observer {
                         if (isAdded && isVisible) {
                             if (it == 0) {
+                                view.findNavController().popBackStack()
+                                dismissAllKeyboards(requireActivity())
                                 showToast(requireContext(), "thanh cong");
                             } else {
+                                dismissAllKeyboards(requireActivity())
                                 showToast(requireContext(), "that bai");
                                 dialog.dismiss()
                             }

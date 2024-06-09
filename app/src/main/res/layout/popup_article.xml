@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/white"
     android:layout_width="350dp"
     android:layout_height="350dp">
 
@@ -10,14 +9,12 @@
         android:id="@+id/mainPopWord"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:backgroundTint="@color/white"
-        android:maxHeight="100dp"
-        android:minHeight="100dp">
+        android:backgroundTint="@color/white">
 
         <FrameLayout
             android:layout_width="350dp"
             android:layout_height="350dp"
-            android:background="@drawable/popdraw">
+            android:background="@drawable/back_article_pop">
 
             <LinearLayout
                 android:id="@+id/linearBody"
@@ -36,10 +33,10 @@
                         android:text="@string/universities"
                         android:textColor="@color/black"
                         android:textFontWeight="1"
-                        android:textSize="16sp"
+                        android:textSize="24sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.05"
+                        app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintVertical_bias="0.05" />
@@ -51,7 +48,7 @@
                         android:orientation="horizontal"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.05"
+                        app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/englishWord"
                         app:layout_constraintVertical_bias="0.01">
@@ -63,29 +60,29 @@
                             android:text="ˈfeɪməs"
                             android:textColor="@color/black"
                             android:textFontWeight="1"
-                            android:textSize="16sp" />
+                            android:textSize="18sp" />
                     </LinearLayout>
 
                     <ImageView
                         android:id="@+id/imageVoice"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
                         android:src="@drawable/ic8sound50"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.926"
+                        app:layout_constraintHorizontal_bias="0.95"
                         app:layout_constraintStart_toEndOf="@+id/englishWord"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintVertical_bias="0.05" />
 
                     <ImageView
                         android:id="@+id/heart"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
                         android:src="@drawable/icheart24"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/imageVoice"
-                        app:layout_constraintHorizontal_bias="0.927"
+                        app:layout_constraintHorizontal_bias="0.9"
                         app:layout_constraintStart_toEndOf="@+id/englishWord"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintVertical_bias="0.05" />
@@ -100,7 +97,7 @@
                         android:textSize="16sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.05"
+                        app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/linearLayout"
                         app:layout_constraintVertical_bias="0.03" />
@@ -109,13 +106,19 @@
         </FrameLayout>
     </ScrollView>
 
-    <TextView
+    <FrameLayout
         android:id="@+id/popNothing"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="nothing"
-        android:textSize="26sp" />
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:background="@drawable/back_article_pop">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:src="@drawable/nodatafound" />
+    </FrameLayout>
+
 
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_word_container"

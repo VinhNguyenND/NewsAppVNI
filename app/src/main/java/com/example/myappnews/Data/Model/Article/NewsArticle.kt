@@ -25,7 +25,7 @@ data class NewsArticle(
     var requiredDate:Date?=null,// thời gian yêu cầu xét duyệt
     var cause: String? = null,//lý do
     var causeDenied:String?=null,
-    var like:Int?=null,//thích
+    var like:ArrayList<String>?= ArrayList(),//thích
     var numSeen:Int?=null,
 ) : Parcelable {
     fun toMap(): Map<String, Any?> {
@@ -42,6 +42,7 @@ data class NewsArticle(
             "sourceUrl" to sourceUrl,
             "sourceId" to sourceId,
             "country" to country,
+            "like" to like,
             "field" to field,
             "isApprove" to isApprove,
             "hide" to hide,

@@ -17,8 +17,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.Navigation
-import androidx.navigation.Navigator
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,14 +25,13 @@ import com.example.myappnews.Data.Local.Dictionary.Entity.DictionaryItem
 import com.example.myappnews.Data.Local.Dictionary.Helper.DictionaryViewModel
 import com.example.myappnews.Interface.Adapter.CommonAdapter
 import com.example.myappnews.R
-import com.example.myappnews.Ui.Fragment.Search.Adapt.FolderAdapter
+import com.example.myappnews.Ui.Fragment.note_dic.Adapt.FolderAdapter
 import com.example.myappnews.Ui.Fragment.management.Author.Home.showToast
 import com.example.myappnews.databinding.AddNoteLayoutBinding
 import com.google.android.material.button.MaterialButton
 import java.util.Date
 
 class AddNote : Fragment() {
-
     private lateinit var binding: AddNoteLayoutBinding
     private lateinit var DictionaryFolder: DictionaryViewModel
     private lateinit var _folderAdapter: FolderAdapter

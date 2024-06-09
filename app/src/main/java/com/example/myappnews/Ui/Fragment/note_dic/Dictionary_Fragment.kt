@@ -1,4 +1,4 @@
-package com.example.myappnews.Ui.Fragment.Search
+package com.example.myappnews.Ui.Fragment.note_dic
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -6,18 +6,14 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Canvas
 import android.os.Bundle
-import android.text.Layout.Directions
 import android.util.Log
 import android.view.Gravity
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
@@ -32,14 +28,12 @@ import com.example.myappnews.Data.Local.Dictionary.Entity.DictionaryFolder
 import com.example.myappnews.Data.Local.Dictionary.Helper.DictionaryViewModel
 import com.example.myappnews.Interface.Adapter.CommonAdapter
 import com.example.myappnews.R
-import com.example.myappnews.Ui.Fragment.Search.Adapt.FolderAdapter
+import com.example.myappnews.Ui.Fragment.note_dic.Adapt.FolderAdapter
 import com.example.myappnews.Ui.Fragment.management.Author.Home.showToast
 import com.example.myappnews.databinding.SearchScreenBinding
 import com.google.android.material.button.MaterialButton
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
-import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 class Dictionary_Fragment : Fragment() {
     private lateinit var binding: SearchScreenBinding

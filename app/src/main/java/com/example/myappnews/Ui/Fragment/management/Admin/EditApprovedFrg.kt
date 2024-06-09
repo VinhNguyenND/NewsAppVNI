@@ -21,14 +21,17 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.example.myappnews.Data.Firebase.ViewModel.AdminViewModel.AdminViewModel
 import com.example.myappnews.Data.Model.Article.Article
 import com.example.myappnews.Data.Model.Article.NewsArticle
+import com.example.myappnews.Data.constant.dismissKeyboard
 import com.example.myappnews.R
 import com.example.myappnews.databinding.EditApprovedBinding
 import java.util.Date
 
+//chi tiet bai bao da dang
 class EditApprovedFrg : Fragment() {
     private lateinit var binding: EditApprovedBinding
     private val _adminViewModel = AdminViewModel.getInstance()
@@ -47,7 +50,7 @@ class EditApprovedFrg : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        event()
+        event(view)
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -87,13 +90,13 @@ class EditApprovedFrg : Fragment() {
 
     }
 
-    private fun event() {
+    private fun event(view: View) {
         binding.btnbackar.setOnClickListener {
             Navigation.findNavController(binding.root).popBackStack()
         }
-        binding.deleteBtnApprove.setOnClickListener {
-            showCustomDialog()
-        }
+//        binding.deleteBtnApprove.setOnClickListener {
+//            showCustomDialog(view)
+//        }
         binding.editApproveShow.setOnClickListener {
             if (isHide) {
                 isHide = false
@@ -107,11 +110,11 @@ class EditApprovedFrg : Fragment() {
             }
         }
         binding.editApprove.setOnClickListener {
-            showRequestEdit();
+            showRequestEdit(view);
         }
     }
 
-    private fun showCustomDialog() {
+    private fun showCustomDialog(view: View) {
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.delete_approve_pop)
@@ -127,11 +130,13 @@ class EditApprovedFrg : Fragment() {
         windowAtribute.gravity = Gravity.CENTER
         window.attributes = windowAtribute
         dialog.findViewById<Button>(R.id.btnDongy).setOnClickListener {
+            dismissKeyboard(requireContext(), view)
             dialog.findViewById<ProgressBar>(R.id.progress_pop_approve).visibility = View.VISIBLE
             _adminViewModel.doDelete(idDoc).observe(viewLifecycleOwner, Observer {
                 dialog.hide()
                 if (it == 1) {
                     showToast(requireContext(), "Bạn đã  xóa thành công")
+                    view.findNavController().popBackStack()
                 } else if (it == -1) {
                     showToast(requireContext(), "Bạn đã xóa thất bại")
                 }
@@ -145,7 +150,7 @@ class EditApprovedFrg : Fragment() {
         dialog.show()
     }
 
-    private fun showRequestEdit() {
+    private fun showRequestEdit(view: View) {
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.cause_pop_up)
@@ -158,10 +163,12 @@ class EditApprovedFrg : Fragment() {
             WindowManager.LayoutParams.WRAP_CONTENT
         )
         val windowAtribute: WindowManager.LayoutParams = window.attributes
+//        dialog.findViewById<TextView>(R.id.textView2).text="Từ chối yêu cầu đăng bài"
         windowAtribute.gravity = Gravity.CENTER
         window.attributes = windowAtribute
         dialog.findViewById<Button>(R.id.btnOkCausepop)
             .setOnClickListener {
+                dismissKeyboard(requireContext(), view)
                 val cause = dialog.findViewById<EditText>(R.id.txtCause).text.toString()
                 val Article = NewsArticle(
                     content = article.content,
@@ -190,6 +197,7 @@ class EditApprovedFrg : Fragment() {
                         if (isAdded && isVisible) {
                             if (it == 0) {
                                 showToast(requireContext(), "thanh cong");
+                                view.findNavController().popBackStack()
                             } else {
                                 showToast(requireContext(), "that bai");
                                 dialog.dismiss()
@@ -214,7 +222,6 @@ class EditApprovedFrg : Fragment() {
 
         val textViewMessage = layout.findViewById<TextView>(R.id.textViewMessage)
         textViewMessage.text = message
-
         val toast = Toast(context)
         toast.setGravity(
             Gravity.CENTER_VERTICAL or Gravity.BOTTOM,

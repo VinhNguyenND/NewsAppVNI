@@ -89,7 +89,6 @@ class Profile_Fragment : Fragment() {
     }
 
 
-
     private fun observeNetwork() {
         internetViewModel.getChangeInternet().observe(viewLifecycleOwner, Observer { isConnected ->
             if (!isConnected) {
@@ -162,7 +161,8 @@ class Profile_Fragment : Fragment() {
                         .into(binding.avatarProfile)
                     imageGlobal = it.Image.toString()
                     nameGlobal = it.Name.toString()
-                    binding.UserNamPr.setText(it.Name)
+                    binding.UserEmailPr.setText(shortString(it.Email.toString()))
+                    binding.UserNamPr.setText(shortString(it.Name.toString()))
                 }
             )
         }
@@ -170,10 +170,8 @@ class Profile_Fragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        showToast(requireContext(), requestCode.toString())
         if (resultCode == Activity.RESULT_OK && requestCode == ImagePicker.REQUEST_CODE) {
             val fileUri = data?.data
-            showToast(requireContext(), fileUri.toString())
             if (fileUri != null) {
                 lifecycleScope.launch(Dispatchers.IO) {
                     val imageBytes: ByteArray? = getImageBytesFromUri(requireContext(), fileUri)
@@ -185,7 +183,7 @@ class Profile_Fragment : Fragment() {
         } else if (resultCode == ImagePicker.RESULT_ERROR) {
             showToast(requireContext(), "up load fail")
         } else {
-            Toast.makeText(requireContext(), "Image picker cancel", Toast.LENGTH_SHORT).show()
+            showToast(requireContext(), "Image picker cancel")
         }
     }
 
@@ -247,6 +245,7 @@ class Profile_Fragment : Fragment() {
 
                 UserEnum.User.toString() -> {
                     binding.layoutSpecial.visibility = View.VISIBLE
+                    binding.addMin.visibility = View.GONE
                 }
 
                 UserEnum.Author.toString() -> {
@@ -316,7 +315,7 @@ class Profile_Fragment : Fragment() {
             viewLifecycleOwner,
             Observer {
                 image = it;
-                val bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+                val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
                 dialog.findViewById<CircleImageView>(R.id.imageProfileEdit).setImageBitmap(bitmap)
             }
         )
@@ -396,4 +395,14 @@ fun openCamera(activity: Activity) {
             1080
         )    //Final image resolution will be less than 1080 x 1080(Optional)
         .start()
+}
+
+fun shortString(string: String): String {
+    var namePro = "";
+    if (string.length > 15) {
+        namePro = string.substring(0, 14) + "..."
+    } else {
+        namePro = string.toString()
+    }
+    return namePro
 }

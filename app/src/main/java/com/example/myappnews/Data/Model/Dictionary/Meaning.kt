@@ -26,23 +26,32 @@ data class Meaning(
         var synonyms: String = "";
         if (this.antonyms.size > 0) {
             antonyms = "\nantonyms: ";
-            for (doc in this.antonyms) {
-                antonyms +=" " +doc;
+            this.antonyms.forEachIndexed { index, doc ->
+                if (index <= 2) {
+                    antonyms += " " + doc;
+                }
             }
         }
         if (this.definitions.size > 0) {
             definitions = "\ndefinitions: "
-            for (doc in this.definitions) {
-                definitions += doc;
+            this.definitions.forEachIndexed { index, doc ->
+                if (index < 2) {
+                    definitions += doc;
+                }
             }
         }
         if (this.partOfSpeech.length > 0) {
             partOfSpeech = "\npartOfSpeech: " + this.partOfSpeech
         }
         if (this.synonyms.size > 0) {
-            synonyms = "\nsynonyms: " + this.synonyms.toString()
+            synonyms = "\nsynonyms: "
+            this.synonyms.forEachIndexed { index, doc ->
+                if (index < 2) {
+                    synonyms += this.synonyms.toString()
+                }
+            }
         }
-        return "Meanings:$antonyms    $definitions   $partOfSpeech   $synonyms";
+        return "$antonyms    $definitions   $partOfSpeech   $synonyms";
     }
 
 

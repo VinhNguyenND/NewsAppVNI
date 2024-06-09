@@ -23,6 +23,7 @@ import com.example.myappnews.Data.Firebase.ViewModel.AdminViewModel.AdminViewMod
 import com.example.myappnews.Data.Firebase.ViewModel.AuthorViewModel.AuthorViewModel
 import com.example.myappnews.Data.Model.Article.NewsArticle
 import com.example.myappnews.Data.SharedPreferences.Shared_Preference
+import com.example.myappnews.Data.constant.dismissKeyboard
 import com.example.myappnews.R
 import com.example.myappnews.Ui.Fragment.management.Author.Home.showToast
 import com.example.myappnews.databinding.EditDeniedBinding
@@ -80,11 +81,11 @@ class EditDenied : Fragment() {
             view.findNavController().navigate(R.id.deniedEdit, bundle)
         }
         binding.btnDeleteDenied.setOnClickListener {
-            showCustomDialog()
+            showCustomDialog(view)
         }
     }
 
-    private fun showCustomDialog() {
+    private fun showCustomDialog(view: View) {
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.delete_approve_pop)
@@ -101,13 +102,14 @@ class EditDenied : Fragment() {
         window.attributes = windowAtribute
         dialog.findViewById<TextView>(R.id.textView).text = "bạn có chắc muốn xóa yêu cầu";
         dialog.findViewById<Button>(R.id.btnDongy).setOnClickListener {
+            dismissKeyboard(requireActivity(),view)
             dialog.findViewById<ProgressBar>(R.id.progress_pop_approve).visibility = View.VISIBLE
             _authorViewModel.deleteDenied(newsArticle = article)
                 .observe(viewLifecycleOwner, Observer {
                     dialog.hide()
-                    if (it == true && isAdded && isVisible) {
+                    if (it == true && isAdded) {
                         showToast(requireContext(), "Bạn đã  xóa thành công")
-                        Navigation.findNavController(binding.root).popBackStack()
+                        view.findNavController().popBackStack()
                     } else if (it == false) {
                         showToast(requireContext(), "Bạn đã xóa thất bại")
                     }

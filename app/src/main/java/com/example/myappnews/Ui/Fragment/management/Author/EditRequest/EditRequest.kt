@@ -18,11 +18,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.myappnews.Data.Firebase.ViewModel.AuthorViewModel.AuthorViewModel
 import com.example.myappnews.Data.Model.Article.NewsArticle
+import com.example.myappnews.Data.constant.dismissKeyboard
 import com.example.myappnews.R
 import com.example.myappnews.Ui.Fragment.Profile.byteToImage
 import com.example.myappnews.Ui.Fragment.Profile.getImageBytesFromUri
@@ -97,6 +99,7 @@ class EditRequest : Fragment() {
 
     private fun event(view: View, newsArticle: NewsArticle) {
         binding.btnOk.setOnClickListener {
+            dismissKeyboard(requireContext(),view)
             val newsArticle = NewsArticle(
                 idArticle = newsArticle.idArticle, // ID article
                 idPoster = newsArticle.idPoster,  // Thiếu trong binding
@@ -118,7 +121,14 @@ class EditRequest : Fragment() {
             )
             _authorViewModel.responseRqEdit(newsArticle, byteArrayImage)
                 .observe(viewLifecycleOwner, Observer {
-                    showToast(requireContext(), "Gửi  yêu cầu thành công")
+                    if (isAdded && isVisible) {
+                        if (it == 1) {
+                            showToast(requireContext(), "Gửi  yêu cầu thành công")
+                            view.findNavController().popBackStack()
+                        } else {
+                            showToast(requireContext(), "Gửi  yêu cầu thất bại")
+                        }
+                    }
                 })
 
         }

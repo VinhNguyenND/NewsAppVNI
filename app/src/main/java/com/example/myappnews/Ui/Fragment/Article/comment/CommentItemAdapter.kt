@@ -62,7 +62,7 @@ class CommentItemAdapter(
         fun bind(comment: Comment) {
             binding.txtNameComment.text = comment.nameUser;
             binding.txtContentComment.text = comment.comment;
-            binding.txtTimeComment.text = comment.time?.let { calculateElapsedTime(it) }
+            binding.txtTimeComment.text = comment.time?.let { calculateElapsedTime(it).trim() }
             if (comment.like.isNotEmpty() && comment.like.contains(_id)) {
                 binding.btnLikeComment.setImageResource(R.drawable.iclikeheart)
             }

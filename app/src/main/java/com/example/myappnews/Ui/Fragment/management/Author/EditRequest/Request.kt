@@ -39,6 +39,7 @@ class Request : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initShimer()
         _shared_Preference = Shared_Preference(requireActivity());
         initRcView(requireContext())
     }
@@ -67,12 +68,27 @@ class Request : Fragment() {
     }
 
     private fun initData() {
+        binding.shimmerViewContainer.startShimmer()
         _authorViewModel.getAllRequireEdit(_shared_Preference.getUid().toString())
             .observe(viewLifecycleOwner, Observer {
                 listArticle = it;
                 _articleAdapter.submitList(it);
+                if (it.isNotEmpty()) {
+                    binding.shimmerViewContainer.stopShimmer()
+                    binding.shimmerViewContainer.hideShimmer()
+                    binding.shimmerViewContainer.visibility = View.GONE
+                    binding.noDataFound.visibility = View.GONE
+                } else {
+                    binding.shimmerViewContainer.stopShimmer()
+                    binding.shimmerViewContainer.hideShimmer()
+                    binding.shimmerViewContainer.visibility = View.GONE
+                    binding.noDataFound.visibility = View.VISIBLE
+                }
             })
     }
 
+    private fun initShimer() {
+        binding.shimmerViewContainer.visibility = View.VISIBLE
+    }
 
 }

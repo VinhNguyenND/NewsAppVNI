@@ -12,9 +12,21 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <Space
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="150dp"/>
+            android:layout_height="150dp">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.041"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/back_24" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -34,6 +46,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/emailInputLayout"
             android:layout_width="330dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -49,6 +62,7 @@
                 android:id="@+id/txtEmailLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/input_text_bg"
                 android:hint="@string/Email_hint"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
@@ -59,6 +73,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/passwordInputLayout"
             android:layout_width="330dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -75,6 +90,7 @@
                 android:id="@+id/txtPassWordLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/input_text_bg"
                 android:hint="@string/PassWord_hint"
                 android:inputType="textPassword"
                 android:maxLines="1"
@@ -104,15 +120,28 @@
 
             <Button
                 android:id="@+id/btnDangNhap"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Đăng Nhập"
+                android:layout_width="100dp"
+                android:layout_height="56dp"
+                android:backgroundTint="#9DCF6A"
+                android:text="Login"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.843" />
+
+            <TextView
+                android:id="@+id/btnForgotPassWord"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="forgot password"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.774"
+                app:layout_constraintStart_toEndOf="@+id/toCreateAccount"
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 

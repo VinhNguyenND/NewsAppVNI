@@ -13,7 +13,7 @@ class AuthorViewModel : ViewModel() {
     private val _awaitApproval = MutableLiveData<ArrayList<NewsArticle>>()
     private val _denied = MutableLiveData<ArrayList<NewsArticle>>()
     private val _requireEdit = MutableLiveData<ArrayList<NewsArticle>>()
-    private val _isRequest = MutableLiveData<Boolean>()
+    private val _isRequest = MutableLiveData<Boolean?>()
     private val _isDeleteDenied = MutableLiveData<Boolean>()
     private val _isDeleteRequest = MutableLiveData<Boolean>()
     private val _isPostAgain = MutableLiveData<Boolean>()
@@ -69,7 +69,7 @@ class AuthorViewModel : ViewModel() {
         return _requireEdit
     }
 
-    fun sendRequest(id: String, newsArticle: NewsArticle): LiveData<Boolean> {
+    fun sendRequest(id: String, newsArticle: NewsArticle): LiveData<Boolean?> {
         _authorRepo.sendRequest(id, newsArticle)
         _authorRepo.IsRequest.observeForever {
             _isRequest.postValue(it)
@@ -77,11 +77,18 @@ class AuthorViewModel : ViewModel() {
         return _isRequest
     }
 
-    fun sendArticleEdit(newsArticle: NewsArticle, imageUri: ByteArray): LiveData<Boolean> {
+    fun sendArticleEdit(newsArticle: NewsArticle, imageUri: ByteArray) {
         _authorRepo.sendArticleEdit(newsArticle, imageUri)
         _authorRepo.IsRequest.observeForever {
             _isRequest.postValue(it)
         }
+    }
+
+    fun setSendArticleEdit(boolean: Boolean?) {
+       _authorRepo.setSendArticleEdit(boolean)
+    }
+
+    fun observerArticleEdit(): LiveData<Boolean?> {
         return _isRequest
     }
 
@@ -101,8 +108,8 @@ class AuthorViewModel : ViewModel() {
         return _isPostAgain
     }
 
-    fun responseRqEdit(newsArticle: NewsArticle,byteArray: ByteArray): LiveData<Int> {
-        _authorRepo.responseRqEdit(newsArticle,byteArray)
+    fun responseRqEdit(newsArticle: NewsArticle, byteArray: ByteArray): LiveData<Int> {
+        _authorRepo.responseRqEdit(newsArticle, byteArray)
         _authorRepo.IsResponseEd.observeForever {
             _isResponseEd.postValue(it);
         }

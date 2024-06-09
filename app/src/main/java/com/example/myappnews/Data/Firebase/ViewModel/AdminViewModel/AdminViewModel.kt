@@ -11,12 +11,14 @@ import com.example.myappnews.Data.Model.Article.NewsArticle
 class AdminViewModel : ViewModel() {
     private val ArRepository = AdminRepo.getInstance();
     private val liveDataAr = MutableLiveData<ArrayList<NewsArticle>>();
+    private val awaitLiveData = MutableLiveData<ArrayList<NewsArticle>>();
     private var _ArticlrWaitLiveData = MutableLiveData<ArrayList<NewsArticle>>();
     private val _isApprove = MutableLiveData<Boolean>();
     private val _idDocument = MutableLiveData<String>();
     private var _isDelete = MutableLiveData<Int>();
     private val _isRequestEdit = MutableLiveData<Int>();
     private val _isUpdateSuccess = MutableLiveData<Int>();
+    private val _isApprovePush = MutableLiveData<Int>();
 
     companion object {
         @Volatile
@@ -44,12 +46,20 @@ class AdminViewModel : ViewModel() {
         ArRepository.set_DeleteAr()
     }
 
-    fun getAllApprove(value: Int): LiveData<ArrayList<NewsArticle>> {
-        ArRepository.getNewsApprove(value)
+    fun getAllApprove(value: Int,idReview: String): LiveData<ArrayList<NewsArticle>> {
+        ArRepository.getNewsApprove(value,idReview)
         ArRepository.ArticleAdminLive.observeForever(Observer {
             liveDataAr.postValue(it);
         })
         return liveDataAr
+    }
+
+    fun getAllAwait(value: Int): LiveData<ArrayList<NewsArticle>> {
+        ArRepository.getNewsAwait(value)
+        ArRepository.ArticleWaitApprove.observeForever {
+            awaitLiveData.postValue(it)
+        }
+        return awaitLiveData
     }
 
     fun doApprove(idReview: String, id: String, value: Int): LiveData<Boolean> {
@@ -80,11 +90,15 @@ class AdminViewModel : ViewModel() {
         return _isRequestEdit
     }
 
-    fun getNewsAwaitEdit(): LiveData<ArrayList<NewsArticle>> {
+    fun getNewsAwaitEdit() {
         ArRepository.getNewsAwaitEdit()
         ArRepository.ArticlrWaitLiveData.observeForever {
             _ArticlrWaitLiveData.postValue(it)
         }
+
+    }
+
+    fun observerGetNewsAwaitEdit(): LiveData<ArrayList<NewsArticle>> {
         return _ArticlrWaitLiveData;
     }
 
@@ -104,11 +118,19 @@ class AdminViewModel : ViewModel() {
         return _isUpdateSuccess
     }
 
-    fun approvePush(news: NewsArticle): LiveData<Int> {
+    fun approvePush(news: NewsArticle) {
         ArRepository.approvePush(news)
-        ArRepository.IsUpdateSuccess.observeForever {
-            _isUpdateSuccess.postValue(it)
+        ArRepository.IsApprovePush.observeForever {
+            _isApprovePush.postValue(it)
         }
-        return _isUpdateSuccess
+
     }
-}
+
+    fun deleteApprovePush(value: Int) {
+        ArRepository.deleteApprovePush(value)
+    }
+
+        fun observerApprovePush(): LiveData<Int> {
+            return _isApprovePush
+        }
+    }

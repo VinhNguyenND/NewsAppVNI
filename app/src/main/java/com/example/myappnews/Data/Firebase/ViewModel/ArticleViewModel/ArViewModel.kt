@@ -20,6 +20,7 @@ class ArViewModel() : ViewModel() {
     private val liveDataHeart = MutableLiveData<ArrayList<NewsArticle>>();
     private val liveDataArticleField = MutableLiveData<ArrayList<NewsArticle>>();
     private var _isAuthen = MutableLiveData<Int>();
+    private var _isForGotPassWord = MutableLiveData<Boolean>();
     private var _FieldLiveData = MutableLiveData<ArrayList<Field>>();
     private var _source = MutableLiveData<ArrayList<Source>>()
     private var _User = MutableLiveData<UserModel>();
@@ -61,12 +62,33 @@ class ArViewModel() : ViewModel() {
         return _FieldLiveData
     }
 
-    fun SignIn(Activity: Activity, Email: String, PassWord: String): LiveData<Int> {
+    fun SignIn(Activity: Activity, Email: String, PassWord: String) {
         ArRepository.Login(Activity, Email, PassWord)
         ArRepository.IsAuthen.observeForever {
             _isAuthen.postValue(it)
         }
+    }
+
+    fun forgotPassWord(Email: String) {
+        ArRepository.forGotPassWord(Email)
+        ArRepository.forGotPassWord.observeForever {
+            _isForGotPassWord.postValue(it)
+        }
+    }
+
+    fun observerForGot(): LiveData<Boolean> {
+        return _isForGotPassWord;
+    }
+
+    fun OberverSignIn(): LiveData<Int> {
         return _isAuthen;
+    }
+
+    fun resetLogin(two: Int) {
+        ArRepository.resetLogin(two)
+        ArRepository.IsAuthen.observeForever {
+            _isAuthen.postValue(it)
+        }
     }
 
     fun getAllSource(): LiveData<ArrayList<Source>> {
@@ -89,12 +111,12 @@ class ArViewModel() : ViewModel() {
         return _User;
     }
 
-    fun doLike(like: Int, id: String) {
-        ArRepository.doLike(like, id)
+    fun doLike(idDoc: String, newsArticle: NewsArticle, id: String, isLike: Boolean) {
+        ArRepository.doLike(idDoc, newsArticle, id, isLike)
     }
 
-    fun getHeart(): LiveData<ArrayList<NewsArticle>> {
-        ArRepository.getHeart()
+    fun getHeart(id: String): LiveData<ArrayList<NewsArticle>> {
+        ArRepository.getHeart(id)
         ArRepository.ArticleHeart.observeForever {
             liveDataHeart.postValue(it)
         }
@@ -129,8 +151,8 @@ class ArViewModel() : ViewModel() {
         ArRepository.sendChildMessage(parent, child)
     }
 
-    fun getMainMessage(type: CommentFilter,id: String): LiveData<ArrayList<Comment>> {
-        ArRepository.getMainMessage(type,id)
+    fun getMainMessage(type: CommentFilter, id: String): LiveData<ArrayList<Comment>> {
+        ArRepository.getMainMessage(type, id)
         return ArRepository.getMainComments
     }
 
@@ -139,15 +161,16 @@ class ArViewModel() : ViewModel() {
         return ArRepository.getChildComments
     }
 
-    fun deleteComment(parent: Comment):LiveData<Boolean> {
+    fun deleteComment(parent: Comment): LiveData<Boolean> {
         ArRepository.deleteComment(parent)
-        return  ArRepository.deleteCommentSuccess
+        return ArRepository.deleteCommentSuccess
     }
 
-     fun likeComment(comment: Comment,id: String,isLike:Boolean) {
-         ArRepository.likeComment(comment, id,isLike)
-     }
-     fun removeComemt(){
-         ArRepository.removeComemt()
-     }
+    fun likeComment(comment: Comment, id: String, isLike: Boolean) {
+        ArRepository.likeComment(comment, id, isLike)
+    }
+
+    fun removeComemt() {
+        ArRepository.removeComemt()
+    }
 }

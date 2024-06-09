@@ -9,6 +9,7 @@ import com.example.myappnews.Ui.Fragment.management.Author.Home.sha256
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
@@ -20,11 +21,13 @@ class AdminRepo {
     private val db = Firebase.firestore
     private var _ArticleLiveData = MutableLiveData<ArrayList<NewsArticle>>();
     private var _ArticlrWaitLiveData = MutableLiveData<ArrayList<NewsArticle>>();
+    private var _articleWaitApprove = MutableLiveData<ArrayList<NewsArticle>>();
     private var _isApprove = MutableLiveData<Boolean>();
     private var _isDelete = MutableLiveData<Int>();
     private val _idDocument = MutableLiveData<String>();
     private val _isRequestEdit = MutableLiveData<Int>();
     private val _isUpdateSuccess = MutableLiveData<Int>();
+    private val _isApprovePush= MutableLiveData<Int>();
     val ArticleAdminLive: LiveData<ArrayList<NewsArticle>>
         get() = _ArticleLiveData;
     val IsApprove: LiveData<Boolean>
@@ -38,9 +41,14 @@ class AdminRepo {
 
     val ArticlrWaitLiveData: LiveData<ArrayList<NewsArticle>>
         get() = _ArticlrWaitLiveData;
+    val ArticleWaitApprove: LiveData<ArrayList<NewsArticle>>
+        get() = _articleWaitApprove
 
     val IsUpdateSuccess: LiveData<Int>
         get() = _isUpdateSuccess;
+
+    val IsApprovePush: LiveData<Int>
+        get() = _isApprovePush
 
     companion object {
         @Volatile
@@ -66,9 +74,12 @@ class AdminRepo {
             }
     }
 
-    fun getNewsApprove(value: Int) {
+    fun getNewsApprove(value: Int,idReview: String) {
         db.collection("Articles")
             .whereEqualTo("isApprove", value)
+            .whereEqualTo("idReviewer",idReview)
+            .whereEqualTo("hide",false)
+            .orderBy("pubDate", Query.Direction.DESCENDING)
             .get()
             .addOnCompleteListener {
                 val arrayArticle = ArrayList<NewsArticle>();
@@ -76,6 +87,24 @@ class AdminRepo {
                     arrayArticle.add(doc.toObject<NewsArticle>())
                 }
                 _ArticleLiveData.postValue(arrayArticle);
+            }.addOnFailureListener {
+                _ArticleLiveData.postValue(ArrayList<NewsArticle>());
+            }
+    }
+
+    fun getNewsAwait(value: Int) {
+        db.collection("Articles")
+            .whereEqualTo("isApprove", value)
+            .orderBy("pubDate", Query.Direction.DESCENDING)
+            .get()
+            .addOnCompleteListener {
+                val arrayArticle = ArrayList<NewsArticle>();
+                for (doc in it.result) {
+                    arrayArticle.add(doc.toObject<NewsArticle>())
+                }
+                _articleWaitApprove.postValue(arrayArticle);
+            }.addOnFailureListener {
+                _articleWaitApprove.postValue(ArrayList<NewsArticle>())
             }
     }
 
@@ -166,6 +195,7 @@ class AdminRepo {
 
     fun getNewsAwaitEdit() {
         db.collection("RequestEdit")
+            .orderBy("requiredDate", Query.Direction.DESCENDING)
             .get()
             .addOnCompleteListener {
                 val arrayArticle = ArrayList<NewsArticle>();
@@ -205,14 +235,17 @@ class AdminRepo {
             .set(news.toMap(), SetOptions.merge())
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    _isRequestEdit.postValue(0);
+                    _isApprovePush.postValue(0);
                 } else {
-                    _isRequestEdit.postValue(-1);
+                    _isApprovePush.postValue(-1);
                 }
             }
             .addOnFailureListener {
-                _isRequestEdit.postValue(-1);
+                _isApprovePush.postValue(-1);
             }
+    }
+    fun deleteApprovePush(value: Int){
+        _isApprovePush.postValue(value)
     }
 
     fun publishRequired(news: NewsArticle) {

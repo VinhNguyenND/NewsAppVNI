@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Rect
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
@@ -52,6 +53,7 @@ import com.example.myappnews.Data.Local.Dictionary.Entity.DictionaryItem
 import com.example.myappnews.Data.Local.Dictionary.Helper.DictionaryViewModel
 import com.example.myappnews.Data.Model.Article.Article
 import com.example.myappnews.Data.Model.Article.NewsArticle
+import com.example.myappnews.Data.SharedPreferences.Shared_Preference
 import com.example.myappnews.Interface.Adapter.CommonAdapter
 import com.example.myappnews.R
 import com.example.myappnews.Ui.Fragment.Article.Article_Fragment.Companion.fromDateToString
@@ -60,7 +62,6 @@ import com.example.myappnews.Ui.Fragment.Home.Adapt.ArticleAdapter
 import com.example.myappnews.Ui.Fragment.management.Author.Home.showToast
 import com.example.myappnews.databinding.ArticleScreenBinding
 import com.facebook.shimmer.ShimmerFrameLayout
-
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -87,6 +88,7 @@ class Article_Fragment : Fragment() {
     private var word: TextView? = null;
     private lateinit var speech: String;
     private var phonetic: TextView? = null;
+    private var audioPhontic: String = "";
     private var meanWord: TextView? = null;
     private val apiKey = "76373408e2mshdd1b501acbcbf46p1b09c4jsn6300c60e03f5"
     private val apiHost = "text-to-speech27.p.rapidapi.com"
@@ -94,6 +96,7 @@ class Article_Fragment : Fragment() {
     private var mp: MediaPlayer? = null
     private var isPlaying = false
     private var isLike = false
+    private lateinit var _shared_Preference: Shared_Preference;
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var article: NewsArticle;
     private lateinit var note: DictionaryItem;
@@ -117,24 +120,20 @@ class Article_Fragment : Fragment() {
     override fun onResume() {
         super.onResume()
         initShimer()
-        setEventforBack()
+//        setEventforBack()
         setEventBottomMedia()
         initializeMediaPlayer()
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        _shared_Preference = Shared_Preference(requireActivity());
         setEventTouchText(binding.txtPageContent)
         initViewModel()
         observeDic()
         setEvent(view)
         initRcView(requireContext())
         initContent()
-        binding.btnCapture.setOnClickListener {
-            getBitmapFromView(view, requireActivity()) {
-                shareBitmap(it)
-            }
-        }
         super.onViewCreated(view, savedInstanceState)
     }
 
@@ -183,7 +182,8 @@ class Article_Fragment : Fragment() {
                 binding.txtRelate.visibility = View.GONE
                 binding.arRcv.visibility = View.GONE
             }
-            if (article.like == 1) {
+            if (_shared_Preference.getUid()?.let { article.like?.contains(it) } == true) {
+
                 isLike = true;
                 binding.btnLike.setImageResource(R.drawable.ic_heart_red_24)
             } else {
@@ -205,11 +205,12 @@ class Article_Fragment : Fragment() {
                     _articleAdapter.submitList(listArticle)
                 }
             )
-//            callTextToSpeech(text)
+            callTextToSpeech(text)
             articlelocalViewModel.addArticle(toArticleEntity(article))
             binding
             binding.txtPageContent.text = Html.fromHtml(text)
             binding.txtPageTime.text = article.pubDate.toString()
+            binding.articlePageTittle.text = article.titleArticle.toString()
             Glide.with(requireContext())
                 .load(article.imageUrl?.trim())
                 .error(R.drawable.uploaderror)
@@ -240,6 +241,13 @@ class Article_Fragment : Fragment() {
                     Log.i("tu dien  getit", it.toString())
                     word!!.text = it[0].wordMean.toString()
                     phonetic!!.text = it[0].phonetic
+                    for (doc in it) {
+                        for (doc1 in doc.phonetics) {
+                            if (doc1.audio.isNotEmpty()) {
+                                audioPhontic = doc1.audio
+                            }
+                        }
+                    }
                     meanWord!!.text = it[0].meanings[0].toString()
                     note = DictionaryItem(
                         idDictionaryFolder = 0,
@@ -296,21 +304,21 @@ class Article_Fragment : Fragment() {
         })
     }
 
-    private fun setEventforBack() {
-        val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                isEnabled = false
-                if (viewPopup != null) {
-                    binding.rlLayout.removeView(viewPopup)
-                    isEnabled = false
-                } else {
-                    isEnabled = true
-                }
-            }
-        }
-
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-    }
+//    private fun setEventforBack() {
+//        val callback = object : OnBackPressedCallback(true) {
+//            override fun handleOnBackPressed() {
+//                isEnabled = false
+//                isEnabled = if (viewPopup != null) {
+//                    binding.rlLayout.removeView(viewPopup)
+//                    false
+//                } else {
+//                    true
+//                }
+//            }
+//        }
+//
+//        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+//    }
 
 
     private fun setEventBottomMedia() {
@@ -357,6 +365,11 @@ class Article_Fragment : Fragment() {
     }
 
     private fun setEvent(view: View) {
+        binding.btnCapture.setOnClickListener {
+            getBitmapFromView(view, requireActivity()) {
+                shareBitmap(it)
+            }
+        }
         binding.btnbackar.setOnClickListener {
             view.findNavController().popBackStack();
         }
@@ -373,55 +386,80 @@ class Article_Fragment : Fragment() {
         }
         binding.comment.setOnClickListener {
             val bundle = Bundle()
-            bundle.putParcelable("Article",article)
+            bundle.putParcelable("Article", article)
             bundle.putInt("ishistory", 1)
-            Navigation.findNavController(binding.root).navigate(R.id.commentFragment,bundle)
+            Navigation.findNavController(binding.root).navigate(R.id.commentFragment, bundle)
         }
 
         binding.downArticle.setOnClickListener {
-            FileWriter.saveToInternal(article.idArticle.toString() + ".tmp", requireContext())
-                .observe(viewLifecycleOwner,
-                    Observer {
-                        if (it != null) {
-                            val Article = ArticleDownEntity(
-                                idArticle = article.idArticle.toString(),
-                                titleArticle = article.titleArticle.toString(),
-                                linkArticle = article.linkArticle.toString(),
-                                creator = article.creator.toString(),
-                                content = article.content.toString(),
-                                pubDate = article.pubDate.toString(),
-                                imageUrl = article.imageUrl.toString(),
-                                sourceUrl = article.sourceUrl.toString(),
-                                sourceId = article.sourceId.toString(),
-                                country = article.country.toString(),
-                                field = article.field.toString(),
-                                sourceVoice = it.toString(),
-                            )
-                            articleDownViewModel.addArticle(Article)
-                            articleDownViewModel.isArticleInserted.observe(
-                                viewLifecycleOwner,
-                                Observer { isSuccess ->
-                                    if (isSuccess) {
-                                        showToast(requireContext(), "Article down successfully")
-                                    } else {
-                                        showToast(requireContext(), "Failed to down article")
-                                    }
-                                })
-                        } else {
-                            showToast(requireContext(), "Failed to down article")
-                        }
-                    })
+            if (_shared_Preference.getUid()?.isNotEmpty() == true) {
+                FileWriter.saveToInternal(article.idArticle.toString() + ".tmp", requireContext())
+                    .observe(viewLifecycleOwner,
+                        Observer {
+                            if (it != null) {
+                                val Article = ArticleDownEntity(
+                                    idArticle = article.idArticle.toString(),
+                                    titleArticle = article.titleArticle.toString(),
+                                    linkArticle = article.linkArticle.toString(),
+                                    creator = article.creator.toString(),
+                                    content = article.content.toString(),
+                                    pubDate = article.pubDate.toString(),
+                                    imageUrl = article.imageUrl.toString(),
+                                    sourceUrl = article.sourceUrl.toString(),
+                                    sourceId = article.sourceId.toString(),
+                                    country = article.country.toString(),
+                                    field = article.field.toString(),
+                                    sourceVoice = it.toString(),
+                                )
+                                articleDownViewModel.addArticle(Article)
+                                articleDownViewModel.isArticleInserted.observe(
+                                    viewLifecycleOwner,
+                                    Observer { isSuccess ->
+                                        if (isSuccess) {
+                                            showToast(requireContext(), "Article down successfully")
+                                        } else {
+                                            showToast(requireContext(), "Failed to down article")
+                                        }
+                                    })
+                            } else {
+                                showToast(requireContext(), "Failed to down article")
+                            }
+                        })
+            } else {
+                showToast(requireContext(), "Bạn cần phải đăng nhập")
+            }
+
         }
 
         binding.btnLike.setOnClickListener {
-            if (isLike) {
-                ArticleViewModel.doLike(0, idDoc)
-                isLike = false;
-                binding.btnLike.setImageResource(R.drawable.icheart24)
+            if (_shared_Preference.getUid()?.isNotEmpty() == true) {
+                if (isLike) {
+                    _shared_Preference.getUid()
+                        ?.let { it1 ->
+                            ArticleViewModel.doLike(
+                                idDoc,
+                                newsArticle = article,
+                                it1,
+                                false
+                            )
+                        }
+                    isLike = false;
+                    binding.btnLike.setImageResource(R.drawable.icheart24)
+                } else {
+                    _shared_Preference.getUid()
+                        ?.let { it1 ->
+                            ArticleViewModel.doLike(
+                                idDoc,
+                                newsArticle = article,
+                                it1,
+                                true
+                            )
+                        }
+                    isLike = true;
+                    binding.btnLike.setImageResource(R.drawable.ic_heart_red_24)
+                }
             } else {
-                ArticleViewModel.doLike(1, idDoc)
-                isLike = true;
-                binding.btnLike.setImageResource(R.drawable.ic_heart_red_24)
+                showToast(requireContext(), "Bạn cần phải đăng nhập")
             }
 
         }
@@ -430,7 +468,6 @@ class Article_Fragment : Fragment() {
     private fun observeSpeech() {
         repository.TextToSpechApi.observe(viewLifecycleOwner, Observer {
             speech = it;
-            showToast(requireContext(), it)
             mp?.setDataSource(it)
             mp?.prepare()
             binding.textEnd.text = mp?.duration?.let { it1 -> formatDuration(it1.toLong()) }
@@ -552,6 +589,8 @@ class Article_Fragment : Fragment() {
                         loading?.visibility = View.VISIBLE
                         content?.visibility = View.INVISIBLE
                         addView(0, distanceToTop.toInt())
+                    } else {
+                        binding.rlLayout.removeView(viewPopup)
                     }
                 }
             }
@@ -626,7 +665,7 @@ class Article_Fragment : Fragment() {
         meanWord = viewPopup!!.findViewById(R.id.meanWordVietNam)
         phonetic = viewPopup!!.findViewById(R.id.phonetic1);
         val heart: ImageView = viewPopup!!.findViewById(R.id.heart);
-
+        val audio: ImageView = viewPopup!!.findViewById(R.id.imageVoice);
 
         val layoutParams = RelativeLayout.LayoutParams(
             CoordinatorLayout.LayoutParams.WRAP_CONTENT,
@@ -642,9 +681,10 @@ class Article_Fragment : Fragment() {
         loading?.startShimmer()
         binding.rlLayout.addView(viewPopup, layoutParams)
 
-
+        audio.setOnClickListener {
+            playAudioFromUrl(audioPhontic)
+        }
         heart.setOnClickListener {
-
             val bundle = Bundle();
             bundle.putParcelable("dictionaryItem", note)
             Navigation.findNavController(binding.root).navigate(R.id.addNote, bundle)
@@ -843,4 +883,19 @@ public fun toNewsArticle(articleEntity: ArticleEntity): NewsArticle {
         sourceId = articleEntity.sourceId,
         sourceUrl = articleEntity.sourceUrl
     )
+}
+
+fun playAudioFromUrl(audioUrl: String) {
+    var mediaPlayer: MediaPlayer? = null
+    if (mediaPlayer == null) {
+        mediaPlayer = MediaPlayer()
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
+    }
+    try {
+        mediaPlayer.setDataSource(audioUrl)
+        mediaPlayer.prepare()
+        mediaPlayer.start()
+    } catch (e: IOException) {
+        e.printStackTrace()
+    }
 }

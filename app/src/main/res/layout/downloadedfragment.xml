@@ -33,7 +33,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
-                android:background="#CFCCCC"
+                android:background="@drawable/decorate_search"
                 app:iconifiedByDefault="false"
                 app:queryHint="Search"
                 app:searchIcon="@drawable/ic_search" />

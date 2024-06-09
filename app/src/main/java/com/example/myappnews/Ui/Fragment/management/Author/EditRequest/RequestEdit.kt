@@ -23,6 +23,7 @@ import com.bumptech.glide.Glide
 import com.example.myappnews.Data.Firebase.ViewModel.AdminViewModel.AdminViewModel
 import com.example.myappnews.Data.Firebase.ViewModel.AuthorViewModel.AuthorViewModel
 import com.example.myappnews.Data.Model.Article.NewsArticle
+import com.example.myappnews.Data.constant.dismissKeyboard
 import com.example.myappnews.R
 import com.example.myappnews.Ui.Fragment.Profile.imageViewToByteArray
 import com.example.myappnews.Ui.Fragment.management.Author.Home.showToast
@@ -80,11 +81,11 @@ class RequestEdit : Fragment() {
             view.findNavController().navigate(R.id.editRequest, bundle)
         }
         binding.btnDenied.setOnClickListener {
-            showCustomDialog()
+            showCustomDialog(view)
         }
     }
 
-    private fun showCustomDialog() {
+    private fun showCustomDialog(view: View) {
         val dialog = Dialog(requireContext())
         dialog.setCancelable(false)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -105,6 +106,7 @@ class RequestEdit : Fragment() {
         val text = dialog.findViewById<TextView>(R.id.textView)
         text.text = "Bạn có chắc muốn từ chối yêu cầu"
         ok.setOnClickListener {
+            dismissKeyboard(requireContext(),view)
             val newsArticle = NewsArticle(
                 idArticle = article.idArticle, // ID article
                 idPoster = article.idPoster,  // Thiếu trong binding
@@ -128,10 +130,16 @@ class RequestEdit : Fragment() {
             _authorViewModel.responseRqEdit(
                 newsArticle,
                 imageToByteArray(binding.imgArticlePage)
-            )
-                .observe(viewLifecycleOwner, Observer {
-                    showToast(requireContext(), "Gửi  yêu cầu thành công")
-                })
+            ).observe(viewLifecycleOwner, Observer {
+                 if (isAdded && isVisible) {
+                     if(it==1){
+                         showToast(requireContext(), "Gửi  yêu cầu thành công")
+                         view.findNavController().popBackStack()
+                     }else{
+                         showToast(requireContext(), "Gửi  yêu cầu thất bại")
+                     }
+                 }
+            })
             dialog.dismiss()
         }
         cancel.setOnClickListener {

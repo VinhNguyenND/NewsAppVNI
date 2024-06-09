@@ -15,7 +15,12 @@ import com.example.myappnews.Data.Model.User.UserModel
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthEmailException
+import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
@@ -26,6 +31,8 @@ import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import kotlinx.coroutines.tasks.await
+import org.apache.poi.hssf.record.PageBreakRecord.Break
 import java.util.Calendar
 import java.util.Date
 
@@ -48,6 +55,7 @@ class ArticleRepository {
     private var getMainComment = MutableLiveData<ArrayList<Comment>>();
     private var getChildComment = MutableLiveData<ArrayList<Comment>>();
     private var _deleteCommentSuccess = MutableLiveData<Boolean>();
+    private var _forGotPassWord = MutableLiveData<Boolean>();
     val ArticleLiveData: LiveData<ArrayList<NewsArticle>>
         get() = _ArticleLiveData;
 
@@ -79,6 +87,8 @@ class ArticleRepository {
         get() = getChildComment
     val deleteCommentSuccess: LiveData<Boolean>
         get() = _deleteCommentSuccess
+    val forGotPassWord: LiveData<Boolean>
+        get() = _forGotPassWord
 
     companion object {
         @Volatile
@@ -107,6 +117,7 @@ class ArticleRepository {
         if (field == "All" && source == "All") {
             db.collection("Articles")
                 .whereEqualTo("hide", false)
+                .orderBy("pubDate", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener {
                     val arrayArticle = ArrayList<NewsArticle>();
@@ -120,6 +131,7 @@ class ArticleRepository {
             db.collection("Articles")
                 .whereEqualTo("sourceId", source)
                 .whereEqualTo("hide", false)
+                .orderBy("pubDate", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener {
                     val arrayArticle = ArrayList<NewsArticle>();
@@ -135,6 +147,7 @@ class ArticleRepository {
             db.collection("Articles")
                 .whereEqualTo("field", field)
                 .whereEqualTo("hide", false)
+                .orderBy("pubDate", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener {
                     val arrayArticle = ArrayList<NewsArticle>();
@@ -151,6 +164,7 @@ class ArticleRepository {
                 .whereEqualTo("field", field)
                 .whereEqualTo("sourceId", source)
                 .whereEqualTo("hide", false)
+                .orderBy("pubDate", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener {
                     val arrayArticle = ArrayList<NewsArticle>();
@@ -165,6 +179,7 @@ class ArticleRepository {
 
     fun getAllSource() {
         db.collection("sources")
+            .orderBy("order", Query.Direction.ASCENDING)
             .get()
             .addOnCompleteListener {
                 val list = ArrayList<Source>()
@@ -207,14 +222,56 @@ class ArticleRepository {
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     getUsertoLogin(activity, auth.currentUser!!.uid.toString())
-                } else {
-                    _isAuthen.postValue(0)
                 }
             }
             .addOnFailureListener {
                 _isAuthen.postValue(-1)
-
             }
+    }
+
+    fun forGotPassWord(Email: String) {
+        auth.sendPasswordResetEmail(Email).addOnCompleteListener {
+            if (it.isSuccessful) {
+                _forGotPassWord.postValue(true)
+            }
+        }.addOnFailureListener {
+            _forGotPassWord.postValue(false)
+        }
+    }
+//    fun Login(activity: Activity, Email: String, PassWord: String) {
+//
+//        auth.signInWithEmailAndPassword(Email, PassWord)
+//            .addOnCompleteListener {
+//                if (it.isSuccessful) {
+//                    getUsertoLogin(activity, auth.currentUser!!.uid.toString())
+//                } else {
+//                    val exception = it.exception
+//                    if (exception is FirebaseTooManyRequestsException) {
+//                        Log.d("TAG_ERROR", "Too many requests. Please try again later.")
+//                    }
+//                    if (exception is FirebaseAuthException) {
+//                        val errorCode = exception.errorCode;
+//                        when (errorCode) {
+//                            "ERROR_WRONG_PASSWORD" -> {
+//                                Log.d("TAG_ERROR", errorCode)
+//                            }
+//
+//                            "ERROR_USER_NOT_FOUND" -> {
+//                                Log.d("TAG_ERROR", errorCode)
+//                            }
+//
+//                            "ERROR_INVALID_CREDENTIAL" -> {
+//                                Log.d("TAG_ERROR", errorCode)
+//                                exception.message?.let { it1 -> Log.d("TAG_ERROR", it1) }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//    }
+
+    fun resetLogin(two: Int) {
+        _isAuthen.postValue(two);
     }
 
     fun SignOut(activity: Activity) {
@@ -257,7 +314,7 @@ class ArticleRepository {
                         _isAuthen.postValue(1)
                     }
                 } else {
-                    _isAuthen.postValue(-1)
+                    _isAuthen.postValue(0)
                 }
             }
     }
@@ -303,15 +360,41 @@ class ArticleRepository {
     }
 
 
-    fun doLike(like: Int, id: String) {
+    //    fun doLike(idUser: String, id: String) {
+//        db.collection("Articles")
+//            .document(id)
+//            .update("like", like)
+//    }
+    fun doLike(iddoc: String, newsArticle: NewsArticle, id: String, isLike: Boolean) {
+        var listLike = ArrayList<String>();
+        if (newsArticle.like?.isNotEmpty() == true) {
+            listLike = newsArticle.like!!
+        }
+        if (isLike) {
+            listLike.add(id)
+            Log.i("islike bawng true", "islike bawng true");
+        } else {
+            listLike.remove(id)
+            Log.i("islike bawng false", "islike bawng false");
+        }
+        newsArticle.like = listLike
         db.collection("Articles")
-            .document(id)
-            .update("like", like)
+            .document(iddoc)
+            .update(newsArticle.toMap())
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    Log.i("thanh cong", "thanh cong");
+                } else {
+                    Log.i("that bai", "that bai");
+                }
+            }.addOnFailureListener {
+                Log.i("that bai", "that bai");
+            }
     }
 
-    fun getHeart() {
+    fun getHeart(id: String) {
         db.collection("Articles")
-            .whereEqualTo("like", 1)
+            .whereArrayContains("like", id)
             .get()
             .addOnCompleteListener {
                 if (it.isSuccessful) {
@@ -331,6 +414,7 @@ class ArticleRepository {
         db.collection("Articles")
             .whereEqualTo("field", newsArticle.field)
 //            .orderBy("pubDate", Query.Direction.DESCENDING)
+            .whereEqualTo("hide", false)
             .limit(5)
             .get()
             .addOnCompleteListener {

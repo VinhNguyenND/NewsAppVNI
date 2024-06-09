@@ -7,6 +7,7 @@ import kotlinx.android.parcel.Parcelize
 data class Source (
    var SourceName: String?= null,
    var choose:Boolean=false,
+   var order:Int?=null,
 ): Parcelable {
 
 }
